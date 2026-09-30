@@ -5,38 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Maple Lounge</title>
 <style>
+  /* The scene is always a Halloween night, so the UI uses one dark palette. */
   :root {
-    --panel-bg: rgba(255, 255, 255, 0.86);
-    --panel-fg: #3b2a3f;
-    --panel-muted: #7b6a80;
-    --panel-border: rgba(80, 50, 90, 0.18);
-    --key-bg: #fff;
-    --key-border: #cdbfd3;
-    --accent: #e3769b;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --panel-bg: rgba(28, 22, 34, 0.86);
-      --panel-fg: #f3e8f6;
-      --panel-muted: #b7a6bd;
-      --panel-border: rgba(255, 255, 255, 0.14);
-      --key-bg: #2d2436;
-      --key-border: #4c3f57;
-      --accent: #f29bb9;
-    }
+    --panel-bg: rgba(24, 16, 34, 0.88);
+    --panel-fg: #f4ecf8;
+    --panel-muted: #b9a8c4;
+    --panel-border: rgba(255, 190, 120, 0.18);
+    --tile-bg: rgba(255, 255, 255, 0.05);
+    --tile-hover: rgba(255, 255, 255, 0.11);
+    --key-bg: #2d2238;
+    --key-border: #4f3e60;
+    --accent: #ff9a3c;
+    --accent-soft: rgba(255, 154, 60, 0.18);
+    --wardrobe-w: 316px;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe6ff; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0d1422; }
   body { font: 14px/1.4 ui-rounded, "SF Pro Rounded", system-ui, sans-serif; color: var(--panel-fg); }
   canvas { display: block; width: 100vw; height: 100vh; image-rendering: pixelated; touch-action: none; }
+  button { font: inherit; color: inherit; }
 
   .panel {
-    position: fixed; top: 16px; left: 16px; max-width: min(340px, calc(100vw - 32px));
+    position: fixed; top: 16px; left: 16px; max-width: min(320px, calc(100vw - 32px));
     background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 14px;
     padding: 12px 14px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-    box-shadow: 0 6px 24px rgba(40, 20, 50, 0.12);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
   }
-  .panel h1 { font-size: 15px; margin: 0 0 6px; letter-spacing: 0.01em; }
+  .panel h1 { font-size: 15px; margin: 0 0 6px; }
   .panel p { margin: 0 0 8px; color: var(--panel-muted); font-size: 12.5px; }
   .asset { display: flex; gap: 10px; align-items: center; margin-top: 8px; }
   .asset img { width: 36px; height: 36px; object-fit: contain; image-rendering: pixelated; flex: none; }
@@ -47,14 +42,71 @@
     display: inline-block; min-width: 22px; padding: 1px 6px; text-align: center; font: inherit; font-size: 11.5px;
     background: var(--key-bg); border: 1px solid var(--key-border); border-bottom-width: 2px; border-radius: 6px;
   }
-  .panel p.fine { margin: 10px 0 0; font-size: 11px; }
-  .panel p.fine a { color: inherit; }
   .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: -1px; margin-right: 4px; background: var(--accent); }
   .toggle { position: absolute; top: 10px; right: 10px; background: none; border: 0; color: var(--panel-muted); cursor: pointer; font-size: 12px; }
   .panel.collapsed > :not(h1):not(.toggle) { display: none; }
   .panel.collapsed h1 { margin: 0; padding-right: 44px; }
+  .panel p.fine { margin: 10px 0 0; font-size: 11px; }
+  .panel p.fine a { color: inherit; }
 
-  .touch { position: fixed; bottom: 16px; left: 16px; right: 16px; display: none; justify-content: space-between; pointer-events: none; }
+  /* ---------- wardrobe ---------- */
+  .wardrobe {
+    position: fixed; top: 0; right: 0; bottom: 0; width: var(--wardrobe-w); max-width: 100vw;
+    display: flex; flex-direction: column;
+    background: var(--panel-bg); border-left: 1px solid var(--panel-border);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.35);
+  }
+  .wardrobe header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 16px 16px 8px; }
+  .wardrobe h2 { margin: 0; font-size: 17px; letter-spacing: 0.01em; }
+  .wardrobe h2 small { font-weight: 500; color: var(--accent); font-size: 12px; margin-left: 6px; }
+  .status { font-size: 12px; color: var(--panel-muted); min-height: 1em; text-align: right; }
+  .status.error { color: #ff8f8f; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 16px 10px; }
+  .tabs button {
+    border: 1px solid var(--panel-border); background: var(--tile-bg); border-radius: 999px;
+    padding: 4px 10px; font-size: 12.5px; cursor: pointer;
+  }
+  .tabs button:hover { background: var(--tile-hover); }
+  .tabs button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: #2a1406; font-weight: 600; }
+  .grid {
+    flex: 1; overflow-y: auto; padding: 4px 16px 16px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; align-content: start;
+  }
+  .tile {
+    display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px 6px;
+    background: var(--tile-bg); border: 1px solid transparent; border-radius: 12px; cursor: pointer; min-height: 96px;
+  }
+  .tile:hover { background: var(--tile-hover); }
+  .tile:focus-visible, .tabs button:focus-visible, .wardrobe footer button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .tile[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+  .tile .icon { width: 48px; height: 48px; display: grid; place-items: center; }
+  .tile img { max-width: 48px; max-height: 48px; image-rendering: pixelated; transform: scale(1.3); }
+  .tile span { font-size: 11px; line-height: 1.2; text-align: center; color: var(--panel-muted);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .tile[aria-pressed="true"] span { color: var(--panel-fg); }
+  .tile .none { font-size: 22px; color: var(--panel-muted); }
+  .wardrobe footer { display: flex; gap: 8px; padding: 12px 16px 16px; border-top: 1px solid var(--panel-border); }
+  .wardrobe footer button {
+    flex: 1; padding: 8px 10px; border-radius: 10px; cursor: pointer;
+    border: 1px solid var(--panel-border); background: var(--tile-bg);
+  }
+  .wardrobe footer button.primary { background: var(--accent); border-color: var(--accent); color: #2a1406; font-weight: 600; }
+  .wardrobe-toggle { display: none; }
+
+  @media (max-width: 760px) {
+    .wardrobe { transform: translateX(100%); transition: transform 0.2s ease; width: min(var(--wardrobe-w), 88vw); }
+    .wardrobe.open { transform: none; }
+    .wardrobe-toggle {
+      display: block; position: fixed; top: 16px; right: 16px; z-index: 2;
+      padding: 8px 12px; border-radius: 999px; border: 1px solid var(--panel-border);
+      background: var(--panel-bg); cursor: pointer;
+    }
+    .wardrobe.open ~ .wardrobe-toggle { right: calc(min(var(--wardrobe-w), 88vw) + 12px); }
+    .panel { top: auto; bottom: 90px; }
+  }
+
+  .touch { position: fixed; bottom: 16px; left: 16px; display: none; gap: 10px; pointer-events: none; }
   .touch .group { display: flex; gap: 10px; pointer-events: auto; }
   .touch button {
     width: 58px; height: 58px; border-radius: 50%; border: 1px solid var(--panel-border);
@@ -64,22 +116,36 @@
 </style>
 </head>
 <body>
-<canvas id="game" aria-label="Game scene: a character, the Adriano pet, and the Rabbit Lamp Chair"></canvas>
+<canvas id="game" aria-label="Halloween night scene with your character, a pet, and the Rabbit Lamp Chair"></canvas>
 
 <div class="panel" id="panel">
   <button class="toggle" id="toggle" type="button">hide</button>
   <h1>Maple Lounge · prototype</h1>
-  <p>Walk up to the lamp and sit. It changes color each time, like in game.</p>
+  <p>Walk up to the lamp and sit. It changes color each time, like in game. Dress up in the wardrobe on the right.</p>
   <div class="asset"><img id="chairIcon" alt=""><div><b id="chairName"></b><span id="chairColor"></span></div></div>
   <div class="asset"><img id="petIcon" alt=""><div><b id="petName"></b><span id="petDesc"></span></div></div>
   <div class="keys">
     <span><kbd>←</kbd> <kbd>→</kbd></span><span>Walk (or <kbd>A</kbd> <kbd>D</kbd>)</span>
     <span><kbd>Space</kbd></span><span>Jump (or <kbd>↑</kbd> <kbd>W</kbd>)</span>
     <span><kbd>↓</kbd></span><span>Sit on the chair when close (or <kbd>S</kbd>)</span>
-    <span>click</span><span>Pet Adriano</span>
+    <span>click</span><span>Pet your pet</span>
   </div>
   <p class="fine">Fan project, not affiliated with Nexon. MapleStory art © Nexon, via <a href="https://maplestory.io">maplestory.io</a>.</p>
 </div>
+
+<aside class="wardrobe" id="wardrobe" aria-label="Wardrobe">
+  <header>
+    <h2>Wardrobe<small>Halloween</small></h2>
+    <span class="status" id="status" role="status"></span>
+  </header>
+  <div class="tabs" id="tabs" role="tablist"></div>
+  <div class="grid" id="grid" role="tabpanel"></div>
+  <footer>
+    <button type="button" id="randomize" class="primary">Randomize look</button>
+    <button type="button" id="reset">Reset</button>
+  </footer>
+</aside>
+<button type="button" class="wardrobe-toggle" id="wardrobeToggle" aria-controls="wardrobe" aria-expanded="false">Wardrobe</button>
 
 <div class="touch" aria-hidden="true">
   <div class="group"><button data-key="left">◀</button><button data-key="right">▶</button></div>
@@ -90,22 +156,54 @@
 <script>
 (() => {
   const A = window.ASSETS;
+  const API = 'https://maplestory.io/api/GMS/270';
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
 
   // ---------- world constants (MapleStory-ish units: px, px/s) ----------
-  const WORLD_W = 1400;
+  const WORLD_W = 2250;
   const GROUND_Y = 0;          // world y of the ground; up is negative
   const WALK_SPEED = 125;
   const JUMP_V = 555;
   const GRAVITY = 2000;
-  const CHAIR_X = 820;
+  const CHAIR_X = 1010;
   const SIT_RANGE = 45;
+  const VIEW_WORLD_H = 430;    // roughly how many world px tall the screen shows
 
   // ---------- image loading ----------
-  const load = src => new Promise(res => { const i = new Image(); i.onload = () => res(i); i.src = src; });
-  async function loadFrames(frames) {
-    return Promise.all(frames.map(async f => ({ ...f, img: await load(f.src) })));
+  const load = (src, cors) => new Promise((res, rej) => {
+    const i = new Image();
+    if (cors) i.crossOrigin = 'anonymous';
+    i.onload = () => res(i); i.onerror = () => rej(new Error('image failed: ' + src)); i.src = src;
+  });
+  const loadFrames = frames => Promise.all(frames.map(async f => ({ ...f, img: await load(f.src) })));
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+
+  // maplestory.io is a free community service and returns errors when hit with many renders at once,
+  // so live requests go through a small queue and retry with backoff.
+  const MAX_LIVE_REQUESTS = 3;
+  let liveActive = 0;
+  const liveQueue = [];
+  function liveRequest(task) {
+    return new Promise((resolve, reject) => {
+      liveQueue.push({ task, resolve, reject });
+      pumpLive();
+    });
+  }
+  function pumpLive() {
+    while (liveActive < MAX_LIVE_REQUESTS && liveQueue.length) {
+      const { task, resolve, reject } = liveQueue.shift();
+      liveActive++;
+      task().then(resolve, reject).finally(() => { liveActive--; pumpLive(); });
+    }
+  }
+  async function withRetry(fn, tries = 3) {
+    for (let attempt = 1; ; attempt++) {
+      try { return await liveRequest(fn); } catch (err) {
+        if (attempt >= tries) throw err;
+        await wait(600 * attempt);
+      }
+    }
   }
 
   // ---------- helpers ----------
@@ -118,13 +216,17 @@
   }
   // Sprites face left by default; `ox, oy` is where the world point lands inside the image.
   function drawSprite(img, ox, oy, x, y, faceRight) {
-    const w = img.width, h = img.height;
     if (!faceRight) { ctx.drawImage(img, Math.round(x - ox), Math.round(y - oy)); return; }
     ctx.save();
     ctx.translate(Math.round(x + ox), Math.round(y - oy));
     ctx.scale(-1, 1);
-    ctx.drawImage(img, 0, 0, w, h);
+    ctx.drawImage(img, 0, 0);
     ctx.restore();
+  }
+  // Scenery is placed by its bottom-center; `sink` pushes it into the ground a little.
+  function drawProp(frame, x, y = GROUND_Y, sink = 0, faceRight = false) {
+    const img = frame.img;
+    drawSprite(img, img.width / 2, img.height - sink, x, y, faceRight);
   }
   function nameTag(text, x, y) {
     ctx.font = '11px ui-rounded, system-ui, sans-serif';
@@ -149,6 +251,14 @@
     ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
     ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
   }
+  function glow(x, y, r, color, strength) {
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, color.replace('A', strength.toFixed(3)));
+    g.addColorStop(1, color.replace('A', '0'));
+    ctx.fillStyle = g;
+    ctx.fillRect(x - r, y - r, r * 2, r * 2);
+  }
+  const pick = list => list[Math.floor(Math.random() * list.length)];
 
   // ---------- input ----------
   const keys = { left: false, right: false, jump: false, down: false };
@@ -157,7 +267,10 @@
     Space: 'jump', ArrowUp: 'jump', KeyW: 'jump', AltLeft: 'jump', AltRight: 'jump',
     ArrowDown: 'down', KeyS: 'down',
   };
-  addEventListener('keydown', e => { const k = keyMap[e.code]; if (k) { keys[k] = true; e.preventDefault(); } });
+  addEventListener('keydown', e => {
+    if (e.target.closest && e.target.closest('button') && (e.code === 'Space' || e.code === 'Enter')) return;
+    const k = keyMap[e.code]; if (k) { keys[k] = true; e.preventDefault(); }
+  });
   addEventListener('keyup', e => { const k = keyMap[e.code]; if (k) { keys[k] = false; e.preventDefault(); } });
   addEventListener('blur', () => Object.keys(keys).forEach(k => keys[k] = false));
   document.querySelectorAll('.touch button').forEach(b => {
@@ -174,82 +287,174 @@
   });
 
   // ---------- view / scaling ----------
+  const wardrobeEl = document.getElementById('wardrobe');
   let scale = 2, dpr = 1, viewW = 0, viewH = 0;
   function resize() {
     dpr = window.devicePixelRatio || 1;
     canvas.width = Math.round(innerWidth * dpr);
     canvas.height = Math.round(innerHeight * dpr);
-    // Integer pixel scale so sprites stay crisp; ~340 world px of height on screen.
-    scale = Math.max(1, Math.round((innerHeight * dpr) / 340));
+    // Integer pixel scale so sprites stay crisp.
+    scale = Math.max(1, Math.round((innerHeight * dpr) / VIEW_WORLD_H));
     viewW = canvas.width / scale;
     viewH = canvas.height / scale;
   }
   addEventListener('resize', resize);
   resize();
+  // World px hidden behind the wardrobe (it overlays the canvas on wide screens).
+  function wardrobeCover() {
+    if (innerWidth <= 760) return 0;
+    return (wardrobeEl.getBoundingClientRect().width * dpr) / scale;
+  }
 
-  // ---------- background ----------
-  const clouds = Array.from({ length: 9 }, (_, i) => ({ x: i * 190 + Math.random() * 80, y: -230 + Math.random() * 90, s: 0.6 + Math.random() * 0.6 }));
-  const flowers = Array.from({ length: 60 }, () => ({ x: Math.random() * WORLD_W, c: ['#ffd1e1', '#fff3a6', '#ffffff', '#d7c6ff'][Math.floor(Math.random() * 4)] }));
+  // ---------- scenery ----------
+  let BG = {};
+  const clouds = Array.from({ length: 7 }, (_, i) => ({ k: 'cloud' + (i % 4), x: i * 260 + Math.random() * 120, y: 0.08 + Math.random() * 0.28, v: 4 + Math.random() * 5 }));
 
-  function drawBackground(camX, camY, t) {
-    const g = ctx.createLinearGradient(0, 0, 0, viewH);
-    g.addColorStop(0, '#9fd8ff'); g.addColorStop(0.7, '#dff3ff'); g.addColorStop(1, '#fdf1f6');
-    ctx.fillStyle = g; ctx.fillRect(0, 0, viewW, viewH);
+  // [sprite, x, sink, faceRight] placed on the play layer, behind the characters.
+  const BACK_PROPS = [
+    ['woodSign', 30, 4],
+    ['pumpkinPillarL', 150, 2], ['wall0', 285, 2], ['wall1', 413, 2], ['wall0', 541, 2], ['pumpkinPillarR', 676, 2],
+    ['vines1', 420, 6],
+    ['faceTree0', 800, 6],
+    ['grave2', 870, 1], ['grave0', 912, 1], ['candles1', 890, -6],
+    ['floatingPumpkins', 1480, 6],
+    ['pumpkinTree', 1420, 8],
+    ['vines0', 1180, 6],
+    ['deadTree0', 1760, 4],
+    ['grave3', 1810, 1], ['grave1', 1858, 1], ['candles0', 1835, -4], ['grave2', 1910, 1],
+    ['pumpkinPillarL', 1990, 2], ['wall1', 2125, 2], ['wall0', 2253, 2],
+    ['vines1', 2120, 6],
+  ];
+  // Drawn after the characters so the scene has some depth.
+  const FRONT_PROPS = [['weeds1', 590, 3], ['weeds0', 1150, 3], ['weeds1', 1560, 3], ['weeds0', 1940, 3]];
+  // Far layers: [sprite, x in layer space, sink]
+  const FAR_TREES = [['deadTree1', 120, 0], ['faceTree1', 560, 4], ['deadTree2', 980, 0], ['faceTree2', 1380, 4], ['deadTree1', 1760, 0]];
+  const LIGHTS = [ // warm glows: [x, y, radius]
+    [150, -170, 70], [676, -170, 70], [890, -18, 40], [1835, -16, 40], [1990, -170, 70], [1420, -210, 150],
+  ];
 
-    // clouds (slow parallax)
+  function drawSky(camX, t) {
+    ctx.drawImage(BG.sky[0].img, 0, 0, viewW, viewH);
+    // stars, twinkling gently
+    const st = BG.stars[0].img;
+    ctx.save();
+    ctx.globalAlpha = 0.75 + 0.25 * Math.sin(t * 1.3);
+    for (let x = -((camX * 0.03) % st.width) - st.width; x < viewW; x += st.width) ctx.drawImage(st, Math.round(x), 0);
+    ctx.restore();
+    // moon
+    const moon = BG.moon[0].img;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    glow(viewW * 0.72 - camX * 0.02 + moon.width / 2, viewH * 0.1 + moon.height / 2, 150, 'rgba(170,200,255,A)', 0.18);
+    ctx.restore();
+    ctx.drawImage(moon, Math.round(viewW * 0.72 - camX * 0.02), Math.round(viewH * 0.1));
+    // drifting clouds
     for (const c of clouds) {
-      const x = ((c.x - camX * 0.2 + t * 6 * c.s) % (WORLD_W + 200) + WORLD_W + 200) % (WORLD_W + 200) - 100;
-      const y = c.y - camY * 0.2;
-      ctx.fillStyle = 'rgba(255,255,255,0.9)';
-      for (const [dx, dy, r] of [[0, 0, 16], [16, -6, 20], [36, 0, 15], [18, 6, 14]]) {
-        ctx.beginPath(); ctx.arc(x + dx * c.s, y + dy * c.s, r * c.s, 0, Math.PI * 2); ctx.fill();
-      }
+      const img = BG[c.k][0].img, span = WORLD_W + 600;
+      const x = (((c.x + t * c.v - camX * 0.1) % span) + span) % span - 300;
+      ctx.globalAlpha = 0.8;
+      ctx.drawImage(img, Math.round(x), Math.round(viewH * c.y));
+      ctx.globalAlpha = 1;
     }
-    // far hills
-    hills(camX * 0.4, camY * 0.4, -70, 60, '#a8e0a0', 0.004);
-    hills(camX * 0.65, camY * 0.65, -38, 38, '#8fd18a', 0.007);
-  }
-  function hills(px, py, base, amp, color, freq) {
-    ctx.fillStyle = color;
-    ctx.beginPath(); ctx.moveTo(0, viewH);
-    for (let sx = 0; sx <= viewW + 8; sx += 8) {
-      const wx = sx + px;
-      const y = base - amp * (0.5 + 0.5 * Math.sin(wx * freq) * Math.cos(wx * freq * 0.37));
-      ctx.lineTo(sx, y - py + viewH * 0.72);
+    // a witch crosses the sky every so often
+    const period = 38, wt = t % period;
+    if (wt < 22) {
+      const wf = frameAt(BG.witch, t);
+      const x = viewW + 150 - (wt / 22) * (viewW + 300);
+      drawSprite(wf.img, wf.img.width / 2, wf.img.height / 2, x, viewH * 0.24 + Math.sin(t * 2) * 10, false);
     }
-    ctx.lineTo(viewW, viewH); ctx.closePath(); ctx.fill();
   }
+
+  // Draw a layer whose world x scrolls at `p` times the camera speed (p=1 is the play layer).
+  function layer(p, camX, horizonY, fn) {
+    ctx.save();
+    ctx.translate(-Math.round(camX * p), Math.round(horizonY));
+    fn();
+    ctx.restore();
+  }
+
+  function drawFar(camX, horizonY, t) {
+    // tree silhouettes
+    layer(0.25, camX, horizonY - 26, () => {
+      const a = BG.treeline0[0].img, b = BG.treeline1[0].img;
+      for (let x = -200, i = 0; x < WORLD_W; x += 400, i++) { const img = i % 2 ? b : a; ctx.drawImage(img, x, -img.height); }
+    });
+    // haunted mansion
+    layer(0.4, camX, horizonY - 14, () => {
+      const m = BG.mansion[0].img;
+      ctx.save(); ctx.globalAlpha = 0.92;
+      ctx.drawImage(m, 520, -m.height);
+      ctx.restore();
+    });
+    // closer trees
+    layer(0.7, camX, horizonY, () => {
+      ctx.save(); ctx.filter = 'brightness(0.75)';
+      for (const [k, x, sink] of FAR_TREES) drawProp(BG[k][0], x, 0, sink);
+      ctx.restore();
+    });
+    // mist band along the horizon
+    const g = ctx.createLinearGradient(0, horizonY - 70, 0, horizonY + 4);
+    g.addColorStop(0, 'rgba(120,110,170,0)'); g.addColorStop(1, 'rgba(120,110,170,0.28)');
+    ctx.fillStyle = g; ctx.fillRect(0, horizonY - 70, viewW, 74);
+  }
+
   function drawGround() {
-    // grass lip
-    ctx.fillStyle = '#6cc36a'; ctx.fillRect(-200, GROUND_Y, WORLD_W + 400, 8);
-    ctx.fillStyle = '#58ad58'; ctx.fillRect(-200, GROUND_Y + 8, WORLD_W + 400, 3);
-    // soil
-    ctx.fillStyle = '#c99a6b'; ctx.fillRect(-200, GROUND_Y + 11, WORLD_W + 400, 400);
-    ctx.fillStyle = '#b8895c';
-    for (let x = -200; x < WORLD_W + 200; x += 32) ctx.fillRect(x + ((x / 32) % 2 ? 10 : 0), GROUND_Y + 22 + ((x / 32) % 3) * 10, 12, 4);
-    for (const f of flowers) { ctx.fillStyle = f.c; ctx.fillRect(Math.round(f.x), GROUND_Y - 2, 3, 3); }
+    const stone = BG.stone[0].img;
+    ctx.save();
+    ctx.filter = 'brightness(0.72)';
+    for (let x = -300; x < WORLD_W + 300; x += stone.width)
+      for (let y = GROUND_Y + 6; y < GROUND_Y + 500; y += stone.height) ctx.drawImage(stone, x, y);
+    ctx.restore();
+    // mossy lip
+    ctx.fillStyle = '#35462f'; ctx.fillRect(-300, GROUND_Y, WORLD_W + 600, 6);
+    ctx.fillStyle = '#4d6440'; ctx.fillRect(-300, GROUND_Y, WORLD_W + 600, 2);
+    const shade = ctx.createLinearGradient(0, GROUND_Y + 6, 0, GROUND_Y + 40);
+    shade.addColorStop(0, 'rgba(0,0,0,0.35)'); shade.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = shade; ctx.fillRect(-300, GROUND_Y + 6, WORLD_W + 600, 34);
+  }
+
+  function drawBackProps(t) {
+    for (const [k, x, sink] of BACK_PROPS) drawProp(frameAt(BG[k], t), x, GROUND_Y, sink);
+    // a jester idles by the gate
+    drawProp(frameAt(BG.jester, t), 330, GROUND_Y, 2, true);
+    // a zombie shambles back and forth between the graves
+    const zf = frameAt(BG.zombie, t), span = 220, zt = (t * 18) % (span * 2);
+    const zx = 1640 + (zt < span ? zt : span * 2 - zt);
+    drawProp(zf, zx, GROUND_Y, 2, zt < span);
+  }
+
+  function drawLights(t) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    LIGHTS.forEach(([x, y, r], i) => {
+      const flicker = 0.16 + 0.04 * Math.sin(t * 7 + i * 1.7) + 0.02 * Math.sin(t * 13 + i);
+      glow(x, GROUND_Y + y, r, 'rgba(255,150,50,A)', flicker);
+    });
+    ctx.restore();
   }
 
   // ---------- entities ----------
-  const player = { x: 560, y: GROUND_Y, vy: 0, faceRight: true, onGround: true, sitting: false, t: 0, state: 'stand1' };
-  const pet = { x: 500, y: GROUND_Y, vy: 0, faceRight: true, onGround: true, t: 0, anim: 'stand0', emote: null, emoteT: 0, idle: 0, say: null, sayT: 0 };
+  const player = { x: 820, y: GROUND_Y, vy: 0, faceRight: true, onGround: true, sitting: false, t: 0, state: 'stand1' };
+  const pet = { x: 760, y: GROUND_Y, vy: 0, faceRight: true, onGround: true, t: 0, anim: 'stand0', emote: null, emoteT: 0, idle: 0, say: null, sayT: 0 };
   const chair = { variant: 0, t: 0 };
-  const PET_LINES = ['...', 'Hmph.', 'Arr.', '*adjusts glasses*', 'Fine. One pat.'];
+  const LINES = {
+    5000144: ['...', 'Hmph.', 'Arr.', '*adjusts glasses*', 'Fine. One pat.'],
+    default: ['Boo!', 'Trick or treat!', 'Hehe~', '♪', 'Candy?'],
+  };
 
-  canvas.addEventListener('pointerdown', e => {
-    const { wx, wy } = screenToWorld(e.clientX, e.clientY);
-    if (Math.abs(wx - pet.x) < 26 && wy < pet.y + 6 && wy > pet.y - 60) {
-      setPetEmote('love', 1.6);
-      pet.say = PET_LINES[Math.floor(Math.random() * PET_LINES.length)]; pet.sayT = 2;
-    }
-  });
   let cam = { x: 0, y: 0 };
   function screenToWorld(cx, cy) {
     return { wx: (cx * dpr) / scale + cam.x, wy: (cy * dpr) / scale + cam.y };
   }
+  canvas.addEventListener('pointerdown', e => {
+    const { wx, wy } = screenToWorld(e.clientX, e.clientY);
+    if (Math.abs(wx - pet.x) < 28 && wy < pet.y + 6 && wy > pet.y - 64) {
+      setPetEmote(['love', 'dancing', 'play'].find(a => petAnims[a]) || null, 1.6);
+      pet.say = pick(LINES[currentPet.id] || LINES.default); pet.sayT = 2;
+    }
+  });
 
   function setPetEmote(name, secs) {
-    if (!petAnims[name]) return;
+    if (!name || !petAnims[name]) return;
     pet.emote = name; pet.emoteT = secs; pet.t = 0;
   }
 
@@ -266,7 +471,7 @@
       chair.variant = pickNewVariant(); chair.t = 0; updateChairLabel();
       return;
     }
-    let dir = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+    const dir = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
     if (dir) player.faceRight = dir > 0;
     player.x = Math.max(20, Math.min(WORLD_W - 20, player.x + dir * WALK_SPEED * dt));
     if (keys.jump && player.onGround) { player.vy = -JUMP_V; player.onGround = false; }
@@ -288,7 +493,7 @@
   function updatePet(dt) {
     pet.t += dt;
     if (pet.sayT > 0 && (pet.sayT -= dt) <= 0) pet.say = null;
-    // Follow a spot just behind the player; while seated, curl up beside the chair.
+    // Follow a spot just behind the player; while seated, settle beside the chair.
     const behind = player.faceRight ? -48 : 48;
     const targetX = player.sitting ? CHAIR_X + 62 : player.x + behind;
     const dx = targetX - pet.x;
@@ -313,10 +518,12 @@
     }
     pet.idle = moving || !pet.onGround ? 0 : pet.idle + dt;
     if (!pet.emote && pet.idle > 6 && !player.sitting && Math.random() < dt * 0.25) {
-      setPetEmote(['dancing', 'chat', 'hungry', 'play'][Math.floor(Math.random() * 4)], 2.2);
+      setPetEmote(pick(['dancing', 'chat', 'hungry', 'play'].filter(a => petAnims[a])), 2.2);
     }
-    let anim = pet.emote || (!pet.onGround ? 'jump' : moving ? 'move'
-      : player.sitting ? (player.t > 8 ? 'sleep' : 'sit') : pet.idle > 20 ? 'sleep' : 'stand0');
+    // Not every pet has every animation (many have no `sit` or `sleep`), so fall back gracefully.
+    const has = a => petAnims[a] ? a : null;
+    const resting = player.sitting ? (player.t > 8 ? has('sleep') || has('sit') : has('sit')) : pet.idle > 20 ? has('sleep') : null;
+    let anim = pet.emote || (!pet.onGround ? has('jump') : moving ? 'move' : resting) || 'stand0';
     if (!petAnims[anim]) anim = 'stand0';
     if (anim !== pet.anim) { pet.anim = anim; if (!pet.emote) pet.t = 0; }
   }
@@ -324,19 +531,24 @@
   // ---------- render ----------
   let petAnims, charAnims, chairVariants;
   function render(t) {
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.imageSmoothingEnabled = false;
     ctx.setTransform(scale, 0, 0, scale, 0, 0);
+    ctx.imageSmoothingEnabled = false;
 
-    // Camera: keep the player near center; ground about 78% down the screen.
-    const targetX = Math.max(-40, Math.min(WORLD_W + 40 - viewW, player.x - viewW / 2));
+    // Camera: keep the player centered in the part of the screen the wardrobe doesn't cover.
+    const visibleW = viewW - wardrobeCover();
+    const targetX = Math.max(-40, Math.min(WORLD_W + 40 - visibleW, player.x - visibleW / 2));
     cam.x += (targetX - cam.x) * 0.12;
-    cam.y = GROUND_Y - viewH * 0.78;
+    cam.y = GROUND_Y - viewH * 0.8;
+    const horizonY = GROUND_Y - cam.y;
 
-    drawBackground(cam.x, cam.y, t);
+    drawSky(cam.x, t);
+    drawFar(cam.x, horizonY, t);
+
     ctx.save();
     ctx.translate(-Math.round(cam.x), -Math.round(cam.y));
     drawGround();
+    drawBackProps(t);
+    drawLights(t);
 
     // Chair (behind the character). It idles on its current color and animates when in use.
     const cf = player.sitting ? frameAt(chairVariants[chair.variant], chair.t) : chairVariants[chair.variant][0];
@@ -345,7 +557,7 @@
     // Pet
     const pf = frameAt(petAnims[pet.anim], pet.t);
     drawSprite(pf.img, pf.ox, pf.oy, pet.x, pet.y, pet.faceRight);
-    nameTag(A.pet.name, pet.x, pet.y + 3);
+    nameTag(currentPet.name, pet.x, pet.y + 3);
     if (pet.say) bubble(pet.say, pet.x, pet.y - pf.oy - 4);
 
     // Character (feetCenter renders put the feet at the image center)
@@ -356,13 +568,20 @@
     drawSprite(ff.img, ff.img.width / 2, ff.img.height / 2, fx, player.y + seat.y, player.faceRight);
     nameTag('You', player.x, player.y + 3);
 
+    for (const [k, x, sink] of FRONT_PROPS) drawProp(BG[k][0], x, GROUND_Y, sink);
+
     if (!player.sitting && player.onGround && Math.abs(player.x - CHAIR_X) < SIT_RANGE) {
       bubble('↓ Sit', CHAIR_X, GROUND_Y - 150);
     }
     ctx.restore();
+
+    // soft night vignette
+    const v = ctx.createRadialGradient(viewW / 2, viewH * 0.6, viewH * 0.35, viewW / 2, viewH * 0.6, viewW * 0.75);
+    v.addColorStop(0, 'rgba(10,5,25,0)'); v.addColorStop(1, 'rgba(10,5,25,0.45)');
+    ctx.fillStyle = v; ctx.fillRect(0, 0, viewW, viewH);
   }
 
-  // ---------- panel ----------
+  // ---------- info panel ----------
   function updateChairLabel() {
     let color = '';
     try { color = swatch(chair.variant); } catch { /* canvas reads can be blocked on file:// */ }
@@ -386,21 +605,223 @@
     }
     return (swatchCache[v] = `rgb(${best.join(',')})`);
   }
+  function showPetInfo(p) {
+    const entry = A.wardrobe.pets.find(x => x.id === p.id);
+    document.getElementById('petIcon').src = entry ? entry.icon : A.pet.anims.stand0[0].src;
+    document.getElementById('petName').textContent = p.name;
+    document.getElementById('petDesc').textContent = cleanDesc(p.desc);
+  }
+  // Game text uses \n and #c…# color codes; keep just the first line as plain text.
+  const cleanDesc = s => (s || '').split(/\\n|\n/)[0].replace(/#c|#/g, '').trim();
+
+  // ---------- wardrobe: looks ----------
+  const BASE_BODY = [12000, 21000, 31000]; // head, face, hair
+  const SLOTS = ['hat', 'outfit', 'cape', 'shoes', 'faceAcc', 'eyeAcc', 'weapon'];
+  const DEFAULT_LOOK = { hat: 1002738, outfit: 1052926, shoes: 1073062 };
+  const FRAME_COUNTS = Object.fromEntries(Object.entries(A.character.anims).map(([k, v]) => [k, v.length]));
+  const FRAME_DELAYS = Object.fromEntries(Object.entries(A.character.anims).map(([k, v]) => [k, v[0].delay]));
+  const lookItems = look => [...BASE_BODY, ...SLOTS.map(s => look[s]).filter(Boolean)];
+  const lookKey = look => lookItems(look).slice().sort((a, b) => a - b).join(',');
+  const DEFAULT_KEY = lookKey(DEFAULT_LOOK);
+  const lookCache = new Map();
+
+  function loadLook(look) {
+    const key = lookKey(look);
+    if (!lookCache.has(key)) {
+      const items = lookItems(look).join(',');
+      const p = Promise.all(Object.entries(FRAME_COUNTS).map(async ([action, n]) => {
+        const frames = await Promise.all(Array.from({ length: n }, (_, f) =>
+          withRetry(() => load(`${API}/Character/feetCenter/${A.character.skin}/${items}/${action}/${f}`, true))));
+        return [action, frames.map(img => ({ img, delay: FRAME_DELAYS[action] }))];
+      })).then(Object.fromEntries);
+      p.catch(() => lookCache.delete(key)); // allow retry
+      lookCache.set(key, p);
+    }
+    return lookCache.get(key);
+  }
+
+  // ---------- wardrobe: pets ----------
+  const petCache = new Map();
+  function loadPet(id) {
+    if (!petCache.has(id)) {
+      const p = (async () => {
+        const d = await withRetry(async () => {
+          const res = await fetch(`${API}/pet/${id}`);
+          if (!res.ok) throw new Error('pet request failed: ' + res.status);
+          return res.json();
+        });
+        const anims = {};
+        for (const [name, books] of Object.entries(d.frameBooks)) {
+          const book = Array.isArray(books) ? books[0] : books;
+          const frames = ((book && book.frames) || []).filter(f => f.image && f.origin);
+          if (frames.length) anims[name] = frames.map(f => ({
+            src: 'data:image/png;base64,' + f.image, ox: f.origin.x, oy: f.origin.y, delay: f.delay || 180,
+          }));
+        }
+        if (!anims.stand0 || !anims.move) throw new Error('pet is missing basic animations');
+        const loaded = {};
+        for (const [k, v] of Object.entries(anims)) loaded[k] = await loadFrames(v);
+        return { id, name: d.description.name, desc: d.description.description || '', anims: loaded };
+      })();
+      p.catch(() => petCache.delete(id));
+      petCache.set(id, p);
+    }
+    return petCache.get(id);
+  }
+
+  // ---------- wardrobe: UI ----------
+  const TABS = [
+    ['pet', 'Pets'], ['hat', 'Hats'], ['outfit', 'Outfits'], ['cape', 'Capes'],
+    ['shoes', 'Shoes'], ['face', 'Face'], ['weapon', 'Weapons'],
+  ];
+  const NONE_ALLOWED = new Set(['hat', 'cape', 'shoes', 'face', 'weapon']);
+  const tabsEl = document.getElementById('tabs');
+  const gridEl = document.getElementById('grid');
+  const statusEl = document.getElementById('status');
+  let activeTab = 'pet';
+  let look = { ...DEFAULT_LOOK };
+  let currentPet = null;
+  let lookToken = 0, petToken = 0;
+
+  function setStatus(text, isError = false) {
+    statusEl.textContent = text;
+    statusEl.classList.toggle('error', isError);
+  }
+
+  function renderTabs() {
+    tabsEl.innerHTML = '';
+    for (const [id, label] of TABS) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.role = 'tab'; b.textContent = label;
+      b.setAttribute('aria-selected', String(id === activeTab));
+      b.addEventListener('click', () => { activeTab = id; renderTabs(); renderGrid(); });
+      tabsEl.appendChild(b);
+    }
+  }
+
+  function tile({ icon, name, pressed, onClick, none }) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'tile'; b.title = name;
+    b.setAttribute('aria-pressed', String(pressed));
+    b.innerHTML = `<div class="icon">${none ? '<span class="none">∅</span>' : `<img alt="" src="${icon}">`}</div><span></span>`;
+    b.lastElementChild.textContent = name;
+    b.addEventListener('click', onClick);
+    return b;
+  }
+
+  function renderGrid() {
+    gridEl.innerHTML = '';
+    if (activeTab === 'pet') {
+      for (const p of A.wardrobe.pets) {
+        gridEl.appendChild(tile({ icon: p.icon, name: p.name, pressed: currentPet && currentPet.id === p.id, onClick: () => choosePet(p.id) }));
+      }
+      return;
+    }
+    const items = A.wardrobe.items[activeTab];
+    const slots = [...new Set(items.map(i => i.slot))];
+    if (NONE_ALLOWED.has(activeTab)) {
+      gridEl.appendChild(tile({
+        none: true, name: 'None', pressed: slots.every(s => !look[s]),
+        onClick: () => { const next = { ...look }; slots.forEach(s => delete next[s]); applyLook(next); },
+      }));
+    }
+    for (const it of items) {
+      gridEl.appendChild(tile({
+        icon: it.icon, name: it.name, pressed: look[it.slot] === it.id,
+        onClick: () => applyLook({ ...look, [it.slot]: it.id }),
+      }));
+    }
+  }
+
+  async function applyLook(next, { quiet = false } = {}) {
+    look = next;
+    renderGrid();
+    save();
+    const token = ++lookToken;
+    if (lookKey(next) === DEFAULT_KEY) { charAnims = defaultCharAnims; setStatus(''); return; }
+    if (!quiet) setStatus('Dressing up…');
+    // Let quick clicks settle so only the final combination is requested.
+    await wait(250);
+    if (token !== lookToken) return;
+    try {
+      const anims = await loadLook(next);
+      if (token !== lookToken) return; // a newer choice won
+      charAnims = anims; setStatus('');
+    } catch {
+      if (token === lookToken) setStatus('Couldn’t load that look. maplestory.io may be busy.', true);
+    }
+  }
+
+  async function choosePet(id) {
+    const token = ++petToken;
+    setStatus('Fetching pet…');
+    try {
+      const p = await loadPet(id);
+      if (token !== petToken) return;
+      currentPet = p; petAnims = p.anims;
+      pet.anim = 'stand0'; pet.emote = null; pet.t = 0; pet.idle = 0; pet.say = null;
+      showPetInfo(p); renderGrid(); save(); setStatus('');
+    } catch {
+      if (token === petToken) setStatus('Couldn’t load that pet. maplestory.io may be busy.', true);
+    }
+  }
+
+  document.getElementById('randomize').addEventListener('click', () => {
+    const next = {};
+    for (const [tab, items] of Object.entries(A.wardrobe.items)) {
+      const optional = NONE_ALLOWED.has(tab) && tab !== 'hat' && tab !== 'shoes';
+      if (optional && Math.random() < 0.35) continue;
+      const it = pick(items);
+      next[it.slot] = it.id;
+    }
+    applyLook(next);
+  });
+  document.getElementById('reset').addEventListener('click', () => {
+    applyLook({ ...DEFAULT_LOOK });
+    choosePet(A.pet.id);
+  });
+
+  const wardrobeToggle = document.getElementById('wardrobeToggle');
+  wardrobeToggle.addEventListener('click', () => {
+    const open = wardrobeEl.classList.toggle('open');
+    wardrobeToggle.setAttribute('aria-expanded', String(open));
+    wardrobeToggle.textContent = open ? 'Close' : 'Wardrobe';
+  });
+
+  // Remember the last look and pet in this browser.
+  const STORE_KEY = 'mapleLounge.v1';
+  function save() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify({ look, pet: currentPet && currentPet.id })); } catch { }
+  }
+  function restore() {
+    try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; }
+  }
 
   // ---------- boot ----------
+  let defaultCharAnims;
   (async () => {
-    petAnims = {};
-    for (const [k, v] of Object.entries(A.pet.anims)) petAnims[k] = await loadFrames(v);
-    charAnims = {};
-    for (const [k, v] of Object.entries(A.character.anims)) charAnims[k] = await loadFrames(v);
+    const baked = {};
+    for (const [k, v] of Object.entries(A.pet.anims)) baked[k] = await loadFrames(v);
+    const adriano = { id: A.pet.id, name: A.pet.name, desc: A.pet.desc, anims: baked };
+    petCache.set(adriano.id, Promise.resolve(adriano));
+    currentPet = adriano; petAnims = baked;
+
+    defaultCharAnims = {};
+    for (const [k, v] of Object.entries(A.character.anims)) defaultCharAnims[k] = await loadFrames(v);
+    charAnims = defaultCharAnims;
     chairVariants = await Promise.all(A.chair.variants.map(loadFrames));
+    const bgEntries = await Promise.all(Object.entries(A.bg).map(async ([k, v]) => [k, await loadFrames(v)]));
+    BG = Object.fromEntries(bgEntries);
 
     document.getElementById('chairIcon').src = A.chair.variants[0][0].src;
     document.getElementById('chairName').textContent = A.chair.name;
-    document.getElementById('petIcon').src = A.pet.anims.stand0[0].src;
-    document.getElementById('petName').textContent = A.pet.name;
-    document.getElementById('petDesc').textContent = A.pet.desc;
+    showPetInfo(adriano);
     updateChairLabel();
+    renderTabs(); renderGrid();
+
+    const saved = restore();
+    if (saved.look && typeof saved.look === 'object') applyLook(saved.look, { quiet: true });
+    if (saved.pet && saved.pet !== adriano.id && A.wardrobe.pets.some(p => p.id === saved.pet)) choosePet(saved.pet);
 
     let last = performance.now();
     const start = last;
