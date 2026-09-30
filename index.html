@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maple Lounge</title>
+<style>
+  :root {
+    --panel-bg: rgba(255, 255, 255, 0.86);
+    --panel-fg: #3b2a3f;
+    --panel-muted: #7b6a80;
+    --panel-border: rgba(80, 50, 90, 0.18);
+    --key-bg: #fff;
+    --key-border: #cdbfd3;
+    --accent: #e3769b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --panel-bg: rgba(28, 22, 34, 0.86);
+      --panel-fg: #f3e8f6;
+      --panel-muted: #b7a6bd;
+      --panel-border: rgba(255, 255, 255, 0.14);
+      --key-bg: #2d2436;
+      --key-border: #4c3f57;
+      --accent: #f29bb9;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe6ff; }
+  body { font: 14px/1.4 ui-rounded, "SF Pro Rounded", system-ui, sans-serif; color: var(--panel-fg); }
+  canvas { display: block; width: 100vw; height: 100vh; image-rendering: pixelated; touch-action: none; }
+
+  .panel {
+    position: fixed; top: 16px; left: 16px; max-width: min(340px, calc(100vw - 32px));
+    background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 14px;
+    padding: 12px 14px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 6px 24px rgba(40, 20, 50, 0.12);
+  }
+  .panel h1 { font-size: 15px; margin: 0 0 6px; letter-spacing: 0.01em; }
+  .panel p { margin: 0 0 8px; color: var(--panel-muted); font-size: 12.5px; }
+  .asset { display: flex; gap: 10px; align-items: center; margin-top: 8px; }
+  .asset img { width: 36px; height: 36px; object-fit: contain; image-rendering: pixelated; flex: none; }
+  .asset b { display: block; font-size: 13px; }
+  .asset span { color: var(--panel-muted); font-size: 12px; }
+  .keys { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; margin-top: 10px; font-size: 12.5px; align-items: center; }
+  kbd {
+    display: inline-block; min-width: 22px; padding: 1px 6px; text-align: center; font: inherit; font-size: 11.5px;
+    background: var(--key-bg); border: 1px solid var(--key-border); border-bottom-width: 2px; border-radius: 6px;
+  }
+  .panel p.fine { margin: 10px 0 0; font-size: 11px; }
+  .panel p.fine a { color: inherit; }
+  .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: -1px; margin-right: 4px; background: var(--accent); }
+  .toggle { position: absolute; top: 10px; right: 10px; background: none; border: 0; color: var(--panel-muted); cursor: pointer; font-size: 12px; }
+  .panel.collapsed > :not(h1):not(.toggle) { display: none; }
+  .panel.collapsed h1 { margin: 0; padding-right: 44px; }
+
+  .touch { position: fixed; bottom: 16px; left: 16px; right: 16px; display: none; justify-content: space-between; pointer-events: none; }
+  .touch .group { display: flex; gap: 10px; pointer-events: auto; }
+  .touch button {
+    width: 58px; height: 58px; border-radius: 50%; border: 1px solid var(--panel-border);
+    background: var(--panel-bg); color: var(--panel-fg); font-size: 20px; -webkit-user-select: none; user-select: none;
+  }
+  @media (pointer: coarse) { .touch { display: flex; } }
+</style>
+</head>
+<body>
+<canvas id="game" aria-label="Game scene: a character, the Adriano pet, and the Rabbit Lamp Chair"></canvas>
+
+<div class="panel" id="panel">
+  <button class="toggle" id="toggle" type="button">hide</button>
+  <h1>Maple Lounge · prototype</h1>
+  <p>Walk up to the lamp and sit. It changes color each time, like in game.</p>
+  <div class="asset"><img id="chairIcon" alt=""><div><b id="chairName"></b><span id="chairColor"></span></div></div>
+  <div class="asset"><img id="petIcon" alt=""><div><b id="petName"></b><span id="petDesc"></span></div></div>
+  <div class="keys">
+    <span><kbd>←</kbd> <kbd>→</kbd></span><span>Walk (or <kbd>A</kbd> <kbd>D</kbd>)</span>
+    <span><kbd>Space</kbd></span><span>Jump (or <kbd>↑</kbd> <kbd>W</kbd>)</span>
+    <span><kbd>↓</kbd></span><span>Sit on the chair when close (or <kbd>S</kbd>)</span>
+    <span>click</span><span>Pet Adriano</span>
+  </div>
+  <p class="fine">Fan project, not affiliated with Nexon. MapleStory art © Nexon, via <a href="https://maplestory.io">maplestory.io</a>.</p>
+</div>
+
+<div class="touch" aria-hidden="true">
+  <div class="group"><button data-key="left">◀</button><button data-key="right">▶</button></div>
+  <div class="group"><button data-key="down">⤓</button><button data-key="jump">⤒</button></div>
+</div>
+
+<script src="assets.js"></script>
+<script>
+(() => {
+  const A = window.ASSETS;
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+
+  // ---------- world constants (MapleStory-ish units: px, px/s) ----------
+  const WORLD_W = 1400;
+  const GROUND_Y = 0;          // world y of the ground; up is negative
+  const WALK_SPEED = 125;
+  const JUMP_V = 555;
+  const GRAVITY = 2000;
+  const CHAIR_X = 820;
+  const SIT_RANGE = 45;
+
+  // ---------- image loading ----------
+  const load = src => new Promise(res => { const i = new Image(); i.onload = () => res(i); i.src = src; });
+  async function loadFrames(frames) {
+    return Promise.all(frames.map(async f => ({ ...f, img: await load(f.src) })));
+  }
+
+  // ---------- helpers ----------
+  function frameAt(frames, t, pingPong = false) {
+    const seq = pingPong && frames.length > 2 ? [...frames, ...frames.slice(1, -1).reverse()] : frames;
+    const total = seq.reduce((s, f) => s + f.delay, 0);
+    let m = (t * 1000) % total;
+    for (const f of seq) { if ((m -= f.delay) < 0) return f; }
+    return seq[0];
+  }
+  // Sprites face left by default; `ox, oy` is where the world point lands inside the image.
+  function drawSprite(img, ox, oy, x, y, faceRight) {
+    const w = img.width, h = img.height;
+    if (!faceRight) { ctx.drawImage(img, Math.round(x - ox), Math.round(y - oy)); return; }
+    ctx.save();
+    ctx.translate(Math.round(x + ox), Math.round(y - oy));
+    ctx.scale(-1, 1);
+    ctx.drawImage(img, 0, 0, w, h);
+    ctx.restore();
+  }
+  function nameTag(text, x, y) {
+    ctx.font = '11px ui-rounded, system-ui, sans-serif';
+    const w = Math.ceil(ctx.measureText(text).width) + 8, h = 15;
+    ctx.fillStyle = 'rgba(0,0,0,0.62)';
+    roundRect(Math.round(x - w / 2), Math.round(y), w, h, 3); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(text, Math.round(x), Math.round(y + h / 2 + 0.5));
+  }
+  function bubble(text, x, y) {
+    ctx.font = '12px ui-rounded, system-ui, sans-serif';
+    const w = Math.ceil(ctx.measureText(text).width) + 14, h = 20;
+    const bx = Math.round(x - w / 2), by = Math.round(y - h);
+    ctx.fillStyle = '#fff'; ctx.strokeStyle = '#8a7a90'; ctx.lineWidth = 1;
+    roundRect(bx + 0.5, by + 0.5, w, h, 6); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x - 4, by + h + 0.5); ctx.lineTo(x, by + h + 6); ctx.lineTo(x + 4, by + h + 0.5); ctx.fill();
+    ctx.fillStyle = '#3b2a3f'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(text, x, by + h / 2 + 1);
+  }
+  function roundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+
+  // ---------- input ----------
+  const keys = { left: false, right: false, jump: false, down: false };
+  const keyMap = {
+    ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right',
+    Space: 'jump', ArrowUp: 'jump', KeyW: 'jump', AltLeft: 'jump', AltRight: 'jump',
+    ArrowDown: 'down', KeyS: 'down',
+  };
+  addEventListener('keydown', e => { const k = keyMap[e.code]; if (k) { keys[k] = true; e.preventDefault(); } });
+  addEventListener('keyup', e => { const k = keyMap[e.code]; if (k) { keys[k] = false; e.preventDefault(); } });
+  addEventListener('blur', () => Object.keys(keys).forEach(k => keys[k] = false));
+  document.querySelectorAll('.touch button').forEach(b => {
+    const k = b.dataset.key;
+    b.addEventListener('pointerdown', e => { keys[k] = true; e.preventDefault(); });
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => b.addEventListener(ev, () => keys[k] = false));
+  });
+
+  const panel = document.getElementById('panel');
+  const toggle = document.getElementById('toggle');
+  toggle.addEventListener('click', () => {
+    panel.classList.toggle('collapsed');
+    toggle.textContent = panel.classList.contains('collapsed') ? 'show' : 'hide';
+  });
+
+  // ---------- view / scaling ----------
+  let scale = 2, dpr = 1, viewW = 0, viewH = 0;
+  function resize() {
+    dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(innerWidth * dpr);
+    canvas.height = Math.round(innerHeight * dpr);
+    // Integer pixel scale so sprites stay crisp; ~340 world px of height on screen.
+    scale = Math.max(1, Math.round((innerHeight * dpr) / 340));
+    viewW = canvas.width / scale;
+    viewH = canvas.height / scale;
+  }
+  addEventListener('resize', resize);
+  resize();
+
+  // ---------- background ----------
+  const clouds = Array.from({ length: 9 }, (_, i) => ({ x: i * 190 + Math.random() * 80, y: -230 + Math.random() * 90, s: 0.6 + Math.random() * 0.6 }));
+  const flowers = Array.from({ length: 60 }, () => ({ x: Math.random() * WORLD_W, c: ['#ffd1e1', '#fff3a6', '#ffffff', '#d7c6ff'][Math.floor(Math.random() * 4)] }));
+
+  function drawBackground(camX, camY, t) {
+    const g = ctx.createLinearGradient(0, 0, 0, viewH);
+    g.addColorStop(0, '#9fd8ff'); g.addColorStop(0.7, '#dff3ff'); g.addColorStop(1, '#fdf1f6');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, viewW, viewH);
+
+    // clouds (slow parallax)
+    for (const c of clouds) {
+      const x = ((c.x - camX * 0.2 + t * 6 * c.s) % (WORLD_W + 200) + WORLD_W + 200) % (WORLD_W + 200) - 100;
+      const y = c.y - camY * 0.2;
+      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      for (const [dx, dy, r] of [[0, 0, 16], [16, -6, 20], [36, 0, 15], [18, 6, 14]]) {
+        ctx.beginPath(); ctx.arc(x + dx * c.s, y + dy * c.s, r * c.s, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    // far hills
+    hills(camX * 0.4, camY * 0.4, -70, 60, '#a8e0a0', 0.004);
+    hills(camX * 0.65, camY * 0.65, -38, 38, '#8fd18a', 0.007);
+  }
+  function hills(px, py, base, amp, color, freq) {
+    ctx.fillStyle = color;
+    ctx.beginPath(); ctx.moveTo(0, viewH);
+    for (let sx = 0; sx <= viewW + 8; sx += 8) {
+      const wx = sx + px;
+      const y = base - amp * (0.5 + 0.5 * Math.sin(wx * freq) * Math.cos(wx * freq * 0.37));
+      ctx.lineTo(sx, y - py + viewH * 0.72);
+    }
+    ctx.lineTo(viewW, viewH); ctx.closePath(); ctx.fill();
+  }
+  function drawGround() {
+    // grass lip
+    ctx.fillStyle = '#6cc36a'; ctx.fillRect(-200, GROUND_Y, WORLD_W + 400, 8);
+    ctx.fillStyle = '#58ad58'; ctx.fillRect(-200, GROUND_Y + 8, WORLD_W + 400, 3);
+    // soil
+    ctx.fillStyle = '#c99a6b'; ctx.fillRect(-200, GROUND_Y + 11, WORLD_W + 400, 400);
+    ctx.fillStyle = '#b8895c';
+    for (let x = -200; x < WORLD_W + 200; x += 32) ctx.fillRect(x + ((x / 32) % 2 ? 10 : 0), GROUND_Y + 22 + ((x / 32) % 3) * 10, 12, 4);
+    for (const f of flowers) { ctx.fillStyle = f.c; ctx.fillRect(Math.round(f.x), GROUND_Y - 2, 3, 3); }
+  }
+
+  // ---------- entities ----------
+  const player = { x: 560, y: GROUND_Y, vy: 0, faceRight: true, onGround: true, sitting: false, t: 0, state: 'stand1' };
+  const pet = { x: 500, y: GROUND_Y, vy: 0, faceRight: true, onGround: true, t: 0, anim: 'stand0', emote: null, emoteT: 0, idle: 0, say: null, sayT: 0 };
+  const chair = { variant: 0, t: 0 };
+  const PET_LINES = ['...', 'Hmph.', 'Arr.', '*adjusts glasses*', 'Fine. One pat.'];
+
+  canvas.addEventListener('pointerdown', e => {
+    const { wx, wy } = screenToWorld(e.clientX, e.clientY);
+    if (Math.abs(wx - pet.x) < 26 && wy < pet.y + 6 && wy > pet.y - 60) {
+      setPetEmote('love', 1.6);
+      pet.say = PET_LINES[Math.floor(Math.random() * PET_LINES.length)]; pet.sayT = 2;
+    }
+  });
+  let cam = { x: 0, y: 0 };
+  function screenToWorld(cx, cy) {
+    return { wx: (cx * dpr) / scale + cam.x, wy: (cy * dpr) / scale + cam.y };
+  }
+
+  function setPetEmote(name, secs) {
+    if (!petAnims[name]) return;
+    pet.emote = name; pet.emoteT = secs; pet.t = 0;
+  }
+
+  function updatePlayer(dt) {
+    const nearChair = Math.abs(player.x - CHAIR_X) < SIT_RANGE;
+    if (player.sitting) {
+      if (keys.left || keys.right || keys.jump) {
+        player.sitting = false;
+        if (keys.jump) { player.vy = -JUMP_V; player.onGround = false; }
+      } else { player.t += dt; return; }
+    }
+    if (keys.down && nearChair && player.onGround) {
+      player.sitting = true; player.x = CHAIR_X; player.t = 0; keys.down = false;
+      chair.variant = pickNewVariant(); chair.t = 0; updateChairLabel();
+      return;
+    }
+    let dir = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+    if (dir) player.faceRight = dir > 0;
+    player.x = Math.max(20, Math.min(WORLD_W - 20, player.x + dir * WALK_SPEED * dt));
+    if (keys.jump && player.onGround) { player.vy = -JUMP_V; player.onGround = false; }
+    if (!player.onGround) {
+      player.vy += GRAVITY * dt; player.y += player.vy * dt;
+      if (player.y >= GROUND_Y) { player.y = GROUND_Y; player.vy = 0; player.onGround = true; }
+    }
+    const next = !player.onGround ? 'jump' : dir ? 'walk1' : 'stand1';
+    if (next !== player.state) { player.state = next; player.t = 0; }
+    player.t += dt;
+  }
+
+  function pickNewVariant() {
+    const n = A.chair.variants.length;
+    let v; do { v = Math.floor(Math.random() * n); } while (n > 1 && v === chair.variant);
+    return v;
+  }
+
+  function updatePet(dt) {
+    pet.t += dt;
+    if (pet.sayT > 0 && (pet.sayT -= dt) <= 0) pet.say = null;
+    // Follow a spot just behind the player; while seated, curl up beside the chair.
+    const behind = player.faceRight ? -48 : 48;
+    const targetX = player.sitting ? CHAIR_X + 62 : player.x + behind;
+    const dx = targetX - pet.x;
+    const moving = Math.abs(dx) > 6;
+    if (moving) {
+      pet.faceRight = dx > 0;
+      const speed = Math.min(Math.abs(dx) * 3, Math.abs(dx) > 160 ? 260 : 150);
+      pet.x += Math.sign(dx) * Math.min(Math.abs(dx), speed * dt);
+    } else if (player.sitting) {
+      pet.faceRight = false; // face the player on the chair
+    }
+    // Hop after the player when they jump nearby.
+    if (pet.onGround && !player.onGround && player.vy < -200 && Math.abs(player.x - pet.x) < 90) {
+      pet.vy = -JUMP_V * 0.8; pet.onGround = false;
+    }
+    if (!pet.onGround) {
+      pet.vy += GRAVITY * dt; pet.y += pet.vy * dt;
+      if (pet.y >= GROUND_Y) { pet.y = GROUND_Y; pet.vy = 0; pet.onGround = true; }
+    }
+    if (pet.emote) {
+      if (moving || !pet.onGround || (pet.emoteT -= dt) <= 0) pet.emote = null;
+    }
+    pet.idle = moving || !pet.onGround ? 0 : pet.idle + dt;
+    if (!pet.emote && pet.idle > 6 && !player.sitting && Math.random() < dt * 0.25) {
+      setPetEmote(['dancing', 'chat', 'hungry', 'play'][Math.floor(Math.random() * 4)], 2.2);
+    }
+    let anim = pet.emote || (!pet.onGround ? 'jump' : moving ? 'move'
+      : player.sitting ? (player.t > 8 ? 'sleep' : 'sit') : pet.idle > 20 ? 'sleep' : 'stand0');
+    if (!petAnims[anim]) anim = 'stand0';
+    if (anim !== pet.anim) { pet.anim = anim; if (!pet.emote) pet.t = 0; }
+  }
+
+  // ---------- render ----------
+  let petAnims, charAnims, chairVariants;
+  function render(t) {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.imageSmoothingEnabled = false;
+    ctx.setTransform(scale, 0, 0, scale, 0, 0);
+
+    // Camera: keep the player near center; ground about 78% down the screen.
+    const targetX = Math.max(-40, Math.min(WORLD_W + 40 - viewW, player.x - viewW / 2));
+    cam.x += (targetX - cam.x) * 0.12;
+    cam.y = GROUND_Y - viewH * 0.78;
+
+    drawBackground(cam.x, cam.y, t);
+    ctx.save();
+    ctx.translate(-Math.round(cam.x), -Math.round(cam.y));
+    drawGround();
+
+    // Chair (behind the character). It idles on its current color and animates when in use.
+    const cf = player.sitting ? frameAt(chairVariants[chair.variant], chair.t) : chairVariants[chair.variant][0];
+    drawSprite(cf.img, cf.ox, cf.oy, CHAIR_X, GROUND_Y, false);
+
+    // Pet
+    const pf = frameAt(petAnims[pet.anim], pet.t);
+    drawSprite(pf.img, pf.ox, pf.oy, pet.x, pet.y, pet.faceRight);
+    nameTag(A.pet.name, pet.x, pet.y + 3);
+    if (pet.say) bubble(pet.say, pet.x, pet.y - pf.oy - 4);
+
+    // Character (feetCenter renders put the feet at the image center)
+    const state = player.sitting ? 'sit' : player.state;
+    const ff = frameAt(charAnims[state], player.t, state === 'stand1');
+    const seat = player.sitting ? A.chair.seat : { x: 0, y: 0 };
+    const fx = player.x + (player.faceRight ? -seat.x : seat.x);
+    drawSprite(ff.img, ff.img.width / 2, ff.img.height / 2, fx, player.y + seat.y, player.faceRight);
+    nameTag('You', player.x, player.y + 3);
+
+    if (!player.sitting && player.onGround && Math.abs(player.x - CHAIR_X) < SIT_RANGE) {
+      bubble('↓ Sit', CHAIR_X, GROUND_Y - 150);
+    }
+    ctx.restore();
+  }
+
+  // ---------- panel ----------
+  function updateChairLabel() {
+    let color = '';
+    try { color = swatch(chair.variant); } catch { /* canvas reads can be blocked on file:// */ }
+    document.getElementById('chairColor').innerHTML =
+      `<i class="swatch" style="${color ? 'background:' + color : ''}"></i>Color ${chair.variant + 1} of ${A.chair.variants.length}`;
+  }
+  // Use the most saturated opaque pixel of the lamp's first frame as its swatch color.
+  const swatchCache = {};
+  function swatch(v) {
+    if (swatchCache[v]) return swatchCache[v];
+    const img = chairVariants[v][0].img;
+    const c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
+    const cx = c.getContext('2d'); cx.drawImage(img, 0, 0);
+    const d = cx.getImageData(0, 0, img.width, img.height).data;
+    let best = [200, 200, 200], bestSat = -1;
+    for (let i = 0; i < d.length; i += 16) {
+      if (d[i + 3] < 250) continue;
+      const mx = Math.max(d[i], d[i + 1], d[i + 2]), mn = Math.min(d[i], d[i + 1], d[i + 2]);
+      const sat = mx ? (mx - mn) / mx : 0;
+      if (sat > bestSat && mx > 150) { bestSat = sat; best = [d[i], d[i + 1], d[i + 2]]; }
+    }
+    return (swatchCache[v] = `rgb(${best.join(',')})`);
+  }
+
+  // ---------- boot ----------
+  (async () => {
+    petAnims = {};
+    for (const [k, v] of Object.entries(A.pet.anims)) petAnims[k] = await loadFrames(v);
+    charAnims = {};
+    for (const [k, v] of Object.entries(A.character.anims)) charAnims[k] = await loadFrames(v);
+    chairVariants = await Promise.all(A.chair.variants.map(loadFrames));
+
+    document.getElementById('chairIcon').src = A.chair.variants[0][0].src;
+    document.getElementById('chairName').textContent = A.chair.name;
+    document.getElementById('petIcon').src = A.pet.anims.stand0[0].src;
+    document.getElementById('petName').textContent = A.pet.name;
+    document.getElementById('petDesc').textContent = A.pet.desc;
+    updateChairLabel();
+
+    let last = performance.now();
+    const start = last;
+    function tick(now) {
+      const dt = Math.min(0.05, (now - last) / 1000); last = now;
+      updatePlayer(dt);
+      updatePet(dt);
+      chair.t += dt;
+      render((now - start) / 1000);
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  })();
+})();
+</script>
+</body>
+</html>
