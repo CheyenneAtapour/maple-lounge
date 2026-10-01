@@ -56,7 +56,12 @@ reopen it by walking to the wardrobe at the far right end of the path and pressi
   pip install pillow
   python3 build_assets.py
   python3 build_theme.py themes/oct.json
+  python3 bake_pets.py        # saves every wardrobe pet into assets/pets/ (skips ones already saved)
   ```
+
+  Pets are saved in the repo and load from the site itself. Only outfit changes are drawn live by
+  maplestory.io, since every combination of items is a different picture; browsers keep each
+  render for a day.
 
 ## Disclaimer
 

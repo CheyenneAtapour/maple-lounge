@@ -108,6 +108,10 @@
   .swatch-btn[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
   .swatch-btn:disabled { opacity: 0.25; cursor: not-allowed; }
   .swatch-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .group-head {
+    grid-column: 1 / -1; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--accent); padding: 8px 2px 0;
+  }
   .gender-filter { grid-column: 1 / -1; display: flex; gap: 6px; padding-bottom: 4px; }
   .gender-filter button {
     border: 1px solid var(--panel-border); background: var(--tile-bg); border-radius: 999px; padding: 3px 12px;
@@ -237,7 +241,7 @@
 <div class="loading" id="loading" role="status">Loading the lounge…</div>
 
 <!-- Bump ?v= whenever assets.js changes so browsers don't pair a new page with a cached old bundle. -->
-<script src="assets.js?v=9"></script>
+<script src="assets.js?v=10"></script>
 <script>
 (() => {
   const A = window.ASSETS;
@@ -428,7 +432,7 @@
     ['jul', 'July', 'Summer Fireworks'], ['aug', 'August', 'Under the Sea'], ['sep', 'September', 'Harvest Moon'],
     ['oct', 'October', 'Halloween'], ['nov', 'November', 'Thanksgiving'], ['dec', 'December', 'Maplemas'],
   ];
-  const THEME_VERSION = 9; // bump with assets.js so cached theme files refresh together
+  const THEME_VERSION = 10; // bump with assets.js so cached theme files refresh together
   let theme = null;        // the active map: spec + loaded sprites + pre-rendered strips
   let S = {};              // the active map's sprites (loaded frames), by name
   const themeCache = new Map();
@@ -1129,13 +1133,22 @@
     return anims;
   }
 
-  function loadLook(look) {
+  // The first standing frame is fetched ahead of everything else and handed to `onPreview`, so the new
+  // look shows up within a second or two; the walking, jumping, and sitting frames follow in the background.
+  function loadLook(look, onPreview) {
     const key = lookKey(look);
     if (!lookCache.has(key)) {
       const items = lookItems(look).join(',');
+      const url = (action, f) => `${API}/Character/feetCenter/${A.character.skin}/${items}/${action}/${f}`;
+      const first = withRetry(() => load(url('stand1', 0), true), 5, true);
+      first.then(img => {
+        if (!onPreview) return;
+        const still = [{ img, delay: 1000 }];
+        onPreview(anchorFrames(Object.fromEntries(Object.keys(FRAME_COUNTS).map(a => [a, still.map(f => ({ ...f }))])), !!look.mount));
+      }).catch(() => {});
       const p = Promise.all(Object.entries(FRAME_COUNTS).map(async ([action, n]) => {
         const frames = await Promise.all(Array.from({ length: n }, (_, f) =>
-          withRetry(() => load(`${API}/Character/feetCenter/${A.character.skin}/${items}/${action}/${f}`, true))));
+          action === 'stand1' && f === 0 ? first : withRetry(() => load(url(action, f), true))));
         return [action, frames.map(img => ({ img, delay: FRAME_DELAYS[action] }))];
       })).then(entries => anchorFrames(Object.fromEntries(entries), !!look.mount));
       p.catch(() => lookCache.delete(key)); // allow retry
@@ -1159,6 +1172,13 @@
     }
     if (!petCache.has(id)) {
       const p = (async () => {
+        // Pets are saved in the repo by bake_pets.py; maplestory.io is only a fallback for unsaved ones.
+        const saved = await loadScript(`assets/pets/${id}.js?v=${THEME_VERSION}`).then(() => (window.MAPLE_PETS || {})[id], () => null);
+        if (saved) {
+          const anims = {};
+          for (const [k, v] of Object.entries(saved.anims)) anims[k] = await loadFrames(v);
+          return { id, name: saved.name, desc: saved.desc, anims };
+        }
         const d = await withRetry(async () => {
           const res = await fetch(`${API}/pet/${id}`);
           if (!res.ok) throw new Error('pet request failed: ' + res.status);
@@ -1218,13 +1238,31 @@
   }
 
   // Seasonal tabs come from the active map; mounts and favorite pets are shared by every map. Adriano is always first.
-  const tabItems = tab => (tab === 'mount' ? A.wardrobe.items.mount : theme && theme.spec.wardrobe[tab]) || [];
+  // One master wardrobe, the same on every map: every month's picks, grouped by event (January first).
+  // Mounts and the favorite pets are shared lists; Adriano is always first.
+  const specs = () => MAPS.map(([key]) => (window.MAPLE_THEMES || {})[key]).filter(Boolean);
+  function withGroups(groups) {
+    const seen = new Set(), out = [];
+    for (const [group, list] of groups) for (const it of list || []) {
+      if (seen.has(it.id)) continue;
+      seen.add(it.id); out.push({ ...it, group });
+    }
+    return out;
+  }
+  const tabItems = tab => tab === 'mount' ? A.wardrobe.items.mount
+    : withGroups(specs().map(t => [t.name, t.wardrobe[tab]]));
   const ADRIANO_ENTRY = { id: A.pet.id, name: A.pet.name, icon: A.pet.anims.stand0[0].src };
-  const petChoices = () => {
-    const seen = new Set();
-    return [ADRIANO_ENTRY, ...A.wardrobe.pets, ...((theme && theme.spec.pets) || [])]
-      .filter(p => !seen.has(p.id) && seen.add(p.id));
-  };
+  const petChoices = () => withGroups([['Favorites', [ADRIANO_ENTRY, ...A.wardrobe.pets]], ...specs().map(t => [t.name, t.pets])]);
+  function groupHeading(text) {
+    const h = document.createElement('div');
+    h.className = 'group-head'; h.textContent = text;
+    return h;
+  }
+  // Every month's list is small (just names and icon paths); scenery images still load only for the map you pick.
+  function loadAllWardrobeLists() {
+    return Promise.all(MAPS.map(([key]) => (window.MAPLE_THEMES || {})[key] ? null
+      : loadScript(`themes/${key}.js?v=${THEME_VERSION}`).catch(() => console.warn('map list missing:', key))));
+  }
 
   function renderTabs() {
     tabsEl.innerHTML = '';
@@ -1285,7 +1323,9 @@
     gridEl.innerHTML = '';
     if (COLOR_KIND[activeTab]) { renderStyleGrid(activeTab); return; }
     if (activeTab === 'pet') {
+      let group = null;
       for (const p of petChoices()) {
+        if (p.group !== group) { group = p.group; gridEl.appendChild(groupHeading(group)); }
         const slot = pets.findIndex(x => x.data.id === p.id);
         const loading = petsLoading.has(p.id);
         gridEl.appendChild(tile({
@@ -1303,7 +1343,9 @@
         onClick: () => { const next = { ...look }; slots.forEach(s => delete next[s]); applyLook(next); },
       }));
     }
+    let group = null;
     for (const it of items) {
+      if (it.group && it.group !== group) { group = it.group; gridEl.appendChild(groupHeading(group)); }
       gridEl.appendChild(tile({
         icon: it.icon, name: it.name, pressed: look[it.slot] === it.id,
         onClick: () => applyLook({ ...look, [it.slot]: it.id }),
@@ -1322,7 +1364,11 @@
     await wait(250);
     if (token !== lookToken) return;
     try {
-      const anims = await loadLook(next);
+      const anims = await loadLook(next, preview => {
+        if (token !== lookToken) return;
+        charAnims = preview; // show the new look standing while the other poses load
+        setStatus('look', 'Loading poses…');
+      });
       if (token !== lookToken) return; // a newer choice won
       charAnims = anims; setStatus('look', '');
     } catch {
@@ -1472,6 +1518,7 @@
     showPetInfo();
     updateChairLabel();
     renderTabs(); renderGrid();
+    loadAllWardrobeLists().then(renderGrid); // fill in every month's picks
 
     const saved = restore();
     // Older saves have no hair/face entries; fill them with the defaults.
