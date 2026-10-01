@@ -125,6 +125,26 @@ WARDROBE = {
         (1702861, "One-Eyed Grim Reaper Weapon"),
         (1702246, "Ghost Weapon"),
     ],
+    # Mounts render with the character riding them (the sitting pose dismounts, like on chairs).
+    "mount": [
+        (1902012, "Yeti"),
+        (1902000, "Hog"),
+        (1902032, "Nightmare"),
+        (1932142, "The Decapatruck"),
+        (1902059, "Giant Bunny"),
+        (1902060, "Tiny Bunny"),
+        (1902008, "Frog"),
+        (1902011, "Turtle"),
+        (1902013, "Buffalo"),
+        (1902046, "Chicken"),
+        (1902051, "Owl"),
+        (1902009, "Ostrich"),
+        (1902045, "Tiger"),
+        (1902024, "Pegasus"),
+        (1902025, "Dragon"),
+        (1902038, "Pink Scooter"),
+        (1902021, "Robot"),
+    ],
 }
 PETS = [5000144, 5000036, 5000256, 5000257, 5000258, 5000502, 5000697, 5000296, 5002531,
         5000903, 5000904, 5000905, 5002519, 5002076, 5002327, 5002328, 5002329, 5002502, 5000476]
@@ -169,6 +189,9 @@ BG_SPRITES = {
     "woodSign": "Map/Obj/halloween.img/field/acc/7",
     "vines0": "Map/Obj/halloween.img/field/amber/5",
     "vines1": "Map/Obj/halloween.img/field/amber/6",
+    "wardrobe": "Map/Obj/halloween.img/inside/room7/3",
+    # Off-theme guests from Aqua Road. GMS v270's API doesn't serve this monster, so use v250.
+    "bubbleFish": ("Mob/2230109.img/move", "250"),
     "candles0": "Map/Obj/halloween.img/2019halloween/ani/4",
     "candles1": "Map/Obj/halloween.img/2019halloween/ani/6",
     "candles2": "Map/Obj/halloween.img/2019halloween/ani/7",
@@ -194,8 +217,8 @@ def pixels(png_bytes):
     return img.size, img.tobytes()
 
 
-def wz(path):
-    return fetch_json(f"{API}/wz/{REGION}/{VERSION}/{urllib.parse.quote(path)}")
+def wz(path, version=VERSION):
+    return fetch_json(f"{API}/wz/{REGION}/{version}/{urllib.parse.quote(path)}")
 
 
 def build_pet():
@@ -277,27 +300,27 @@ def save_png(png, path):
     return path
 
 
-def wz_canvas_png(path, kids):
+def wz_canvas_png(path, kids, version=VERSION):
     """Canvases can be links to image data stored elsewhere in the file."""
     if "_outlink" in kids:
-        path = wz(f"{path}/_outlink")["value"]
+        path = wz(f"{path}/_outlink", version)["value"]
     elif "_inlink" in kids:
-        path = path.split(".img/")[0] + ".img/" + wz(f"{path}/_inlink")["value"]
-    return fetch(f"{API}/wz/img/{REGION}/{VERSION}/{urllib.parse.quote(path)}")[0]
+        path = path.split(".img/")[0] + ".img/" + wz(f"{path}/_inlink", version)["value"]
+    return fetch(f"{API}/wz/img/{REGION}/{version}/{urllib.parse.quote(path)}")[0]
 
 
-def wz_sprite(path, out_prefix):
-    node = wz(path)
+def wz_sprite(path, out_prefix, version=VERSION):
+    node = wz(path, version)
     if node.get("type") == 12:
         frame_paths = [path]
     else:
         frame_paths = [f"{path}/{k}" for k in sorted((c for c in node["children"] if c.isdigit()), key=int)]
     frames = []
     for i, fp in enumerate(frame_paths):
-        kids = wz(fp).get("children") or []
-        origin = wz(f"{fp}/origin")["value"] if "origin" in kids else {"x": 0, "y": 0}
-        delay = wz(f"{fp}/delay")["value"] if "delay" in kids else 150
-        png = wz_canvas_png(fp, kids)
+        kids = wz(fp, version).get("children") or []
+        origin = wz(f"{fp}/origin", version)["value"] if "origin" in kids else {"x": 0, "y": 0}
+        delay = wz(f"{fp}/delay", version)["value"] if "delay" in kids else 150
+        png = wz_canvas_png(fp, kids, version)
         w, h = Image.open(io.BytesIO(png)).size
         src = save_png(png, f"{out_prefix}_{i}.png")
         frames.append({"src": src, "w": w, "h": h, "ox": origin["x"], "oy": origin["y"], "delay": delay})
@@ -307,7 +330,8 @@ def wz_sprite(path, out_prefix):
 def build_background():
     bg = {}
     for name, path in BG_SPRITES.items():
-        bg[name] = wz_sprite(path, f"assets/bg/{name}")
+        path, version = path if isinstance(path, tuple) else (path, VERSION)
+        bg[name] = wz_sprite(path, f"assets/bg/{name}", version)
         print(f"bg {name}: {len(bg[name])} frames")
     return bg
 

@@ -7,7 +7,7 @@
 <style>
   /* The scene is always a Halloween night, so the UI uses one dark palette. */
   :root {
-    --panel-bg: rgba(24, 16, 34, 0.88);
+    --panel-bg: rgba(22, 15, 32, 0.94);
     --panel-fg: #f4ecf8;
     --panel-muted: #b9a8c4;
     --panel-border: rgba(255, 190, 120, 0.18);
@@ -22,14 +22,19 @@
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; overflow: hidden; background: #0d1422; }
   body { font: 14px/1.4 ui-rounded, "SF Pro Rounded", system-ui, sans-serif; color: var(--panel-fg); }
-  canvas { display: block; width: 100vw; height: 100vh; image-rendering: pixelated; touch-action: none; }
   button { font: inherit; color: inherit; }
 
+  /* The game draws at the art's own resolution and the browser scales it up by a whole number
+     (crisp pixels, far less drawing work). Name tags and bubbles go on a full-resolution overlay. */
+  #game, #ui { position: fixed; top: 0; left: 0; display: block; }
+  #game { image-rendering: pixelated; touch-action: none; }
+  #ui { pointer-events: none; }
+
+  /* Solid-ish panels instead of backdrop blur: blurring a moving game every frame is expensive. */
   .panel {
     position: fixed; top: 16px; left: 16px; max-width: min(320px, calc(100vw - 32px));
     background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 14px;
-    padding: 12px 14px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+    padding: 12px 14px; box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
   }
   .panel h1 { font-size: 15px; margin: 0 0 6px; }
   .panel p { margin: 0 0 8px; color: var(--panel-muted); font-size: 12.5px; }
@@ -54,14 +59,21 @@
     position: fixed; top: 0; right: 0; bottom: 0; width: var(--wardrobe-w); max-width: 100vw;
     display: flex; flex-direction: column;
     background: var(--panel-bg); border-left: 1px solid var(--panel-border);
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     box-shadow: -10px 0 30px rgba(0, 0, 0, 0.35);
+    transform: translateX(100%); visibility: hidden; transition: transform 0.22s ease, visibility 0s linear 0.22s;
   }
+  .wardrobe.open { transform: none; visibility: visible; transition: transform 0.22s ease; }
   .wardrobe header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 16px 16px 8px; }
   .wardrobe h2 { margin: 0; font-size: 17px; letter-spacing: 0.01em; }
   .wardrobe h2 small { font-weight: 500; color: var(--accent); font-size: 12px; margin-left: 6px; }
+  .wardrobe .head-right { display: flex; align-items: center; gap: 10px; }
   .status { font-size: 12px; color: var(--panel-muted); min-height: 1em; text-align: right; }
   .status.error { color: #ff8f8f; }
+  .wardrobe .minimize {
+    border: 1px solid var(--panel-border); background: var(--tile-bg); border-radius: 999px;
+    width: 30px; height: 30px; cursor: pointer; font-size: 16px; line-height: 1; flex: none;
+  }
+  .wardrobe .minimize:hover { background: var(--tile-hover); }
   .tabs { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 16px 10px; }
   .tabs button {
     border: 1px solid var(--panel-border); background: var(--tile-bg); border-radius: 999px;
@@ -78,7 +90,9 @@
     background: var(--tile-bg); border: 1px solid transparent; border-radius: 12px; cursor: pointer; min-height: 96px;
   }
   .tile:hover { background: var(--tile-hover); }
-  .tile:focus-visible, .tabs button:focus-visible, .wardrobe footer button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .tile:focus-visible, .tabs button:focus-visible, .wardrobe footer button:focus-visible, .wardrobe .minimize:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
   .tile[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
   .tile .icon { width: 48px; height: 48px; display: grid; place-items: center; }
   .tile img { max-width: 48px; max-height: 48px; image-rendering: pixelated; transform: scale(1.3); }
@@ -92,19 +106,27 @@
     border: 1px solid var(--panel-border); background: var(--tile-bg);
   }
   .wardrobe footer button.primary { background: var(--accent); border-color: var(--accent); color: #2a1406; font-weight: 600; }
-  .wardrobe-toggle { display: none; }
+
+  .toast {
+    position: fixed; top: 16px; right: 16px; max-width: min(320px, calc(100vw - 32px));
+    background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 12px;
+    padding: 10px 14px; font-size: 13px; box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+    opacity: 0; transform: translateY(-6px); transition: opacity 0.2s ease, transform 0.2s ease; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: none; }
 
   @media (max-width: 760px) {
-    .wardrobe { transform: translateX(100%); transition: transform 0.2s ease; width: min(var(--wardrobe-w), 88vw); }
-    .wardrobe.open { transform: none; }
-    .wardrobe-toggle {
-      display: block; position: fixed; top: 16px; right: 16px; z-index: 2;
-      padding: 8px 12px; border-radius: 999px; border: 1px solid var(--panel-border);
-      background: var(--panel-bg); cursor: pointer;
-    }
-    .wardrobe.open ~ .wardrobe-toggle { right: calc(min(var(--wardrobe-w), 88vw) + 12px); }
+    .wardrobe { width: min(var(--wardrobe-w), 88vw); }
     .panel { top: auto; bottom: 90px; }
   }
+
+  .loading {
+    position: fixed; inset: 0; display: grid; place-items: center; padding: 16px; text-align: center;
+    background: radial-gradient(ellipse at 50% 40%, #1f2a44, #0d1422 70%);
+    color: var(--panel-muted); font-size: 15px; z-index: 5;
+  }
+  .loading.error { color: #ffb4a8; }
+  .loading[hidden] { display: none; }
 
   .touch { position: fixed; bottom: 16px; left: 16px; display: none; gap: 10px; pointer-events: none; }
   .touch .group { display: flex; gap: 10px; pointer-events: auto; }
@@ -117,26 +139,31 @@
 </head>
 <body>
 <canvas id="game" aria-label="Halloween night scene with your character, a pet, and the Rabbit Lamp Chair"></canvas>
+<canvas id="ui" aria-hidden="true"></canvas>
 
 <div class="panel" id="panel">
   <button class="toggle" id="toggle" type="button">hide</button>
   <h1>Maple Lounge · prototype</h1>
-  <p>Walk up to the lamp and sit. It changes color each time, like in game. Dress up in the wardrobe on the right.</p>
+  <p>Walk up to the lamp and sit. It changes color each time, like in game. Dress up in the wardrobe on the right; if you minimize it, walk to the wardrobe at the end of the path to open it again.</p>
   <div class="asset"><img id="chairIcon" alt=""><div><b id="chairName"></b><span id="chairColor"></span></div></div>
   <div class="asset"><img id="petIcon" alt=""><div><b id="petName"></b><span id="petDesc"></span></div></div>
   <div class="keys">
     <span><kbd>←</kbd> <kbd>→</kbd></span><span>Walk (or <kbd>A</kbd> <kbd>D</kbd>)</span>
     <span><kbd>Space</kbd></span><span>Jump (or <kbd>↑</kbd> <kbd>W</kbd>)</span>
-    <span><kbd>↓</kbd></span><span>Sit on the chair when close (or <kbd>S</kbd>)</span>
-    <span>click</span><span>Pet your pet</span>
+    <span><kbd>↓</kbd></span><span>Sit on the chair or open the wardrobe when close (or <kbd>S</kbd>)</span>
+    <span><kbd>Esc</kbd></span><span>Minimize the wardrobe</span>
+    <span>click</span><span>Pet your pet, or poke a Bubble Fish</span>
   </div>
   <p class="fine">Fan project, not affiliated with Nexon. MapleStory art © Nexon, via <a href="https://maplestory.io">maplestory.io</a>.</p>
 </div>
 
-<aside class="wardrobe" id="wardrobe" aria-label="Wardrobe">
+<aside class="wardrobe open" id="wardrobe" aria-label="Wardrobe">
   <header>
     <h2>Wardrobe<small>Halloween</small></h2>
-    <span class="status" id="status" role="status"></span>
+    <div class="head-right">
+      <span class="status" id="status" role="status"></span>
+      <button type="button" class="minimize" id="minimizeWardrobe" aria-label="Minimize wardrobe" title="Minimize (Esc)">–</button>
+    </div>
   </header>
   <div class="tabs" id="tabs" role="tablist"></div>
   <div class="grid" id="grid" role="tabpanel"></div>
@@ -145,20 +172,25 @@
     <button type="button" id="reset">Reset</button>
   </footer>
 </aside>
-<button type="button" class="wardrobe-toggle" id="wardrobeToggle" aria-controls="wardrobe" aria-expanded="false">Wardrobe</button>
+<div class="toast" id="toast" role="status"></div>
 
 <div class="touch" aria-hidden="true">
   <div class="group"><button data-key="left">◀</button><button data-key="right">▶</button></div>
   <div class="group"><button data-key="down">⤓</button><button data-key="jump">⤒</button></div>
 </div>
 
-<script src="assets.js"></script>
+<div class="loading" id="loading" role="status">Loading the lounge…</div>
+
+<!-- Bump ?v= whenever assets.js changes so browsers don't pair a new page with a cached old bundle. -->
+<script src="assets.js?v=4"></script>
 <script>
 (() => {
   const A = window.ASSETS;
   const API = 'https://maplestory.io/api/GMS/270';
   const canvas = document.getElementById('game');
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d', { alpha: false });
+  const uiCanvas = document.getElementById('ui');
+  const ui = uiCanvas.getContext('2d');
 
   // ---------- world constants (MapleStory-ish units: px, px/s) ----------
   const WORLD_W = 2250;
@@ -168,7 +200,10 @@
   const GRAVITY = 2000;
   const CHAIR_X = 1010;
   const SIT_RANGE = 45;
+  const WARDROBE_X = 2150;     // the wardrobe stands at the far right end of the path
+  const WARDROBE_RANGE = 75;
   const VIEW_WORLD_H = 430;    // roughly how many world px tall the screen shows
+  const STRIP_PAD = 400;       // pre-rendered scenery strips extend this far past each world edge
 
   // ---------- image loading ----------
   const load = (src, cors) => new Promise((res, rej) => {
@@ -181,7 +216,7 @@
 
   // maplestory.io is a free community service and returns errors when hit with many renders at once,
   // so live requests go through a small queue and retry with backoff.
-  const MAX_LIVE_REQUESTS = 3;
+  const MAX_LIVE_REQUESTS = 2;
   let liveActive = 0;
   const liveQueue = [];
   function liveRequest(task) {
@@ -197,66 +232,70 @@
       task().then(resolve, reject).finally(() => { liveActive--; pumpLive(); });
     }
   }
-  async function withRetry(fn, tries = 3) {
+  async function withRetry(fn, tries = 5) {
     for (let attempt = 1; ; attempt++) {
       try { return await liveRequest(fn); } catch (err) {
         if (attempt >= tries) throw err;
-        await wait(600 * attempt);
+        await wait(700 * attempt);
       }
     }
   }
 
   // ---------- helpers ----------
+  // Animation timing totals are cached on the frame arrays so nothing is allocated per frame.
   function frameAt(frames, t, pingPong = false) {
-    const seq = pingPong && frames.length > 2 ? [...frames, ...frames.slice(1, -1).reverse()] : frames;
-    const total = seq.reduce((s, f) => s + f.delay, 0);
+    let seq = frames;
+    if (pingPong && frames.length > 2) seq = frames._pp || (frames._pp = [...frames, ...frames.slice(1, -1).reverse()]);
+    const total = seq._total || (seq._total = seq.reduce((s, f) => s + f.delay, 0));
     let m = (t * 1000) % total;
-    for (const f of seq) { if ((m -= f.delay) < 0) return f; }
+    for (let i = 0; i < seq.length; i++) { if ((m -= seq[i].delay) < 0) return seq[i]; }
     return seq[0];
   }
   // Sprites face left by default; `ox, oy` is where the world point lands inside the image.
-  function drawSprite(img, ox, oy, x, y, faceRight) {
-    if (!faceRight) { ctx.drawImage(img, Math.round(x - ox), Math.round(y - oy)); return; }
-    ctx.save();
-    ctx.translate(Math.round(x + ox), Math.round(y - oy));
-    ctx.scale(-1, 1);
-    ctx.drawImage(img, 0, 0);
-    ctx.restore();
+  function drawSprite(g, img, ox, oy, x, y, faceRight) {
+    if (!faceRight) { g.drawImage(img, Math.round(x - ox), Math.round(y - oy)); return; }
+    g.save();
+    g.translate(Math.round(x + ox), Math.round(y - oy));
+    g.scale(-1, 1);
+    g.drawImage(img, 0, 0);
+    g.restore();
   }
   // Scenery is placed by its bottom-center; `sink` pushes it into the ground a little.
-  function drawProp(frame, x, y = GROUND_Y, sink = 0, faceRight = false) {
+  function drawProp(g, frame, x, y = GROUND_Y, sink = 0, faceRight = false) {
     const img = frame.img;
-    drawSprite(img, img.width / 2, img.height - sink, x, y, faceRight);
+    drawSprite(g, img, img.width / 2, img.height - sink, x, y, faceRight);
   }
-  function nameTag(text, x, y) {
-    ctx.font = '11px ui-rounded, system-ui, sans-serif';
-    const w = Math.ceil(ctx.measureText(text).width) + 8, h = 15;
-    ctx.fillStyle = 'rgba(0,0,0,0.62)';
-    roundRect(Math.round(x - w / 2), Math.round(y), w, h, 3); ctx.fill();
-    ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(text, Math.round(x), Math.round(y + h / 2 + 0.5));
+  function makeCanvas(w, h) {
+    const c = document.createElement('canvas');
+    c.width = Math.max(1, Math.ceil(w)); c.height = Math.max(1, Math.ceil(h));
+    const g = c.getContext('2d');
+    g.imageSmoothingEnabled = false;
+    return [c, g];
   }
-  function bubble(text, x, y) {
-    ctx.font = '12px ui-rounded, system-ui, sans-serif';
-    const w = Math.ceil(ctx.measureText(text).width) + 14, h = 20;
-    const bx = Math.round(x - w / 2), by = Math.round(y - h);
-    ctx.fillStyle = '#fff'; ctx.strokeStyle = '#8a7a90'; ctx.lineWidth = 1;
-    roundRect(bx + 0.5, by + 0.5, w, h, 6); ctx.fill(); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(x - 4, by + h + 0.5); ctx.lineTo(x, by + h + 6); ctx.lineTo(x + 4, by + h + 0.5); ctx.fill();
-    ctx.fillStyle = '#3b2a3f'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(text, x, by + h / 2 + 1);
+  // Darken what's already drawn (works everywhere, unlike ctx.filter).
+  function darken(g, amount) {
+    g.globalCompositeOperation = 'source-atop';
+    g.fillStyle = `rgba(0,0,0,${amount})`;
+    g.fillRect(0, 0, g.canvas.width, g.canvas.height);
+    g.globalCompositeOperation = 'source-over';
   }
-  function roundRect(x, y, w, h, r) {
-    ctx.beginPath();
-    ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
-    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  // Soft light blobs are pre-rendered once per color/size and stamped with additive blending.
+  const glowCache = new Map();
+  function glowSprite(rgb, r) {
+    const key = rgb + r;
+    if (!glowCache.has(key)) {
+      const [c, g] = makeCanvas(r * 2, r * 2);
+      const grad = g.createRadialGradient(r, r, 0, r, r, r);
+      grad.addColorStop(0, `rgba(${rgb},1)`); grad.addColorStop(1, `rgba(${rgb},0)`);
+      g.fillStyle = grad; g.fillRect(0, 0, r * 2, r * 2);
+      glowCache.set(key, c);
+    }
+    return glowCache.get(key);
   }
-  function glow(x, y, r, color, strength) {
-    const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-    g.addColorStop(0, color.replace('A', strength.toFixed(3)));
-    g.addColorStop(1, color.replace('A', '0'));
-    ctx.fillStyle = g;
-    ctx.fillRect(x - r, y - r, r * 2, r * 2);
+  function glow(x, y, r, rgb, strength) {
+    ctx.globalAlpha = Math.max(0, Math.min(1, strength));
+    ctx.drawImage(glowSprite(rgb, r), Math.round(x - r), Math.round(y - r));
+    ctx.globalAlpha = 1;
   }
   const pick = list => list[Math.floor(Math.random() * list.length)];
 
@@ -265,9 +304,10 @@
   const keyMap = {
     ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right',
     Space: 'jump', ArrowUp: 'jump', KeyW: 'jump', AltLeft: 'jump', AltRight: 'jump',
-    ArrowDown: 'down', KeyS: 'down',
+    ArrowDown: 'down', KeyS: 'down', KeyE: 'down',
   };
   addEventListener('keydown', e => {
+    if (e.code === 'Escape') { minimizeWardrobe(); return; }
     if (e.target.closest && e.target.closest('button') && (e.code === 'Space' || e.code === 'Enter')) return;
     const k = keyMap[e.code]; if (k) { keys[k] = true; e.preventDefault(); }
   });
@@ -288,29 +328,34 @@
 
   // ---------- view / scaling ----------
   const wardrobeEl = document.getElementById('wardrobe');
-  let scale = 2, dpr = 1, viewW = 0, viewH = 0;
+  let scale = 2, dpr = 1, viewW = 0, viewH = 0, cover = 0;
+  let skyCache = null, vignetteCache = null;
   function resize() {
     dpr = window.devicePixelRatio || 1;
-    canvas.width = Math.round(innerWidth * dpr);
-    canvas.height = Math.round(innerHeight * dpr);
-    // Integer pixel scale so sprites stay crisp.
+    // Integer pixel scale so sprites stay crisp; the canvas itself is only the art's resolution.
     scale = Math.max(1, Math.round((innerHeight * dpr) / VIEW_WORLD_H));
-    viewW = canvas.width / scale;
-    viewH = canvas.height / scale;
+    viewW = Math.ceil((innerWidth * dpr) / scale);
+    viewH = Math.ceil((innerHeight * dpr) / scale);
+    canvas.width = viewW; canvas.height = viewH;
+    const cssW = (viewW * scale) / dpr + 'px', cssH = (viewH * scale) / dpr + 'px';
+    canvas.style.width = uiCanvas.style.width = cssW;
+    canvas.style.height = uiCanvas.style.height = cssH;
+    uiCanvas.width = viewW * scale; uiCanvas.height = viewH * scale;
+    ctx.imageSmoothingEnabled = false;
+    uiDirty.length = 0;
+    skyCache = vignetteCache = null; // rebuilt lazily at the new size
+    updateCover();
   }
-  addEventListener('resize', resize);
-  resize();
-  // World px hidden behind the wardrobe (it overlays the canvas on wide screens).
-  function wardrobeCover() {
-    if (innerWidth <= 760) return 0;
-    return (wardrobeEl.getBoundingClientRect().width * dpr) / scale;
+  // World px hidden behind the open wardrobe (it overlays the canvas on wide screens).
+  function updateCover() {
+    cover = wardrobeOpen && innerWidth > 760 ? (wardrobeEl.offsetWidth * dpr) / scale : 0;
   }
 
   // ---------- scenery ----------
   let BG = {};
   const clouds = Array.from({ length: 7 }, (_, i) => ({ k: 'cloud' + (i % 4), x: i * 260 + Math.random() * 120, y: 0.08 + Math.random() * 0.28, v: 4 + Math.random() * 5 }));
 
-  // [sprite, x, sink, faceRight] placed on the play layer, behind the characters.
+  // [sprite, x, sink] placed on the play layer, behind the characters.
   const BACK_PROPS = [
     ['woodSign', 30, 4],
     ['pumpkinPillarL', 150, 2], ['wall0', 285, 2], ['wall1', 413, 2], ['wall0', 541, 2], ['pumpkinPillarR', 676, 2],
@@ -323,7 +368,8 @@
     ['deadTree0', 1760, 4],
     ['grave3', 1810, 1], ['grave1', 1858, 1], ['candles0', 1835, -4], ['grave2', 1910, 1],
     ['pumpkinPillarL', 1990, 2], ['wall1', 2125, 2], ['wall0', 2253, 2],
-    ['vines1', 2120, 6],
+    ['vines1', 2075, 6],
+    ['wardrobe', WARDROBE_X, 2],
   ];
   // Drawn after the characters so the scene has some depth.
   const FRONT_PROPS = [['weeds1', 590, 3], ['weeds0', 1150, 3], ['weeds1', 1560, 3], ['weeds0', 1940, 3]];
@@ -332,104 +378,195 @@
   const LIGHTS = [ // warm glows: [x, y, radius]
     [150, -170, 70], [676, -170, 70], [890, -18, 40], [1835, -16, 40], [1990, -170, 70], [1420, -210, 150],
   ];
+  const WARM = '255,150,50', MAGIC = '190,130,255', MOONLIGHT = '170,200,255';
+
+  // Everything that never moves is drawn once into wide strips; each frame then blits a handful of images.
+  const strips = {};
+  let animatedBack = [];
+  function buildStrips() {
+    const W = WORLD_W + STRIP_PAD * 2;
+    // distant tree silhouettes (scrolls at 0.25x)
+    {
+      const a = BG.treeline0[0].img, b = BG.treeline1[0].img, h = Math.max(a.height, b.height);
+      const [c, g] = makeCanvas(W, h);
+      for (let x = -200, i = 0; x < WORLD_W + STRIP_PAD; x += 400, i++) { const img = i % 2 ? b : a; g.drawImage(img, x + STRIP_PAD, h - img.height); }
+      strips.treeline = c;
+    }
+    // haunted mansion (0.4x), slightly faded
+    {
+      const m = BG.mansion[0].img;
+      const [c, g] = makeCanvas(m.width, m.height);
+      g.globalAlpha = 0.92; g.drawImage(m, 0, 0);
+      strips.mansion = c;
+    }
+    // closer trees (0.7x), dimmed
+    {
+      const h = Math.max(...FAR_TREES.map(([k, , sink]) => BG[k][0].img.height - sink));
+      const [c, g] = makeCanvas(W, h);
+      for (const [k, x, sink] of FAR_TREES) drawProp(g, BG[k][0], x + STRIP_PAD, h, sink);
+      darken(g, 0.25);
+      strips.farTrees = c;
+    }
+    // ground: dimmed cobblestones, a mossy lip, and a shadow under the lip
+    {
+      const stone = BG.stone[0].img, h = 220;
+      const [c, g] = makeCanvas(W, h);
+      for (let x = 0; x < W; x += stone.width) for (let y = 6; y < h; y += stone.height) g.drawImage(stone, x, y);
+      darken(g, 0.28);
+      g.fillStyle = '#35462f'; g.fillRect(0, 0, W, 6);
+      g.fillStyle = '#4d6440'; g.fillRect(0, 0, W, 2);
+      const shade = g.createLinearGradient(0, 6, 0, 40);
+      shade.addColorStop(0, 'rgba(0,0,0,0.35)'); shade.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = shade; g.fillRect(0, 6, W, 34);
+      strips.ground = c;
+    }
+    // play-layer props: still ones are baked, animated ones are drawn live
+    {
+      const h = 420;
+      const [c, g] = makeCanvas(W, h);
+      animatedBack = [];
+      for (const p of BACK_PROPS) {
+        const frames = BG[p[0]];
+        if (frames.length > 1) animatedBack.push(p);
+        else drawProp(g, frames[0], p[1] + STRIP_PAD, h, p[2]);
+      }
+      strips.back = c; strips.backH = h;
+    }
+    {
+      const h = 80;
+      const [c, g] = makeCanvas(W, h);
+      for (const [k, x, sink] of FRONT_PROPS) drawProp(g, BG[k][0], x + STRIP_PAD, h, sink);
+      strips.front = c; strips.frontH = h;
+    }
+    // haze along the horizon
+    {
+      const [c, g] = makeCanvas(1, 74);
+      const grad = g.createLinearGradient(0, 0, 0, 74);
+      grad.addColorStop(0, 'rgba(120,110,170,0)'); grad.addColorStop(1, 'rgba(120,110,170,0.28)');
+      g.fillStyle = grad; g.fillRect(0, 0, 1, 74);
+      strips.mist = c;
+    }
+  }
+
+  function buildViewCaches() {
+    {
+      const [c, g] = makeCanvas(viewW, viewH);
+      g.drawImage(BG.sky[0].img, 0, 0, viewW, viewH);
+      skyCache = c;
+    }
+    {
+      const [c, g] = makeCanvas(viewW, viewH);
+      const v = g.createRadialGradient(viewW / 2, viewH * 0.6, viewH * 0.35, viewW / 2, viewH * 0.6, viewW * 0.75);
+      v.addColorStop(0, 'rgba(10,5,25,0)'); v.addColorStop(1, 'rgba(10,5,25,0.45)');
+      g.fillStyle = v; g.fillRect(0, 0, viewW, viewH);
+      vignetteCache = c;
+    }
+  }
 
   function drawSky(camX, t) {
-    ctx.drawImage(BG.sky[0].img, 0, 0, viewW, viewH);
+    ctx.drawImage(skyCache, 0, 0);
     // stars, twinkling gently
     const st = BG.stars[0].img;
-    ctx.save();
     ctx.globalAlpha = 0.75 + 0.25 * Math.sin(t * 1.3);
     for (let x = -((camX * 0.03) % st.width) - st.width; x < viewW; x += st.width) ctx.drawImage(st, Math.round(x), 0);
-    ctx.restore();
+    ctx.globalAlpha = 1;
     // moon
     const moon = BG.moon[0].img;
-    ctx.save(); ctx.globalCompositeOperation = 'lighter';
-    glow(viewW * 0.72 - camX * 0.02 + moon.width / 2, viewH * 0.1 + moon.height / 2, 150, 'rgba(170,200,255,A)', 0.18);
-    ctx.restore();
-    ctx.drawImage(moon, Math.round(viewW * 0.72 - camX * 0.02), Math.round(viewH * 0.1));
+    const mx = Math.round(viewW * 0.72 - camX * 0.02), my = Math.round(viewH * 0.1);
+    ctx.globalCompositeOperation = 'lighter';
+    glow(mx + moon.width / 2, my + moon.height / 2, 150, MOONLIGHT, 0.18);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.drawImage(moon, mx, my);
     // drifting clouds
+    ctx.globalAlpha = 0.8;
     for (const c of clouds) {
       const img = BG[c.k][0].img, span = WORLD_W + 600;
       const x = (((c.x + t * c.v - camX * 0.1) % span) + span) % span - 300;
-      ctx.globalAlpha = 0.8;
       ctx.drawImage(img, Math.round(x), Math.round(viewH * c.y));
-      ctx.globalAlpha = 1;
     }
+    ctx.globalAlpha = 1;
     // a witch crosses the sky every so often
     const period = 38, wt = t % period;
     if (wt < 22) {
       const wf = frameAt(BG.witch, t);
       const x = viewW + 150 - (wt / 22) * (viewW + 300);
-      drawSprite(wf.img, wf.img.width / 2, wf.img.height / 2, x, viewH * 0.24 + Math.sin(t * 2) * 10, false);
+      drawSprite(ctx, wf.img, wf.img.width / 2, wf.img.height / 2, x, viewH * 0.24 + Math.sin(t * 2) * 10, false);
     }
   }
 
-  // Draw a layer whose world x scrolls at `p` times the camera speed (p=1 is the play layer).
-  function layer(p, camX, horizonY, fn) {
-    ctx.save();
-    ctx.translate(-Math.round(camX * p), Math.round(horizonY));
-    fn();
-    ctx.restore();
+  function drawFar(camX, horizonY) {
+    const tl = strips.treeline;
+    ctx.drawImage(tl, -Math.round(camX * 0.25) - STRIP_PAD, Math.round(horizonY - 26 - tl.height));
+    const m = strips.mansion;
+    ctx.drawImage(m, 520 - Math.round(camX * 0.4), Math.round(horizonY - 14 - m.height));
+    const ft = strips.farTrees;
+    ctx.drawImage(ft, -Math.round(camX * 0.7) - STRIP_PAD, Math.round(horizonY - ft.height));
+    ctx.drawImage(strips.mist, 0, Math.round(horizonY - 70), viewW, 74);
   }
 
-  function drawFar(camX, horizonY, t) {
-    // tree silhouettes
-    layer(0.25, camX, horizonY - 26, () => {
-      const a = BG.treeline0[0].img, b = BG.treeline1[0].img;
-      for (let x = -200, i = 0; x < WORLD_W; x += 400, i++) { const img = i % 2 ? b : a; ctx.drawImage(img, x, -img.height); }
-    });
-    // haunted mansion
-    layer(0.4, camX, horizonY - 14, () => {
-      const m = BG.mansion[0].img;
-      ctx.save(); ctx.globalAlpha = 0.92;
-      ctx.drawImage(m, 520, -m.height);
-      ctx.restore();
-    });
-    // closer trees
-    layer(0.7, camX, horizonY, () => {
-      ctx.save(); ctx.filter = 'brightness(0.75)';
-      for (const [k, x, sink] of FAR_TREES) drawProp(BG[k][0], x, 0, sink);
-      ctx.restore();
-    });
-    // mist band along the horizon
-    const g = ctx.createLinearGradient(0, horizonY - 70, 0, horizonY + 4);
-    g.addColorStop(0, 'rgba(120,110,170,0)'); g.addColorStop(1, 'rgba(120,110,170,0.28)');
-    ctx.fillStyle = g; ctx.fillRect(0, horizonY - 70, viewW, 74);
+  // ---------- Bubble Fish ----------
+  // Off-theme visitors from Aqua Road that drift through the air. Click one and it darts the other way.
+  const fish = Array.from({ length: 7 }, (_, i) => ({
+    x: 120 + Math.random() * (WORLD_W - 240), base: -80 - Math.random() * 200,
+    dir: Math.random() < 0.5 ? -1 : 1, speed: 22 + Math.random() * 26, phase: Math.random() * 6.28,
+    boost: 0, front: i % 3 === 0,
+  }));
+  function updateFish(dt) {
+    for (const f of fish) {
+      if (f.boost > 0) f.boost -= dt;
+      f.x += f.dir * f.speed * (f.boost > 0 ? 4 : 1) * dt;
+      if (f.x < -60) f.dir = 1;
+      if (f.x > WORLD_W + 60) f.dir = -1;
+    }
+  }
+  function drawFish(t, front) {
+    for (const f of fish) {
+      if (f.front !== front) continue;
+      const fr = frameAt(BG.bubbleFish, t * (f.boost > 0 ? 2.5 : 1) + f.phase);
+      f.y = GROUND_Y + f.base + Math.sin(t * 1.3 + f.phase) * 12;
+      drawSprite(ctx, fr.img, fr.ox, fr.oy, f.x, f.y, f.dir > 0);
+    }
   }
 
-  function drawGround() {
-    const stone = BG.stone[0].img;
-    ctx.save();
-    ctx.filter = 'brightness(0.72)';
-    for (let x = -300; x < WORLD_W + 300; x += stone.width)
-      for (let y = GROUND_Y + 6; y < GROUND_Y + 500; y += stone.height) ctx.drawImage(stone, x, y);
-    ctx.restore();
-    // mossy lip
-    ctx.fillStyle = '#35462f'; ctx.fillRect(-300, GROUND_Y, WORLD_W + 600, 6);
-    ctx.fillStyle = '#4d6440'; ctx.fillRect(-300, GROUND_Y, WORLD_W + 600, 2);
-    const shade = ctx.createLinearGradient(0, GROUND_Y + 6, 0, GROUND_Y + 40);
-    shade.addColorStop(0, 'rgba(0,0,0,0.35)'); shade.addColorStop(1, 'rgba(0,0,0,0)');
-    ctx.fillStyle = shade; ctx.fillRect(-300, GROUND_Y + 6, WORLD_W + 600, 34);
+  // ---------- name tags and bubbles (full-resolution overlay) ----------
+  // Only the rectangles drawn last frame are cleared, so the overlay costs almost nothing.
+  const uiDirty = [];
+  let uiCamX = 0, uiCamY = 0;
+  function uiBegin(camX, camY) {
+    ui.setTransform(1, 0, 0, 1, 0, 0);
+    for (const r of uiDirty) ui.clearRect(r[0], r[1], r[2], r[3]);
+    uiDirty.length = 0;
+    uiCamX = camX; uiCamY = camY;
+    ui.setTransform(scale, 0, 0, scale, -camX * scale, -camY * scale);
   }
-
-  function drawBackProps(t) {
-    for (const [k, x, sink] of BACK_PROPS) drawProp(frameAt(BG[k], t), x, GROUND_Y, sink);
-    // a jester idles by the gate
-    drawProp(frameAt(BG.jester, t), 330, GROUND_Y, 2, true);
-    // a zombie shambles back and forth between the graves
-    const zf = frameAt(BG.zombie, t), span = 220, zt = (t * 18) % (span * 2);
-    const zx = 1640 + (zt < span ? zt : span * 2 - zt);
-    drawProp(zf, zx, GROUND_Y, 2, zt < span);
+  function markDirty(x, y, w, h) {
+    uiDirty.push([Math.floor((x - uiCamX) * scale) - 2, Math.floor((y - uiCamY) * scale) - 2, Math.ceil(w * scale) + 4, Math.ceil(h * scale) + 4]);
   }
-
-  function drawLights(t) {
-    ctx.save();
-    ctx.globalCompositeOperation = 'lighter';
-    LIGHTS.forEach(([x, y, r], i) => {
-      const flicker = 0.16 + 0.04 * Math.sin(t * 7 + i * 1.7) + 0.02 * Math.sin(t * 13 + i);
-      glow(x, GROUND_Y + y, r, 'rgba(255,150,50,A)', flicker);
-    });
-    ctx.restore();
+  function roundRect(g, x, y, w, h, r) {
+    g.beginPath();
+    g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r);
+    g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
+  }
+  function nameTag(text, x, y) {
+    ui.font = '11px ui-rounded, system-ui, sans-serif';
+    const w = Math.ceil(ui.measureText(text).width) + 8, h = 15;
+    const bx = Math.round(x - w / 2), by = Math.round(y);
+    ui.fillStyle = 'rgba(0,0,0,0.62)';
+    roundRect(ui, bx, by, w, h, 3); ui.fill();
+    ui.fillStyle = '#fff'; ui.textAlign = 'center'; ui.textBaseline = 'middle';
+    ui.fillText(text, Math.round(x), by + h / 2 + 0.5);
+    markDirty(bx, by, w, h);
+  }
+  function bubble(text, x, y) {
+    ui.font = '12px ui-rounded, system-ui, sans-serif';
+    const w = Math.ceil(ui.measureText(text).width) + 14, h = 20;
+    const bx = Math.round(x - w / 2), by = Math.round(y - h);
+    ui.fillStyle = '#fff'; ui.strokeStyle = '#8a7a90'; ui.lineWidth = 1;
+    roundRect(ui, bx + 0.5, by + 0.5, w, h, 6); ui.fill(); ui.stroke();
+    ui.beginPath(); ui.moveTo(x - 4, by + h + 0.5); ui.lineTo(x, by + h + 6); ui.lineTo(x + 4, by + h + 0.5); ui.fill();
+    ui.fillStyle = '#3b2a3f'; ui.textAlign = 'center'; ui.textBaseline = 'middle';
+    ui.fillText(text, x, by + h / 2 + 1);
+    markDirty(bx, by, w + 1, h + 7);
   }
 
   // ---------- entities ----------
@@ -442,6 +579,7 @@
   };
 
   let cam = { x: 0, y: 0 };
+  let clock = 0;
   function screenToWorld(cx, cy) {
     return { wx: (cx * dpr) / scale + cam.x, wy: (cy * dpr) / scale + cam.y };
   }
@@ -450,7 +588,52 @@
     if (Math.abs(wx - pet.x) < 28 && wy < pet.y + 6 && wy > pet.y - 64) {
       setPetEmote(['love', 'dancing', 'play'].find(a => petAnims[a]) || null, 1.6);
       pet.say = pick(LINES[currentPet.id] || LINES.default); pet.sayT = 2;
+      return;
     }
+    for (const f of fish) {
+      if (Math.abs(wx - f.x) < 34 && Math.abs(wy - (f.y - 30)) < 32) { f.dir *= -1; f.boost = 1.2; return; }
+    }
+    // Clicking the wardrobe opens it once you're standing near it.
+    const w = BG.wardrobe && BG.wardrobe[0].img;
+    if (w && Math.abs(wx - WARDROBE_X) < w.width / 2 && wy < GROUND_Y && wy > GROUND_Y - w.height && nearWardrobe()) {
+      openWardrobe();
+    }
+  });
+
+  // ---------- the wardrobe menu ----------
+  // It starts open; once minimized, the only way back is the wardrobe at the end of the path.
+  let wardrobeOpen = true;
+  const nearWardrobe = () => Math.abs(player.x - WARDROBE_X) < WARDROBE_RANGE;
+  const toastEl = document.getElementById('toast');
+  let toastTimer = 0;
+  function toast(text) {
+    toastEl.textContent = text;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 4200);
+  }
+  function setWardrobe(open) {
+    wardrobeOpen = open;
+    wardrobeEl.classList.toggle('open', open);
+    wardrobeEl.toggleAttribute('inert', !open);
+    if (!open && wardrobeEl.contains(document.activeElement)) document.activeElement.blur();
+    updateCover();
+  }
+  function openWardrobe() {
+    if (wardrobeOpen) return;
+    setWardrobe(true);
+    toastEl.classList.remove('show');
+  }
+  function minimizeWardrobe() {
+    if (!wardrobeOpen) return;
+    setWardrobe(false);
+    toast('Wardrobe minimized. Walk to the wardrobe at the far right end of the path to open it again.');
+  }
+  document.getElementById('minimizeWardrobe').addEventListener('click', minimizeWardrobe);
+  // After a mouse click on a wardrobe button, hand the keyboard back to the game so Space jumps.
+  wardrobeEl.addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (b && e.detail > 0) b.blur();
   });
 
   function setPetEmote(name, secs) {
@@ -460,6 +643,9 @@
 
   function updatePlayer(dt) {
     const nearChair = Math.abs(player.x - CHAIR_X) < SIT_RANGE;
+    if (keys.down && !wardrobeOpen && nearWardrobe() && player.onGround && !player.sitting) {
+      keys.down = false; openWardrobe(); return;
+    }
     if (player.sitting) {
       if (keys.left || keys.right || keys.jump) {
         player.sitting = false;
@@ -493,9 +679,9 @@
   function updatePet(dt) {
     pet.t += dt;
     if (pet.sayT > 0 && (pet.sayT -= dt) <= 0) pet.say = null;
-    // Follow a spot just behind the player; while seated, settle beside the chair.
-    const behind = player.faceRight ? -48 : 48;
-    const targetX = player.sitting ? CHAIR_X + 62 : player.x + behind;
+    // Follow a spot just behind the player (further back when riding); while seated, settle beside the chair.
+    const gap = 48 + (charAnims.mountHalfWidth || 0);
+    const targetX = player.sitting ? CHAIR_X + 62 : player.x + (player.faceRight ? -gap : gap);
     const dx = targetX - pet.x;
     const moving = Math.abs(dx) > 6;
     if (moving) {
@@ -506,7 +692,7 @@
       pet.faceRight = false; // face the player on the chair
     }
     // Hop after the player when they jump nearby.
-    if (pet.onGround && !player.onGround && player.vy < -200 && Math.abs(player.x - pet.x) < 90) {
+    if (pet.onGround && !player.onGround && player.vy < -200 && Math.abs(player.x - pet.x) < 90 + gap) {
       pet.vy = -JUMP_V * 0.8; pet.onGround = false;
     }
     if (!pet.onGround) {
@@ -531,54 +717,69 @@
   // ---------- render ----------
   let petAnims, charAnims, chairVariants;
   function render(t) {
-    ctx.setTransform(scale, 0, 0, scale, 0, 0);
-    ctx.imageSmoothingEnabled = false;
+    if (!skyCache) buildViewCaches();
 
     // Camera: keep the player centered in the part of the screen the wardrobe doesn't cover.
-    const visibleW = viewW - wardrobeCover();
+    const visibleW = viewW - cover;
     const targetX = Math.max(-40, Math.min(WORLD_W + 40 - visibleW, player.x - visibleW / 2));
     cam.x += (targetX - cam.x) * 0.12;
     cam.y = GROUND_Y - viewH * 0.8;
-    const horizonY = GROUND_Y - cam.y;
+    const camX = Math.round(cam.x), camY = Math.round(cam.y);
+    const horizonY = GROUND_Y - camY;
 
     drawSky(cam.x, t);
-    drawFar(cam.x, horizonY, t);
+    drawFar(cam.x, horizonY);
 
     ctx.save();
-    ctx.translate(-Math.round(cam.x), -Math.round(cam.y));
-    drawGround();
-    drawBackProps(t);
-    drawLights(t);
+    ctx.translate(-camX, -camY);
+    ctx.drawImage(strips.ground, -STRIP_PAD, GROUND_Y);
+    ctx.drawImage(strips.back, -STRIP_PAD, GROUND_Y - strips.backH);
+    for (const [k, x, sink] of animatedBack) drawProp(ctx, frameAt(BG[k], t), x, GROUND_Y, sink);
+    // a jester idles by the gate
+    drawProp(ctx, frameAt(BG.jester, t), 330, GROUND_Y, 2, true);
+    // a zombie shambles back and forth between the graves
+    const zf = frameAt(BG.zombie, t), span = 220, zt = (t * 18) % (span * 2);
+    drawProp(ctx, zf, 1640 + (zt < span ? zt : span * 2 - zt), GROUND_Y, 2, zt < span);
+
+    // warm flickering lights, plus a magic shimmer on the wardrobe
+    ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < LIGHTS.length; i++) {
+      const [x, y, r] = LIGHTS[i];
+      glow(x, GROUND_Y + y, r, WARM, 0.16 + 0.04 * Math.sin(t * 7 + i * 1.7) + 0.02 * Math.sin(t * 13 + i));
+    }
+    glow(WARDROBE_X, GROUND_Y - 120, 150, MAGIC, wardrobeOpen || nearWardrobe() ? 0.22 : 0.1 + 0.04 * Math.sin(t * 2.2));
+    ctx.globalCompositeOperation = 'source-over';
+
+    drawFish(t, false);
 
     // Chair (behind the character). It idles on its current color and animates when in use.
     const cf = player.sitting ? frameAt(chairVariants[chair.variant], chair.t) : chairVariants[chair.variant][0];
-    drawSprite(cf.img, cf.ox, cf.oy, CHAIR_X, GROUND_Y, false);
+    drawSprite(ctx, cf.img, cf.ox, cf.oy, CHAIR_X, GROUND_Y, false);
 
-    // Pet
     const pf = frameAt(petAnims[pet.anim], pet.t);
-    drawSprite(pf.img, pf.ox, pf.oy, pet.x, pet.y, pet.faceRight);
-    nameTag(currentPet.name, pet.x, pet.y + 3);
-    if (pet.say) bubble(pet.say, pet.x, pet.y - pf.oy - 4);
+    drawSprite(ctx, pf.img, pf.ox, pf.oy, pet.x, pet.y, pet.faceRight);
 
-    // Character (feetCenter renders put the feet at the image center)
     const state = player.sitting ? 'sit' : player.state;
     const ff = frameAt(charAnims[state], player.t, state === 'stand1');
     const seat = player.sitting ? A.chair.seat : { x: 0, y: 0 };
     const fx = player.x + (player.faceRight ? -seat.x : seat.x);
-    drawSprite(ff.img, ff.img.width / 2, ff.img.height / 2, fx, player.y + seat.y, player.faceRight);
-    nameTag('You', player.x, player.y + 3);
+    drawSprite(ctx, ff.img, ff.ox, ff.oy, fx, player.y + seat.y, player.faceRight);
 
-    for (const [k, x, sink] of FRONT_PROPS) drawProp(BG[k][0], x, GROUND_Y, sink);
-
-    if (!player.sitting && player.onGround && Math.abs(player.x - CHAIR_X) < SIT_RANGE) {
-      bubble('↓ Sit', CHAIR_X, GROUND_Y - 150);
-    }
+    ctx.drawImage(strips.front, -STRIP_PAD, GROUND_Y - strips.frontH);
+    drawFish(t, true);
     ctx.restore();
 
-    // soft night vignette
-    const v = ctx.createRadialGradient(viewW / 2, viewH * 0.6, viewH * 0.35, viewW / 2, viewH * 0.6, viewW * 0.75);
-    v.addColorStop(0, 'rgba(10,5,25,0)'); v.addColorStop(1, 'rgba(10,5,25,0.45)');
-    ctx.fillStyle = v; ctx.fillRect(0, 0, viewW, viewH);
+    ctx.drawImage(vignetteCache, 0, 0);
+
+    // overlay: name tags and prompts
+    uiBegin(camX, camY);
+    nameTag(currentPet.name, pet.x, pet.y + 3);
+    if (pet.say) bubble(pet.say, pet.x, pet.y - pf.oy - 4);
+    nameTag('You', player.x, player.y + 3);
+    if (!player.sitting && player.onGround && Math.abs(player.x - CHAIR_X) < SIT_RANGE) bubble('↓ Sit', CHAIR_X, GROUND_Y - 150);
+    if (!wardrobeOpen && player.onGround && nearWardrobe()) {
+      bubble('↓ Open wardrobe', WARDROBE_X, GROUND_Y - BG.wardrobe[0].img.height - 8);
+    }
   }
 
   // ---------- info panel ----------
@@ -593,9 +794,9 @@
   function swatch(v) {
     if (swatchCache[v]) return swatchCache[v];
     const img = chairVariants[v][0].img;
-    const c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
-    const cx = c.getContext('2d'); cx.drawImage(img, 0, 0);
-    const d = cx.getImageData(0, 0, img.width, img.height).data;
+    const [, g] = makeCanvas(img.width, img.height);
+    g.drawImage(img, 0, 0);
+    const d = g.getImageData(0, 0, img.width, img.height).data;
     let best = [200, 200, 200], bestSat = -1;
     for (let i = 0; i < d.length; i += 16) {
       if (d[i + 3] < 250) continue;
@@ -616,7 +817,7 @@
 
   // ---------- wardrobe: looks ----------
   const BASE_BODY = [12000, 21000, 31000]; // head, face, hair
-  const SLOTS = ['hat', 'outfit', 'cape', 'shoes', 'faceAcc', 'eyeAcc', 'weapon'];
+  const SLOTS = ['hat', 'outfit', 'cape', 'shoes', 'faceAcc', 'eyeAcc', 'weapon', 'mount'];
   const DEFAULT_LOOK = { hat: 1002738, outfit: 1052926, shoes: 1073062 };
   const FRAME_COUNTS = Object.fromEntries(Object.entries(A.character.anims).map(([k, v]) => [k, v.length]));
   const FRAME_DELAYS = Object.fromEntries(Object.entries(A.character.anims).map(([k, v]) => [k, v[0].delay]));
@@ -624,6 +825,36 @@
   const lookKey = look => lookItems(look).slice().sort((a, b) => a - b).join(',');
   const DEFAULT_KEY = lookKey(DEFAULT_LOOK);
   const lookCache = new Map();
+
+  // Renders are centered on the rider's feet. With a mount, find where the mount actually touches
+  // the ground (lowest opaque row of the standing frame) and anchor every frame by that.
+  function opaqueBounds(img) {
+    const [, g] = makeCanvas(img.width, img.height);
+    g.drawImage(img, 0, 0);
+    const d = g.getImageData(0, 0, img.width, img.height).data;
+    let bottom = -1, left = img.width, right = -1;
+    for (let y = 0; y < img.height; y++) for (let x = 0; x < img.width; x++) {
+      if (d[(y * img.width + x) * 4 + 3] > 10) { bottom = y; if (x < left) left = x; if (x > right) right = x; }
+    }
+    return { bottom, width: right - left + 1 };
+  }
+  function anchorFrames(anims, mounted) {
+    let lift = 0;
+    if (mounted) {
+      try {
+        const s = anims.stand1[0].img, b = opaqueBounds(s);
+        if (b.bottom >= 0) { lift = b.bottom + 1 - s.height / 2; anims.mountHalfWidth = Math.round(b.width / 2); }
+      } catch { /* can't read pixels; fall back to the feet anchor */ }
+    }
+    for (const [action, frames] of Object.entries(anims)) {
+      if (!Array.isArray(frames)) continue;
+      for (const f of frames) {
+        f.ox = f.img.width / 2;
+        f.oy = f.img.height / 2 + (mounted && action !== 'sit' ? lift : 0);
+      }
+    }
+    return anims;
+  }
 
   function loadLook(look) {
     const key = lookKey(look);
@@ -633,7 +864,7 @@
         const frames = await Promise.all(Array.from({ length: n }, (_, f) =>
           withRetry(() => load(`${API}/Character/feetCenter/${A.character.skin}/${items}/${action}/${f}`, true))));
         return [action, frames.map(img => ({ img, delay: FRAME_DELAYS[action] }))];
-      })).then(Object.fromEntries);
+      })).then(entries => anchorFrames(Object.fromEntries(entries), !!look.mount));
       p.catch(() => lookCache.delete(key)); // allow retry
       lookCache.set(key, p);
     }
@@ -671,10 +902,10 @@
 
   // ---------- wardrobe: UI ----------
   const TABS = [
-    ['pet', 'Pets'], ['hat', 'Hats'], ['outfit', 'Outfits'], ['cape', 'Capes'],
+    ['pet', 'Pets'], ['mount', 'Mounts'], ['hat', 'Hats'], ['outfit', 'Outfits'], ['cape', 'Capes'],
     ['shoes', 'Shoes'], ['face', 'Face'], ['weapon', 'Weapons'],
   ];
-  const NONE_ALLOWED = new Set(['hat', 'cape', 'shoes', 'face', 'weapon']);
+  const NONE_ALLOWED = new Set(['hat', 'cape', 'shoes', 'face', 'weapon', 'mount']);
   const tabsEl = document.getElementById('tabs');
   const gridEl = document.getElementById('grid');
   const statusEl = document.getElementById('status');
@@ -683,9 +914,13 @@
   let currentPet = null;
   let lookToken = 0, petToken = 0;
 
-  function setStatus(text, isError = false) {
-    statusEl.textContent = text;
-    statusEl.classList.toggle('error', isError);
+  // Outfit and pet loads report separately so one finishing can't hide the other's error.
+  const statusBy = { look: null, pet: null };
+  function setStatus(kind, text, isError = false) {
+    statusBy[kind] = text ? { text, isError } : null;
+    const s = statusBy.look || statusBy.pet;
+    statusEl.textContent = s ? s.text : '';
+    statusEl.classList.toggle('error', !!(s && s.isError));
   }
 
   function renderTabs() {
@@ -703,7 +938,7 @@
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'tile'; b.title = name;
     b.setAttribute('aria-pressed', String(pressed));
-    b.innerHTML = `<div class="icon">${none ? '<span class="none">∅</span>' : `<img alt="" src="${icon}">`}</div><span></span>`;
+    b.innerHTML = `<div class="icon">${none ? '<span class="none">∅</span>' : `<img alt="" loading="lazy" src="${icon}">`}</div><span></span>`;
     b.lastElementChild.textContent = name;
     b.addEventListener('click', onClick);
     return b;
@@ -721,7 +956,7 @@
     const slots = [...new Set(items.map(i => i.slot))];
     if (NONE_ALLOWED.has(activeTab)) {
       gridEl.appendChild(tile({
-        none: true, name: 'None', pressed: slots.every(s => !look[s]),
+        none: true, name: activeTab === 'mount' ? 'On foot' : 'None', pressed: slots.every(s => !look[s]),
         onClick: () => { const next = { ...look }; slots.forEach(s => delete next[s]); applyLook(next); },
       }));
     }
@@ -738,39 +973,39 @@
     renderGrid();
     save();
     const token = ++lookToken;
-    if (lookKey(next) === DEFAULT_KEY) { charAnims = defaultCharAnims; setStatus(''); return; }
-    if (!quiet) setStatus('Dressing up…');
+    if (lookKey(next) === DEFAULT_KEY) { charAnims = defaultCharAnims; setStatus('look', ''); return; }
+    if (!quiet) setStatus('look', 'Dressing up…');
     // Let quick clicks settle so only the final combination is requested.
     await wait(250);
     if (token !== lookToken) return;
     try {
       const anims = await loadLook(next);
       if (token !== lookToken) return; // a newer choice won
-      charAnims = anims; setStatus('');
+      charAnims = anims; setStatus('look', '');
     } catch {
-      if (token === lookToken) setStatus('Couldn’t load that look. maplestory.io may be busy.', true);
+      if (token === lookToken) setStatus('look', 'maplestory.io is busy. Click the item again to retry.', true);
     }
   }
 
   async function choosePet(id) {
     const token = ++petToken;
-    setStatus('Fetching pet…');
+    setStatus('pet', 'Fetching pet…');
     try {
       const p = await loadPet(id);
       if (token !== petToken) return;
       currentPet = p; petAnims = p.anims;
       pet.anim = 'stand0'; pet.emote = null; pet.t = 0; pet.idle = 0; pet.say = null;
-      showPetInfo(p); renderGrid(); save(); setStatus('');
+      showPetInfo(p); renderGrid(); save(); setStatus('pet', '');
     } catch {
-      if (token === petToken) setStatus('Couldn’t load that pet. maplestory.io may be busy.', true);
+      if (token === petToken) setStatus('pet', 'maplestory.io is busy. Click the pet again to retry.', true);
     }
   }
 
   document.getElementById('randomize').addEventListener('click', () => {
     const next = {};
     for (const [tab, items] of Object.entries(A.wardrobe.items)) {
-      const optional = NONE_ALLOWED.has(tab) && tab !== 'hat' && tab !== 'shoes';
-      if (optional && Math.random() < 0.35) continue;
+      const skipChance = tab === 'mount' ? 0.6 : NONE_ALLOWED.has(tab) && tab !== 'hat' && tab !== 'shoes' ? 0.35 : 0;
+      if (Math.random() < skipChance) continue;
       const it = pick(items);
       next[it.slot] = it.id;
     }
@@ -779,13 +1014,6 @@
   document.getElementById('reset').addEventListener('click', () => {
     applyLook({ ...DEFAULT_LOOK });
     choosePet(A.pet.id);
-  });
-
-  const wardrobeToggle = document.getElementById('wardrobeToggle');
-  wardrobeToggle.addEventListener('click', () => {
-    const open = wardrobeEl.classList.toggle('open');
-    wardrobeToggle.setAttribute('aria-expanded', String(open));
-    wardrobeToggle.textContent = open ? 'Close' : 'Wardrobe';
   });
 
   // Remember the last look and pet in this browser.
@@ -800,6 +1028,11 @@
   // ---------- boot ----------
   let defaultCharAnims;
   (async () => {
+    // On phones the wardrobe would cover most of the game, so it starts minimized there.
+    if (innerWidth <= 760) setWardrobe(false);
+    addEventListener('resize', resize);
+    resize();
+
     const baked = {};
     for (const [k, v] of Object.entries(A.pet.anims)) baked[k] = await loadFrames(v);
     const adriano = { id: A.pet.id, name: A.pet.name, desc: A.pet.desc, anims: baked };
@@ -808,10 +1041,16 @@
 
     defaultCharAnims = {};
     for (const [k, v] of Object.entries(A.character.anims)) defaultCharAnims[k] = await loadFrames(v);
+    anchorFrames(defaultCharAnims, false);
     charAnims = defaultCharAnims;
     chairVariants = await Promise.all(A.chair.variants.map(loadFrames));
-    const bgEntries = await Promise.all(Object.entries(A.bg).map(async ([k, v]) => [k, await loadFrames(v)]));
+    // Scenery is decoration: if an image fails, draw nothing in its place rather than stopping the game.
+    const blank = { img: makeCanvas(1, 1)[0], ox: 0, oy: 0, delay: 1000 };
+    const bgEntries = await Promise.all(Object.entries(A.bg).map(async ([k, v]) =>
+      [k, await loadFrames(v).catch(() => { console.warn('scenery failed to load:', k); return [blank]; })]));
     BG = Object.fromEntries(bgEntries);
+    buildStrips();
+    document.getElementById('loading').hidden = true;
 
     document.getElementById('chairIcon').src = A.chair.variants[0][0].src;
     document.getElementById('chairName').textContent = A.chair.name;
@@ -824,17 +1063,24 @@
     if (saved.pet && saved.pet !== adriano.id && A.wardrobe.pets.some(p => p.id === saved.pet)) choosePet(saved.pet);
 
     let last = performance.now();
-    const start = last;
     function tick(now) {
       const dt = Math.min(0.05, (now - last) / 1000); last = now;
+      clock += dt;
       updatePlayer(dt);
       updatePet(dt);
+      updateFish(dt);
       chair.t += dt;
-      render((now - start) / 1000);
+      render(clock);
       requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
-  })();
+  })().catch(err => {
+    console.error(err);
+    const el = document.getElementById('loading');
+    el.hidden = false;
+    el.classList.add('error');
+    el.textContent = 'The lounge couldn’t start. Try a hard refresh (⌘⇧R / Ctrl+Shift+R).';
+  });
 })();
 </script>
 </body>
