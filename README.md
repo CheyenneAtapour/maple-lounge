@@ -4,10 +4,11 @@ A small browser prototype for a MapleStory fashion/hangout game with a themed ma
 Walk around, jump, and sit on the Rabbit Lamp Chair (it changes color each time, like in game)
 while your pet follows you and Bubble Fish drift by. The wardrobe panel on the right swaps pets,
 mounts (Yeti, Hog, and more), hats, outfits, capes, shoes, face accessories, and weapons
-(seasonal picks for the current map). Minimize it to reveal the **Map** picker, which switches
-between twelve monthly event maps; the page opens on the current month's map (or `?map=jan` …
-`?map=dec`). Once minimized, the wardrobe can only be reopened at the wardrobe at the far right end
-of the path.
+(seasonal picks for the current map), plus hair and face styles (filter by female/male) with hair
+and eye colors. Up to three pets can follow you at once. Minimize the wardrobe to show the **Maps**
+and **Wardrobe** buttons: Maps switches between twelve monthly event maps (the page opens on the
+current month's map, or `?map=jan` … `?map=dec`), and Wardrobe reopens the wardrobe. You can also
+reopen it by walking to the wardrobe at the far right end of the path and pressing ↓.
 
 | Month | Map | Month | Map |
 |---|---|---|---|
@@ -27,8 +28,9 @@ of the path.
 | ← → / A D | Walk |
 | Space / ↑ / W | Jump |
 | ↓ / S (near the lamp) | Sit; any move key stands up |
-| Esc or – | Minimize the wardrobe |
-| ↓ / S / E (near the wardrobe), or click it | Reopen the wardrobe |
+| Esc or – | Minimize the wardrobe (Esc also closes the map picker) |
+| Wardrobe button, or ↓ / S / E near the wardrobe | Reopen the wardrobe |
+| Maps button | Switch maps |
 | Click a Bubble Fish | It darts away |
 | Click your pet | Pet it |
 

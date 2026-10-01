@@ -108,6 +108,13 @@
   .swatch-btn[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
   .swatch-btn:disabled { opacity: 0.25; cursor: not-allowed; }
   .swatch-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .gender-filter { grid-column: 1 / -1; display: flex; gap: 6px; padding-bottom: 4px; }
+  .gender-filter button {
+    border: 1px solid var(--panel-border); background: var(--tile-bg); border-radius: 999px; padding: 3px 12px;
+    font-size: 12.5px; cursor: pointer;
+  }
+  .gender-filter button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #2a1406; font-weight: 600; }
+  .gender-filter button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .tile { position: relative; }
   .tile .badge {
     position: absolute; top: 5px; right: 6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
@@ -120,13 +127,22 @@
   }
   .wardrobe footer button.primary { background: var(--accent); border-color: var(--accent); color: #2a1406; font-weight: 600; }
 
-  /* Map picker: only visible while the wardrobe is minimized. */
+  /* Dock: shown while the wardrobe is minimized. "Maps" toggles the map picker, "Wardrobe" reopens the wardrobe. */
+  .dock { position: fixed; top: 16px; right: 16px; display: flex; gap: 8px; }
+  .wardrobe.open ~ .dock, .wardrobe.open ~ .map-picker { display: none; }
+  .dock button {
+    padding: 8px 14px; border-radius: 999px; border: 1px solid var(--panel-border); background: var(--panel-bg);
+    font-size: 13.5px; cursor: pointer; box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  }
+  .dock button:hover { background: var(--key-bg); }
+  .dock button[aria-expanded="true"] { background: var(--accent); border-color: var(--accent); color: #2a1406; font-weight: 600; }
+  .dock button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .map-picker {
-    position: fixed; top: 16px; right: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    position: fixed; top: 62px; right: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
     max-width: calc(100vw - 32px); background: var(--panel-bg); border: 1px solid var(--panel-border);
     border-radius: 12px; padding: 8px 10px; box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
   }
-  .wardrobe.open ~ .map-picker { display: none; }
+  .map-picker[hidden] { display: none; }
   .map-picker label { font-size: 12.5px; color: var(--panel-muted); }
   .map-picker select {
     font: inherit; font-size: 13.5px; color: var(--panel-fg); background: var(--key-bg);
@@ -138,7 +154,7 @@
   .map-status.error { color: #ff8f8f; }
 
   .toast {
-    position: fixed; top: 70px; right: 16px; max-width: min(320px, calc(100vw - 32px));
+    position: fixed; top: 116px; right: 16px; max-width: min(320px, calc(100vw - 32px));
     background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 12px;
     padding: 10px 14px; font-size: 13px; box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
     opacity: 0; transform: translateY(-6px); transition: opacity 0.2s ease, transform 0.2s ease; pointer-events: none;
@@ -174,7 +190,7 @@
 <div class="panel" id="panel">
   <button class="toggle" id="toggle" type="button">hide</button>
   <h1>Maple Lounge · prototype</h1>
-  <p>Walk up to the lamp and sit. It changes color each time, like in game. Dress up in the wardrobe on the right; minimize it to pick a different month’s map, and walk to the wardrobe at the end of the path to open it again.</p>
+  <p>Walk up to the lamp and sit. It changes color each time, like in game. Dress up in the wardrobe on the right; minimize it to switch maps with the Maps button. Reopen it with the Wardrobe button, or walk to the wardrobe at the end of the path.</p>
   <div class="asset"><img id="chairIcon" alt=""><div><b id="chairName"></b><span id="chairColor"></span></div></div>
   <div class="asset"><img id="petIcon" alt=""><div><b id="petName"></b><span id="petDesc"></span></div></div>
   <div class="keys">
@@ -202,7 +218,11 @@
     <button type="button" id="reset">Reset</button>
   </footer>
 </aside>
-<div class="map-picker" id="mapPicker">
+<div class="dock" id="dock">
+  <button type="button" id="mapsBtn" aria-controls="mapPicker" aria-expanded="false">Maps</button>
+  <button type="button" id="wardrobeBtn" aria-controls="wardrobe">Wardrobe</button>
+</div>
+<div class="map-picker" id="mapPicker" hidden>
   <label for="mapSelect">Map</label>
   <select id="mapSelect"></select>
   <span class="map-status" id="mapStatus" role="status"></span>
@@ -217,7 +237,7 @@
 <div class="loading" id="loading" role="status">Loading the lounge…</div>
 
 <!-- Bump ?v= whenever assets.js changes so browsers don't pair a new page with a cached old bundle. -->
-<script src="assets.js?v=8"></script>
+<script src="assets.js?v=9"></script>
 <script>
 (() => {
   const A = window.ASSETS;
@@ -346,7 +366,10 @@
     ArrowDown: 'down', KeyS: 'down', KeyE: 'down',
   };
   addEventListener('keydown', e => {
-    if (e.code === 'Escape') { minimizeWardrobe(); return; }
+    if (e.code === 'Escape') {
+      if (!document.getElementById('mapPicker').hidden) setMapPicker(false); else minimizeWardrobe();
+      return;
+    }
     if (e.target.tagName === 'SELECT') return; // arrow keys belong to the map picker while it's focused
     if (e.target.closest && e.target.closest('button') && (e.code === 'Space' || e.code === 'Enter')) return;
     const k = keyMap[e.code]; if (k) { keys[k] = true; e.preventDefault(); }
@@ -405,7 +428,7 @@
     ['jul', 'July', 'Summer Fireworks'], ['aug', 'August', 'Under the Sea'], ['sep', 'September', 'Harvest Moon'],
     ['oct', 'October', 'Halloween'], ['nov', 'November', 'Thanksgiving'], ['dec', 'December', 'Maplemas'],
   ];
-  const THEME_VERSION = 8; // bump with assets.js so cached theme files refresh together
+  const THEME_VERSION = 9; // bump with assets.js so cached theme files refresh together
   let theme = null;        // the active map: spec + loaded sprites + pre-rendered strips
   let S = {};              // the active map's sprites (loaded frames), by name
   const themeCache = new Map();
@@ -827,7 +850,7 @@
   });
 
   // ---------- the wardrobe menu ----------
-  // It starts open; once minimized, the only way back is the wardrobe at the end of the path.
+  // It starts open. Minimized, it comes back from the Wardrobe button or the wardrobe at the end of the path.
   let wardrobeOpen = true;
   const nearWardrobe = () => Math.abs(player.x - WARDROBE_X) < WARDROBE_RANGE;
   const toastEl = document.getElementById('toast');
@@ -848,14 +871,31 @@
   function openWardrobe() {
     if (wardrobeOpen) return;
     setWardrobe(true);
+    setMapPicker(false);
     toastEl.classList.remove('show');
   }
   function minimizeWardrobe() {
     if (!wardrobeOpen) return;
     setWardrobe(false);
-    toast('Wardrobe minimized. Walk to the wardrobe at the far right end of the path to open it again.');
   }
   document.getElementById('minimizeWardrobe').addEventListener('click', minimizeWardrobe);
+
+  // Dock buttons (visible while the wardrobe is minimized)
+  const mapsBtn = document.getElementById('mapsBtn');
+  function setMapPicker(show) {
+    document.getElementById('mapPicker').hidden = !show;
+    mapsBtn.setAttribute('aria-expanded', String(show));
+  }
+  mapsBtn.addEventListener('click', e => {
+    const show = document.getElementById('mapPicker').hidden;
+    setMapPicker(show);
+    if (show) document.getElementById('mapSelect').focus();
+    else if (e.detail > 0) mapsBtn.blur();
+  });
+  document.getElementById('wardrobeBtn').addEventListener('click', e => {
+    openWardrobe();
+    if (e.detail > 0) e.currentTarget.blur();
+  });
   // After a mouse click on a wardrobe button, hand the keyboard back to the game so Space jumps.
   wardrobeEl.addEventListener('click', e => {
     const b = e.target.closest('button');
@@ -1158,6 +1198,7 @@
     faces: { list: () => A.wardrobe.faces, colors: EYE_COLORS, base: id => id - Math.floor(id / 100 % 10) * 100, color: id => Math.floor(id / 100 % 10), make: (b, c) => b + c * 100, label: 'Eye color' },
   };
   const COLOR_SLOT = { hair: 'hair', faces: 'face' };
+  let styleGender = 'all'; // Hair/Face filter: all, m (male), f (female)
   const NONE_ALLOWED = new Set(['hat', 'cape', 'shoes', 'face', 'weapon', 'mount']);
   const tabsEl = document.getElementById('tabs');
   const gridEl = document.getElementById('grid');
@@ -1223,7 +1264,16 @@
       row.appendChild(b);
     });
     gridEl.appendChild(row);
-    for (const h of kind.list()) {
+    const filters = document.createElement('div');
+    filters.className = 'gender-filter'; filters.setAttribute('role', 'group'); filters.setAttribute('aria-label', 'Show styles for');
+    for (const [g, label] of [['all', 'All'], ['f', 'Female'], ['m', 'Male']]) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.textContent = label; b.setAttribute('aria-pressed', String(styleGender === g));
+      b.addEventListener('click', () => { styleGender = g; renderGrid(); });
+      filters.appendChild(b);
+    }
+    gridEl.appendChild(filters);
+    for (const h of kind.list().filter(h => styleGender === 'all' || h.gender === styleGender)) {
       gridEl.appendChild(tile({
         icon: h.icon, name: h.name, pressed: h.id === curBase,
         onClick: () => applyLook({ ...look, [slot]: kind.make(h.id, h.colors.includes(curColor) ? curColor : h.colors[0]) }),
@@ -1367,6 +1417,7 @@
       if (token !== mapToken) return;
       applyTheme(t);
       mapStatus.textContent = '';
+      setMapPicker(false);
     } catch {
       if (token !== mapToken) return;
       mapStatus.textContent = 'That map isn’t available yet.'; mapStatus.classList.add('error');

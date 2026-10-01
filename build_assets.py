@@ -292,14 +292,15 @@ def head_icon(items):
 def build_hair_faces():
     import concurrent.futures as cf
     data = json.load(open(HAIR_FACES))
+    # In the game's ID ranges, 30xxx hair and 20xxx faces are male; 31xxx hair and 21xxx faces are female.
     def hair(entry):
-        base, name, colors = entry
+        base, name, colors, gender = entry
         icon = save_png(head_icon([12000, 21000, base]), f"assets/icons/hair_{base}.png")
-        return {"id": base, "name": name, "colors": colors, "icon": icon}
+        return {"id": base, "name": name, "colors": colors, "gender": gender, "icon": icon}
     def face(entry):
-        base, name, colors = entry
+        base, name, colors, gender = entry
         icon = save_png(head_icon([12000, base, 31000]), f"assets/icons/face_{base}.png")
-        return {"id": base, "name": name, "colors": colors, "icon": icon}
+        return {"id": base, "name": name, "colors": colors, "gender": gender, "icon": icon}
     with cf.ThreadPoolExecutor(3) as ex:
         hairs = list(ex.map(hair, data["hair"]))
         faces = list(ex.map(face, data["faces"]))
