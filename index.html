@@ -67,7 +67,8 @@
   .wardrobe h2 { margin: 0; font-size: 17px; letter-spacing: 0.01em; }
   .wardrobe h2 small { font-weight: 500; color: var(--accent); font-size: 12px; margin-left: 6px; }
   .wardrobe .head-right { display: flex; align-items: center; gap: 10px; }
-  .status { font-size: 12px; color: var(--panel-muted); min-height: 1em; text-align: right; }
+  .status { font-size: 12px; color: var(--panel-muted); padding: 0 16px 6px; }
+  .status:empty { display: none; }
   .status.error { color: #ff8f8f; }
   .wardrobe .minimize {
     border: 1px solid var(--panel-border); background: var(--tile-bg); border-radius: 999px;
@@ -100,6 +101,18 @@
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .tile[aria-pressed="true"] span { color: var(--panel-fg); }
   .tile .none { font-size: 22px; color: var(--panel-muted); }
+  .swatches { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; padding: 2px 0 6px; }
+  .swatch-btn {
+    width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.25); cursor: pointer; padding: 0;
+  }
+  .swatch-btn[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+  .swatch-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+  .swatch-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .tile { position: relative; }
+  .tile .badge {
+    position: absolute; top: 5px; right: 6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
+    background: var(--accent); color: #2a1406; font-size: 11px; font-weight: 700; line-height: 18px;
+  }
   .wardrobe footer { display: flex; gap: 8px; padding: 12px 16px 16px; border-top: 1px solid var(--panel-border); }
   .wardrobe footer button {
     flex: 1; padding: 8px 10px; border-radius: 10px; cursor: pointer;
@@ -107,8 +120,25 @@
   }
   .wardrobe footer button.primary { background: var(--accent); border-color: var(--accent); color: #2a1406; font-weight: 600; }
 
+  /* Map picker: only visible while the wardrobe is minimized. */
+  .map-picker {
+    position: fixed; top: 16px; right: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    max-width: calc(100vw - 32px); background: var(--panel-bg); border: 1px solid var(--panel-border);
+    border-radius: 12px; padding: 8px 10px; box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  }
+  .wardrobe.open ~ .map-picker { display: none; }
+  .map-picker label { font-size: 12.5px; color: var(--panel-muted); }
+  .map-picker select {
+    font: inherit; font-size: 13.5px; color: var(--panel-fg); background: var(--key-bg);
+    border: 1px solid var(--key-border); border-radius: 8px; padding: 5px 8px; cursor: pointer;
+  }
+  .map-picker select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .map-status { font-size: 12px; color: var(--panel-muted); }
+  .map-status:empty { display: none; }
+  .map-status.error { color: #ff8f8f; }
+
   .toast {
-    position: fixed; top: 16px; right: 16px; max-width: min(320px, calc(100vw - 32px));
+    position: fixed; top: 70px; right: 16px; max-width: min(320px, calc(100vw - 32px));
     background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 12px;
     padding: 10px 14px; font-size: 13px; box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
     opacity: 0; transform: translateY(-6px); transition: opacity 0.2s ease, transform 0.2s ease; pointer-events: none;
@@ -138,13 +168,13 @@
 </style>
 </head>
 <body>
-<canvas id="game" aria-label="Halloween night scene with your character, a pet, and the Rabbit Lamp Chair"></canvas>
+<canvas id="game" aria-label="Map scene with your character, a pet, and the Rabbit Lamp Chair"></canvas>
 <canvas id="ui" aria-hidden="true"></canvas>
 
 <div class="panel" id="panel">
   <button class="toggle" id="toggle" type="button">hide</button>
   <h1>Maple Lounge · prototype</h1>
-  <p>Walk up to the lamp and sit. It changes color each time, like in game. Dress up in the wardrobe on the right; if you minimize it, walk to the wardrobe at the end of the path to open it again.</p>
+  <p>Walk up to the lamp and sit. It changes color each time, like in game. Dress up in the wardrobe on the right; minimize it to pick a different month’s map, and walk to the wardrobe at the end of the path to open it again.</p>
   <div class="asset"><img id="chairIcon" alt=""><div><b id="chairName"></b><span id="chairColor"></span></div></div>
   <div class="asset"><img id="petIcon" alt=""><div><b id="petName"></b><span id="petDesc"></span></div></div>
   <div class="keys">
@@ -159,12 +189,12 @@
 
 <aside class="wardrobe open" id="wardrobe" aria-label="Wardrobe">
   <header>
-    <h2>Wardrobe<small>Halloween</small></h2>
+    <h2>Wardrobe<small id="themeName"></small></h2>
     <div class="head-right">
-      <span class="status" id="status" role="status"></span>
       <button type="button" class="minimize" id="minimizeWardrobe" aria-label="Minimize wardrobe" title="Minimize (Esc)">–</button>
     </div>
   </header>
+  <div class="status" id="status" role="status"></div>
   <div class="tabs" id="tabs" role="tablist"></div>
   <div class="grid" id="grid" role="tabpanel"></div>
   <footer>
@@ -172,6 +202,11 @@
     <button type="button" id="reset">Reset</button>
   </footer>
 </aside>
+<div class="map-picker" id="mapPicker">
+  <label for="mapSelect">Map</label>
+  <select id="mapSelect"></select>
+  <span class="map-status" id="mapStatus" role="status"></span>
+</div>
 <div class="toast" id="toast" role="status"></div>
 
 <div class="touch" aria-hidden="true">
@@ -182,7 +217,7 @@
 <div class="loading" id="loading" role="status">Loading the lounge…</div>
 
 <!-- Bump ?v= whenever assets.js changes so browsers don't pair a new page with a cached old bundle. -->
-<script src="assets.js?v=4"></script>
+<script src="assets.js?v=8"></script>
 <script>
 (() => {
   const A = window.ASSETS;
@@ -219,9 +254,11 @@
   const MAX_LIVE_REQUESTS = 2;
   let liveActive = 0;
   const liveQueue = [];
-  function liveRequest(task) {
+  // A slow request gives up its slot after REQUEST_TIMEOUT so it can't stall everything queued behind it.
+  const REQUEST_TIMEOUT = 12000;
+  function liveRequest(task, front = false) {
     return new Promise((resolve, reject) => {
-      liveQueue.push({ task, resolve, reject });
+      liveQueue[front ? 'unshift' : 'push']({ task, resolve, reject });
       pumpLive();
     });
   }
@@ -229,12 +266,14 @@
     while (liveActive < MAX_LIVE_REQUESTS && liveQueue.length) {
       const { task, resolve, reject } = liveQueue.shift();
       liveActive++;
-      task().then(resolve, reject).finally(() => { liveActive--; pumpLive(); });
+      const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('request timed out')), REQUEST_TIMEOUT));
+      Promise.race([task(), timeout]).then(resolve, reject).finally(() => { liveActive--; pumpLive(); });
     }
   }
-  async function withRetry(fn, tries = 5) {
+  // `front` puts the request at the head of the line (pets are one small request; outfits are nine).
+  async function withRetry(fn, tries = 5, front = false) {
     for (let attempt = 1; ; attempt++) {
-      try { return await liveRequest(fn); } catch (err) {
+      try { return await liveRequest(fn, front); } catch (err) {
         if (attempt >= tries) throw err;
         await wait(700 * attempt);
       }
@@ -308,6 +347,7 @@
   };
   addEventListener('keydown', e => {
     if (e.code === 'Escape') { minimizeWardrobe(); return; }
+    if (e.target.tagName === 'SELECT') return; // arrow keys belong to the map picker while it's focused
     if (e.target.closest && e.target.closest('button') && (e.code === 'Space' || e.code === 'Enter')) return;
     const k = keyMap[e.code]; if (k) { keys[k] = true; e.preventDefault(); }
   });
@@ -345,163 +385,327 @@
     uiDirty.length = 0;
     skyCache = vignetteCache = null; // rebuilt lazily at the new size
     updateCover();
+    if (theme) resetParticles();
   }
   // World px hidden behind the open wardrobe (it overlays the canvas on wide screens).
   function updateCover() {
     cover = wardrobeOpen && innerWidth > 760 ? (wardrobeEl.offsetWidth * dpr) / scale : 0;
   }
 
-  // ---------- scenery ----------
+  // ---------- scenery shared by every map ----------
   let BG = {};
-  const clouds = Array.from({ length: 7 }, (_, i) => ({ k: 'cloud' + (i % 4), x: i * 260 + Math.random() * 120, y: 0.08 + Math.random() * 0.28, v: 4 + Math.random() * 5 }));
+  const MAGIC = '190,130,255';
 
-  // [sprite, x, sink] placed on the play layer, behind the characters.
-  const BACK_PROPS = [
-    ['woodSign', 30, 4],
-    ['pumpkinPillarL', 150, 2], ['wall0', 285, 2], ['wall1', 413, 2], ['wall0', 541, 2], ['pumpkinPillarR', 676, 2],
-    ['vines1', 420, 6],
-    ['faceTree0', 800, 6],
-    ['grave2', 870, 1], ['grave0', 912, 1], ['candles1', 890, -6],
-    ['floatingPumpkins', 1480, 6],
-    ['pumpkinTree', 1420, 8],
-    ['vines0', 1180, 6],
-    ['deadTree0', 1760, 4],
-    ['grave3', 1810, 1], ['grave1', 1858, 1], ['candles0', 1835, -4], ['grave2', 1910, 1],
-    ['pumpkinPillarL', 1990, 2], ['wall1', 2125, 2], ['wall0', 2253, 2],
-    ['vines1', 2075, 6],
-    ['wardrobe', WARDROBE_X, 2],
+  // ---------- monthly maps ----------
+  // Each month has a themed map. Its scenery, wardrobe picks, and pets live in themes/<key>.js,
+  // built from themes/<key>.json by build_theme.py, and are loaded on demand.
+  const MAPS = [
+    ['jan', 'January', 'New Year'], ['feb', 'February', 'Valentine’s Day'], ['mar', 'March', 'Cherry Blossoms'],
+    ['apr', 'April', 'Easter'], ['may', 'May', 'Maple Anniversary'], ['jun', 'June', 'Beach Summer'],
+    ['jul', 'July', 'Summer Fireworks'], ['aug', 'August', 'Under the Sea'], ['sep', 'September', 'Harvest Moon'],
+    ['oct', 'October', 'Halloween'], ['nov', 'November', 'Thanksgiving'], ['dec', 'December', 'Maplemas'],
   ];
-  // Drawn after the characters so the scene has some depth.
-  const FRONT_PROPS = [['weeds1', 590, 3], ['weeds0', 1150, 3], ['weeds1', 1560, 3], ['weeds0', 1940, 3]];
-  // Far layers: [sprite, x in layer space, sink]
-  const FAR_TREES = [['deadTree1', 120, 0], ['faceTree1', 560, 4], ['deadTree2', 980, 0], ['faceTree2', 1380, 4], ['deadTree1', 1760, 0]];
-  const LIGHTS = [ // warm glows: [x, y, radius]
-    [150, -170, 70], [676, -170, 70], [890, -18, 40], [1835, -16, 40], [1990, -170, 70], [1420, -210, 150],
-  ];
-  const WARM = '255,150,50', MAGIC = '190,130,255', MOONLIGHT = '170,200,255';
+  const THEME_VERSION = 8; // bump with assets.js so cached theme files refresh together
+  let theme = null;        // the active map: spec + loaded sprites + pre-rendered strips
+  let S = {};              // the active map's sprites (loaded frames), by name
+  const themeCache = new Map();
+
+  function loadScript(src) {
+    return new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = src; s.onload = res; s.onerror = () => rej(new Error('missing ' + src));
+      document.head.appendChild(s);
+    });
+  }
+  function loadTheme(key) {
+    if (!themeCache.has(key)) {
+      const p = (async () => {
+        const all = window.MAPLE_THEMES || {};
+        if (!all[key]) await loadScript(`themes/${key}.js?v=${THEME_VERSION}`);
+        const spec = window.MAPLE_THEMES[key];
+        const blank = { img: makeCanvas(1, 1)[0], ox: 0, oy: 0, delay: 1000 };
+        // Scenery is decoration: if an image fails, draw nothing in its place rather than stopping the game.
+        const entries = await Promise.all(Object.entries(spec.sprites).map(async ([k, v]) =>
+          [k, await loadFrames(v).catch(() => { console.warn('scenery failed to load:', key, k); return [blank]; })]));
+        const t = { spec, sprites: Object.fromEntries(entries) };
+        t.strips = buildStrips(t);
+        t.clouds = makeClouds(spec.scene.clouds);
+        return t;
+      })();
+      p.catch(() => themeCache.delete(key));
+      themeCache.set(key, p);
+    }
+    return themeCache.get(key);
+  }
+
+  const sceneSprite = (t, k) => t.sprites[k] || BG[k];
+  const WARDROBE_PROP = ['wardrobe', WARDROBE_X, 2];
 
   // Everything that never moves is drawn once into wide strips; each frame then blits a handful of images.
-  const strips = {};
-  let animatedBack = [];
-  function buildStrips() {
-    const W = WORLD_W + STRIP_PAD * 2;
-    // distant tree silhouettes (scrolls at 0.25x)
-    {
-      const a = BG.treeline0[0].img, b = BG.treeline1[0].img, h = Math.max(a.height, b.height);
+  function buildStrips(t) {
+    const sc = t.spec.scene, W = WORLD_W + STRIP_PAD * 2, out = { far: [] };
+    const spr = k => sceneSprite(t, k);
+    for (const layer of sc.far || []) {
+      let h = 1;
+      const items = layer.items || [];
+      if (layer.tile) h = Math.max(...layer.tile.map(k => spr(k)[0].img.height));
+      for (const [k, , sink = 0] of items) h = Math.max(h, spr(k)[0].img.height - sink);
       const [c, g] = makeCanvas(W, h);
-      for (let x = -200, i = 0; x < WORLD_W + STRIP_PAD; x += 400, i++) { const img = i % 2 ? b : a; g.drawImage(img, x + STRIP_PAD, h - img.height); }
-      strips.treeline = c;
+      if (layer.alpha) g.globalAlpha = layer.alpha;
+      if (layer.tile) {
+        for (let x = layer.start ?? -200, i = 0; x < WORLD_W + STRIP_PAD; x += layer.spacing || 400, i++) {
+          const img = spr(layer.tile[i % layer.tile.length])[0].img;
+          g.drawImage(img, x + STRIP_PAD, h - img.height);
+        }
+      }
+      for (const [k, x, sink = 0, flip] of items) drawProp(g, spr(k)[0], x + STRIP_PAD, h, sink, !!flip);
+      g.globalAlpha = 1;
+      if (layer.darken) darken(g, layer.darken);
+      out.far.push({ canvas: c, parallax: layer.parallax, y: layer.y || 0 });
     }
-    // haunted mansion (0.4x), slightly faded
+    // ground
     {
-      const m = BG.mansion[0].img;
-      const [c, g] = makeCanvas(m.width, m.height);
-      g.globalAlpha = 0.92; g.drawImage(m, 0, 0);
-      strips.mansion = c;
-    }
-    // closer trees (0.7x), dimmed
-    {
-      const h = Math.max(...FAR_TREES.map(([k, , sink]) => BG[k][0].img.height - sink));
+      const gr = sc.ground || {}, h = 220;
       const [c, g] = makeCanvas(W, h);
-      for (const [k, x, sink] of FAR_TREES) drawProp(g, BG[k][0], x + STRIP_PAD, h, sink);
-      darken(g, 0.25);
-      strips.farTrees = c;
-    }
-    // ground: dimmed cobblestones, a mossy lip, and a shadow under the lip
-    {
-      const stone = BG.stone[0].img, h = 220;
-      const [c, g] = makeCanvas(W, h);
-      for (let x = 0; x < W; x += stone.width) for (let y = 6; y < h; y += stone.height) g.drawImage(stone, x, y);
-      darken(g, 0.28);
-      g.fillStyle = '#35462f'; g.fillRect(0, 0, W, 6);
-      g.fillStyle = '#4d6440'; g.fillRect(0, 0, W, 2);
+      if (gr.tile) {
+        const stone = spr(gr.tile)[0].img;
+        for (let x = 0; x < W; x += stone.width) for (let y = 6; y < h; y += stone.height) g.drawImage(stone, x, y);
+      } else { g.fillStyle = gr.fill || '#3a3046'; g.fillRect(0, 6, W, h); }
+      if (gr.darken) darken(g, gr.darken);
+      const [lip, highlight] = gr.lip || ['#35462f', '#4d6440'];
+      g.fillStyle = lip; g.fillRect(0, 0, W, 6);
+      g.fillStyle = highlight; g.fillRect(0, 0, W, 2);
       const shade = g.createLinearGradient(0, 6, 0, 40);
       shade.addColorStop(0, 'rgba(0,0,0,0.35)'); shade.addColorStop(1, 'rgba(0,0,0,0)');
       g.fillStyle = shade; g.fillRect(0, 6, W, 34);
-      strips.ground = c;
+      out.ground = c;
     }
     // play-layer props: still ones are baked, animated ones are drawn live
-    {
-      const h = 420;
+    const bake = list => {
+      const still = [], animated = [];
+      for (const p of list) (spr(p[0]).length > 1 ? animated : still).push(p);
+      const h = Math.min(640, Math.max(1, ...still.map(([k, , sink = 0]) => spr(k)[0].img.height - sink)));
       const [c, g] = makeCanvas(W, h);
-      animatedBack = [];
-      for (const p of BACK_PROPS) {
-        const frames = BG[p[0]];
-        if (frames.length > 1) animatedBack.push(p);
-        else drawProp(g, frames[0], p[1] + STRIP_PAD, h, p[2]);
-      }
-      strips.back = c; strips.backH = h;
-    }
-    {
-      const h = 80;
-      const [c, g] = makeCanvas(W, h);
-      for (const [k, x, sink] of FRONT_PROPS) drawProp(g, BG[k][0], x + STRIP_PAD, h, sink);
-      strips.front = c; strips.frontH = h;
-    }
-    // haze along the horizon
-    {
+      for (const [k, x, sink = 0, flip] of still) drawProp(g, spr(k)[0], x + STRIP_PAD, h, sink, !!flip);
+      return { canvas: c, h, animated };
+    };
+    out.back = bake([...(sc.back || []), WARDROBE_PROP]);
+    out.front = bake(sc.front || []);
+    if (sc.mist) {
       const [c, g] = makeCanvas(1, 74);
       const grad = g.createLinearGradient(0, 0, 0, 74);
-      grad.addColorStop(0, 'rgba(120,110,170,0)'); grad.addColorStop(1, 'rgba(120,110,170,0.28)');
+      grad.addColorStop(0, `rgba(${sc.mist},0)`); grad.addColorStop(1, `rgba(${sc.mist},0.28)`);
       g.fillStyle = grad; g.fillRect(0, 0, 1, 74);
-      strips.mist = c;
+      out.mist = c;
     }
+    return out;
   }
 
+  // Sky and vignette depend on the screen size, so they're rebuilt on resize or map change.
   function buildViewCaches() {
+    const sc = theme.spec.scene;
     {
       const [c, g] = makeCanvas(viewW, viewH);
-      g.drawImage(BG.sky[0].img, 0, 0, viewW, viewH);
+      if (typeof sc.sky === 'string') g.drawImage(S[sc.sky][0].img, 0, 0, viewW, viewH);
+      else {
+        const [top, bottom] = (sc.sky && sc.sky.gradient) || ['#0d1422', '#2a2240'];
+        const grad = g.createLinearGradient(0, 0, 0, viewH);
+        grad.addColorStop(0, top); grad.addColorStop(1, bottom);
+        g.fillStyle = grad; g.fillRect(0, 0, viewW, viewH);
+      }
       skyCache = c;
     }
     {
       const [c, g] = makeCanvas(viewW, viewH);
+      const rgb = sc.vignette || '10,5,25';
       const v = g.createRadialGradient(viewW / 2, viewH * 0.6, viewH * 0.35, viewW / 2, viewH * 0.6, viewW * 0.75);
-      v.addColorStop(0, 'rgba(10,5,25,0)'); v.addColorStop(1, 'rgba(10,5,25,0.45)');
+      v.addColorStop(0, `rgba(${rgb},0)`); v.addColorStop(1, `rgba(${rgb},${sc.vignetteStrength ?? 0.45})`);
       g.fillStyle = v; g.fillRect(0, 0, viewW, viewH);
       vignetteCache = c;
     }
   }
 
+  function makeClouds(cfg) {
+    if (!cfg) return [];
+    const [y0, y1] = cfg.y || [0.08, 0.36], [v0, v1] = cfg.speed || [4, 9];
+    return Array.from({ length: cfg.count || 6 }, (_, i) => ({
+      k: cfg.sprites[i % cfg.sprites.length], x: i * 260 + Math.random() * 120,
+      y: y0 + Math.random() * (y1 - y0), v: v0 + Math.random() * (v1 - v0),
+    }));
+  }
+
   function drawSky(camX, t) {
+    const sc = theme.spec.scene;
     ctx.drawImage(skyCache, 0, 0);
-    // stars, twinkling gently
-    const st = BG.stars[0].img;
-    ctx.globalAlpha = 0.75 + 0.25 * Math.sin(t * 1.3);
-    for (let x = -((camX * 0.03) % st.width) - st.width; x < viewW; x += st.width) ctx.drawImage(st, Math.round(x), 0);
-    ctx.globalAlpha = 1;
-    // moon
-    const moon = BG.moon[0].img;
-    const mx = Math.round(viewW * 0.72 - camX * 0.02), my = Math.round(viewH * 0.1);
-    ctx.globalCompositeOperation = 'lighter';
-    glow(mx + moon.width / 2, my + moon.height / 2, 150, MOONLIGHT, 0.18);
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.drawImage(moon, mx, my);
-    // drifting clouds
-    ctx.globalAlpha = 0.8;
-    for (const c of clouds) {
-      const img = BG[c.k][0].img, span = WORLD_W + 600;
-      const x = (((c.x + t * c.v - camX * 0.1) % span) + span) % span - 300;
-      ctx.drawImage(img, Math.round(x), Math.round(viewH * c.y));
+    if (sc.stars) {
+      const st = S[sc.stars.sprite][0].img, [a0, a1] = sc.stars.alpha || [0.5, 1];
+      ctx.globalAlpha = a0 + (a1 - a0) * (0.5 + 0.5 * Math.sin(t * (sc.stars.speed || 1.3)));
+      for (let x = -((camX * 0.03) % st.width) - st.width; x < viewW; x += st.width) ctx.drawImage(st, Math.round(x), 0);
+      ctx.globalAlpha = 1;
     }
-    ctx.globalAlpha = 1;
-    // a witch crosses the sky every so often
-    const period = 38, wt = t % period;
-    if (wt < 22) {
-      const wf = frameAt(BG.witch, t);
-      const x = viewW + 150 - (wt / 22) * (viewW + 300);
-      drawSprite(ctx, wf.img, wf.img.width / 2, wf.img.height / 2, x, viewH * 0.24 + Math.sin(t * 2) * 10, false);
+    const cel = sc.celestial;
+    if (cel) {
+      const img = S[cel.sprite][0].img;
+      const mx = Math.round(viewW * cel.x - camX * (cel.parallax ?? 0.02)), my = Math.round(viewH * cel.y);
+      if (cel.glow) {
+        ctx.globalCompositeOperation = 'lighter';
+        glow(mx + img.width / 2, my + img.height / 2, cel.glowRadius || 150, cel.glow, cel.glowStrength ?? 0.18);
+        ctx.globalCompositeOperation = 'source-over';
+      }
+      ctx.drawImage(img, mx, my);
+    }
+    if (theme.clouds.length) {
+      ctx.globalAlpha = sc.clouds.alpha ?? 0.8;
+      for (const c of theme.clouds) {
+        const img = S[c.k][0].img, span = WORLD_W + 600;
+        const x = (((c.x + t * c.v - camX * 0.1) % span) + span) % span - 300;
+        ctx.drawImage(img, Math.round(x), Math.round(viewH * c.y));
+      }
+      ctx.globalAlpha = 1;
+    }
+    const fl = sc.flyer;
+    if (fl) {
+      const wt = t % (fl.period || 38), dur = fl.duration || 22;
+      if (wt < dur) {
+        const wf = frameAt(S[fl.sprite], t), dir = fl.dir || -1, p = wt / dur;
+        const x = dir < 0 ? viewW + 150 - p * (viewW + 300) : -150 + p * (viewW + 300);
+        drawSprite(ctx, wf.img, wf.img.width / 2, wf.img.height / 2, x, viewH * (fl.y || 0.24) + Math.sin(t * 2) * (fl.bob ?? 10), dir > 0);
+      }
     }
   }
 
   function drawFar(camX, horizonY) {
-    const tl = strips.treeline;
-    ctx.drawImage(tl, -Math.round(camX * 0.25) - STRIP_PAD, Math.round(horizonY - 26 - tl.height));
-    const m = strips.mansion;
-    ctx.drawImage(m, 520 - Math.round(camX * 0.4), Math.round(horizonY - 14 - m.height));
-    const ft = strips.farTrees;
-    ctx.drawImage(ft, -Math.round(camX * 0.7) - STRIP_PAD, Math.round(horizonY - ft.height));
-    ctx.drawImage(strips.mist, 0, Math.round(horizonY - 70), viewW, 74);
+    for (const l of theme.strips.far) {
+      ctx.drawImage(l.canvas, -Math.round(camX * l.parallax) - STRIP_PAD, Math.round(horizonY + l.y - l.canvas.height));
+    }
+    if (theme.strips.mist) ctx.drawImage(theme.strips.mist, 0, Math.round(horizonY - 70), viewW, 74);
+  }
+
+  function drawScenery(t) {
+    const sc = theme.spec.scene, st = theme.strips;
+    ctx.drawImage(st.ground, -STRIP_PAD, GROUND_Y);
+    ctx.drawImage(st.back.canvas, -STRIP_PAD, GROUND_Y - st.back.h);
+    for (const [k, x, sink = 0, flip] of st.back.animated) drawProp(ctx, frameAt(sceneSprite(theme, k), t), x, GROUND_Y, sink, !!flip);
+    for (const [k, x, sink = 0, flip] of sc.idlers || []) drawProp(ctx, frameAt(S[k], t), x, GROUND_Y, sink, !!flip);
+    for (const w of sc.walkers || []) {
+      const span = w.span || 200, wt = (t * (w.speed || 18)) % (span * 2);
+      drawProp(ctx, frameAt(S[w.sprite], t), w.x + (wt < span ? wt : span * 2 - wt), GROUND_Y, w.sink ?? 2, w.facesRight ? wt >= span : wt < span);
+    }
+    ctx.globalCompositeOperation = 'lighter';
+    const lights = sc.lights;
+    if (lights) {
+      lights.items.forEach(([x, y, r, rgb], i) => {
+        const flicker = lights.steady ? 0.18 : 0.16 + 0.04 * Math.sin(t * 7 + i * 1.7) + 0.02 * Math.sin(t * 13 + i);
+        glow(x, GROUND_Y + y, r, rgb || lights.color || '255,150,50', flicker * (lights.strength || 1));
+      });
+    }
+    glow(WARDROBE_X, GROUND_Y - 120, 150, MAGIC, wardrobeOpen || nearWardrobe() ? 0.22 : 0.1 + 0.04 * Math.sin(t * 2.2));
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  function drawFrontScenery(t) {
+    const st = theme.strips;
+    ctx.drawImage(st.front.canvas, -STRIP_PAD, GROUND_Y - st.front.h);
+    for (const [k, x, sink = 0, flip] of st.front.animated) drawProp(ctx, frameAt(S[k], t), x, GROUND_Y, sink, !!flip);
+  }
+
+  // ---------- seasonal particles ----------
+  // Small pixel effects drawn at the art's resolution: snow, petals, leaves, hearts, bubbles,
+  // confetti, sparkles (screen space), and fireworks (in the sky).
+  let particles = [], fireworks = [], nextBurst = 0;
+  const PARTICLE_COLORS = {
+    snow: ['#ffffff', '#e8f1ff'], petals: ['#ffc1d9', '#ffd8e6', '#ffb0cc'], leaves: ['#e0662c', '#c8421e', '#f0a030', '#9c5a24'],
+    hearts: ['#ff6f9f', '#ff9cc0', '#ff4f7f'], bubbles: ['#bfe8ff'], confetti: ['#ff9a3c', '#ffd34d', '#7ad3ff', '#ff6fa8', '#8de07a'],
+    sparkles: ['#fff6c0', '#ffffff'],
+  };
+  function resetParticles() {
+    const cfg = theme.spec.scene.particles;
+    particles = []; fireworks = []; nextBurst = 0;
+    if (!cfg || cfg.type === 'fireworks') return;
+    const colors = cfg.colors || PARTICLE_COLORS[cfg.type] || ['#ffffff'];
+    for (let i = 0; i < (cfg.count || 60); i++) particles.push(spawnParticle(cfg, colors, true));
+  }
+  function spawnParticle(cfg, colors, anywhere) {
+    const rising = cfg.type === 'hearts' || cfg.type === 'bubbles';
+    const fast = { snow: [14, 32], petals: [16, 28], leaves: [14, 24], confetti: [26, 46], hearts: [10, 20], bubbles: [12, 26], sparkles: [0, 0] }[cfg.type] || [12, 24];
+    return {
+      x: Math.random() * (viewW + 80) - 40,
+      y: anywhere ? Math.random() * viewH : rising ? viewH + 6 : -6,
+      vy: (fast[0] + Math.random() * (fast[1] - fast[0])) * (rising ? -1 : 1),
+      vx: cfg.type === 'petals' || cfg.type === 'leaves' ? 6 + Math.random() * 10 : 0,
+      sway: Math.random() * 6.28, size: Math.random() < 0.3 ? 2 : 1,
+      color: colors[Math.floor(Math.random() * colors.length)], life: Math.random() * 6.28,
+    };
+  }
+  function updateParticles(dt) {
+    const cfg = theme && theme.spec.scene.particles;
+    if (!cfg) return;
+    if (cfg.type === 'fireworks') {
+      if ((nextBurst -= dt) <= 0) {
+        nextBurst = 0.9 + Math.random() * 1.8;
+        const colors = cfg.colors || ['#ff6f6f', '#ffd34d', '#7ad3ff', '#ff8fd8', '#9dff8a', '#ffffff'];
+        const cx = 40 + Math.random() * (viewW - 80), cy = viewH * (0.08 + Math.random() * 0.3), color = pick(colors);
+        const n = 26 + Math.floor(Math.random() * 14), speed = 40 + Math.random() * 30;
+        for (let i = 0; i < n; i++) {
+          const a = (i / n) * Math.PI * 2;
+          fireworks.push({ x: cx, y: cy, vx: Math.cos(a) * speed, vy: Math.sin(a) * speed, life: 1.4 + Math.random() * 0.5, age: 0, color });
+        }
+      }
+      for (const f of fireworks) { f.age += dt; f.vy += 30 * dt; f.vx *= 0.985; f.vy *= 0.985; f.x += f.vx * dt; f.y += f.vy * dt; }
+      fireworks = fireworks.filter(f => f.age < f.life);
+      return;
+    }
+    const colors = cfg.colors || PARTICLE_COLORS[cfg.type] || ['#ffffff'];
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      p.sway += dt * 1.6; p.life += dt * 3;
+      p.x += (p.vx + Math.sin(p.sway) * (cfg.type === 'snow' ? 8 : 12)) * dt;
+      p.y += p.vy * dt;
+      if (p.y > viewH + 8 || p.y < -10 || p.x > viewW + 50 || p.x < -50) particles[i] = spawnParticle(cfg, colors, false);
+    }
+  }
+  const HEART = [[1, 0], [3, 0], [0, 1], [1, 1], [2, 1], [3, 1], [4, 1], [1, 2], [2, 2], [3, 2], [2, 3]];
+  function drawParticles(t, where) {
+    const cfg = theme.spec.scene.particles;
+    if (!cfg) return;
+    if (cfg.type === 'fireworks') {
+      if (where !== 'sky') return;
+      ctx.globalCompositeOperation = 'lighter';
+      for (const f of fireworks) {
+        ctx.globalAlpha = Math.max(0, 1 - f.age / f.life);
+        ctx.fillStyle = f.color;
+        ctx.fillRect(Math.round(f.x), Math.round(f.y), 2, 2);
+      }
+      ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+      return;
+    }
+    if (where !== 'front') return;
+    ctx.globalAlpha = cfg.alpha ?? 0.9;
+    for (const p of particles) {
+      const x = Math.round(p.x), y = Math.round(p.y);
+      ctx.fillStyle = p.color;
+      switch (cfg.type) {
+        case 'hearts':
+          for (const [hx, hy] of HEART) ctx.fillRect(x + hx, y + hy, 1, 1);
+          break;
+        case 'bubbles':
+          ctx.fillRect(x, y - 1, 2, 1); ctx.fillRect(x, y + 2, 2, 1); ctx.fillRect(x - 1, y, 1, 2); ctx.fillRect(x + 2, y, 1, 2);
+          break;
+        case 'sparkles': {
+          const a = 0.5 + 0.5 * Math.sin(p.life);
+          ctx.globalAlpha = a * (cfg.alpha ?? 0.9);
+          ctx.fillRect(x, y, 1, 1);
+          if (a > 0.8) { ctx.fillRect(x - 1, y, 3, 1); ctx.fillRect(x, y - 1, 1, 3); }
+          ctx.globalAlpha = cfg.alpha ?? 0.9;
+          break;
+        }
+        case 'petals': case 'leaves': case 'confetti':
+          ctx.fillRect(x, y, Math.sin(p.life) > 0 ? 2 : 1, p.size);
+          break;
+        default:
+          ctx.fillRect(x, y, p.size, p.size);
+      }
+    }
+    ctx.globalAlpha = 1;
   }
 
   // ---------- Bubble Fish ----------
@@ -547,6 +751,16 @@
     g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r);
     g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
   }
+  // Draw ground-level name tags, nudging neighbors apart so they never overlap.
+  function nameTags(tags) {
+    ui.font = '11px ui-rounded, system-ui, sans-serif';
+    for (const t of tags) { t.w = Math.ceil(ui.measureText(t.text).width) + 8; t.left = t.x - t.w / 2; }
+    tags.sort((a, b) => a.x - b.x);
+    for (let i = 1; i < tags.length; i++) tags[i].left = Math.max(tags[i].left, tags[i - 1].left + tags[i - 1].w + 2);
+    // Re-center the group around its owners so the push doesn't all go rightward.
+    const shift = tags.reduce((s, t) => s + (t.left + t.w / 2 - t.x), 0) / (tags.length || 1);
+    for (const t of tags) nameTag(t.text, t.left - shift + t.w / 2, t.y);
+  }
   function nameTag(text, x, y) {
     ui.font = '11px ui-rounded, system-ui, sans-serif';
     const w = Math.ceil(ui.measureText(text).width) + 8, h = 15;
@@ -570,25 +784,37 @@
   }
 
   // ---------- entities ----------
-  const player = { x: 820, y: GROUND_Y, vy: 0, faceRight: true, onGround: true, sitting: false, t: 0, state: 'stand1' };
-  const pet = { x: 760, y: GROUND_Y, vy: 0, faceRight: true, onGround: true, t: 0, anim: 'stand0', emote: null, emoteT: 0, idle: 0, say: null, sayT: 0 };
+  // ?x=<world x> starts somewhere else on the map (handy for previews); the default is just left of the chair.
+  const START_X = Math.max(20, Math.min(WORLD_W - 20, +new URLSearchParams(location.search).get('x') || 820));
+  const player = { x: START_X, y: GROUND_Y, vy: 0, faceRight: true, onGround: true, sitting: false, t: 0, state: 'stand1' };
+  // Up to three pets can be out at once, like in game. They follow in a line behind you.
+  const MAX_PETS = 3;
+  const PET_SPACING = 58; // roomy enough that name tags don't pile up
+  let pets = [];
+  const makePet = (data, x) => ({ data, x, y: GROUND_Y, vy: 0, faceRight: true, onGround: true, t: 0, anim: 'stand0', emote: null, emoteT: 0, idle: 0, say: null, sayT: 0 });
   const chair = { variant: 0, t: 0 };
   const LINES = {
     5000144: ['...', 'Hmph.', 'Arr.', '*adjusts glasses*', 'Fine. One pat.'],
+    penni: ['Tweet!', '♪', 'To the skies!', '*flutters*'],
     default: ['Boo!', 'Trick or treat!', 'Hehe~', '♪', 'Candy?'],
   };
 
-  let cam = { x: 0, y: 0 };
+  let cam = { x: 0, y: 0 }, camReady = false;
   let clock = 0;
   function screenToWorld(cx, cy) {
     return { wx: (cx * dpr) / scale + cam.x, wy: (cy * dpr) / scale + cam.y };
   }
   canvas.addEventListener('pointerdown', e => {
     const { wx, wy } = screenToWorld(e.clientX, e.clientY);
-    if (Math.abs(wx - pet.x) < 28 && wy < pet.y + 6 && wy > pet.y - 64) {
-      setPetEmote(['love', 'dancing', 'play'].find(a => petAnims[a]) || null, 1.6);
-      pet.say = pick(LINES[currentPet.id] || LINES.default); pet.sayT = 2;
-      return;
+    for (const pet of pets) {
+      const f = pet.frame, hit = f
+        ? Math.abs(wx - pet.x) < Math.max(20, f.img.width / 2) && wy > pet.y - f.oy && wy < pet.y - f.oy + f.img.height
+        : Math.abs(wx - pet.x) < 28 && wy < pet.y + 6 && wy > pet.y - 64;
+      if (hit) {
+        setPetEmote(pet, ['love', 'dancing', 'play'].find(a => pet.data.anims[a]) || null, 1.6);
+        pet.say = pick(LINES[pet.data.id] || LINES.default); pet.sayT = 2;
+        return;
+      }
     }
     for (const f of fish) {
       if (Math.abs(wx - f.x) < 34 && Math.abs(wy - (f.y - 30)) < 32) { f.dir *= -1; f.boost = 1.2; return; }
@@ -636,8 +862,8 @@
     if (b && e.detail > 0) b.blur();
   });
 
-  function setPetEmote(name, secs) {
-    if (!name || !petAnims[name]) return;
+  function setPetEmote(pet, name, secs) {
+    if (!name || !pet.data.anims[name]) return;
     pet.emote = name; pet.emoteT = secs; pet.t = 0;
   }
 
@@ -676,12 +902,14 @@
     return v;
   }
 
-  function updatePet(dt) {
+  function updatePets(dt) { pets.forEach((pet, i) => updatePet(pet, i, dt)); }
+  function updatePet(pet, slot, dt) {
+    const petAnims = pet.data.anims;
     pet.t += dt;
     if (pet.sayT > 0 && (pet.sayT -= dt) <= 0) pet.say = null;
-    // Follow a spot just behind the player (further back when riding); while seated, settle beside the chair.
-    const gap = 48 + (charAnims.mountHalfWidth || 0);
-    const targetX = player.sitting ? CHAIR_X + 62 : player.x + (player.faceRight ? -gap : gap);
+    // Follow in line behind the player (further back when riding); while seated, settle beside the chair.
+    const gap = 48 + (charAnims.mountHalfWidth || 0) + slot * PET_SPACING;
+    const targetX = player.sitting ? CHAIR_X + 62 + slot * PET_SPACING : player.x + (player.faceRight ? -gap : gap);
     const dx = targetX - pet.x;
     const moving = Math.abs(dx) > 6;
     if (moving) {
@@ -690,6 +918,13 @@
       pet.x += Math.sign(dx) * Math.min(Math.abs(dx), speed * dt);
     } else if (player.sitting) {
       pet.faceRight = false; // face the player on the chair
+    }
+    if (pet.data.fly) {
+      // Fliers hover a little above the ground with a gentle bob, and just glide or float.
+      pet.y = GROUND_Y - 46 + Math.sin(clock * 2.4 + slot * 1.3) * 5;
+      const anim = moving && petAnims.move ? 'move' : 'stand0';
+      if (anim !== pet.anim) { pet.anim = anim; pet.t = 0; }
+      return;
     }
     // Hop after the player when they jump nearby.
     if (pet.onGround && !player.onGround && player.vy < -200 && Math.abs(player.x - pet.x) < 90 + gap) {
@@ -704,7 +939,7 @@
     }
     pet.idle = moving || !pet.onGround ? 0 : pet.idle + dt;
     if (!pet.emote && pet.idle > 6 && !player.sitting && Math.random() < dt * 0.25) {
-      setPetEmote(pick(['dancing', 'chat', 'hungry', 'play'].filter(a => petAnims[a])), 2.2);
+      setPetEmote(pet, pick(['dancing', 'chat', 'hungry', 'play'].filter(a => petAnims[a])), 2.2);
     }
     // Not every pet has every animation (many have no `sit` or `sleep`), so fall back gracefully.
     const has = a => petAnims[a] ? a : null;
@@ -715,49 +950,38 @@
   }
 
   // ---------- render ----------
-  let petAnims, charAnims, chairVariants;
+  let charAnims, chairVariants;
   function render(t) {
     if (!skyCache) buildViewCaches();
 
     // Camera: keep the player centered in the part of the screen the wardrobe doesn't cover.
     const visibleW = viewW - cover;
     const targetX = Math.max(-40, Math.min(WORLD_W + 40 - visibleW, player.x - visibleW / 2));
-    cam.x += (targetX - cam.x) * 0.12;
+    cam.x = camReady ? cam.x + (targetX - cam.x) * 0.12 : targetX; // snap on the first frame, ease after
+    camReady = true;
     cam.y = GROUND_Y - viewH * 0.8;
     const camX = Math.round(cam.x), camY = Math.round(cam.y);
     const horizonY = GROUND_Y - camY;
 
     drawSky(cam.x, t);
     drawFar(cam.x, horizonY);
+    drawParticles(t, 'sky'); // fireworks burst in front of the distant layers
 
     ctx.save();
     ctx.translate(-camX, -camY);
-    ctx.drawImage(strips.ground, -STRIP_PAD, GROUND_Y);
-    ctx.drawImage(strips.back, -STRIP_PAD, GROUND_Y - strips.backH);
-    for (const [k, x, sink] of animatedBack) drawProp(ctx, frameAt(BG[k], t), x, GROUND_Y, sink);
-    // a jester idles by the gate
-    drawProp(ctx, frameAt(BG.jester, t), 330, GROUND_Y, 2, true);
-    // a zombie shambles back and forth between the graves
-    const zf = frameAt(BG.zombie, t), span = 220, zt = (t * 18) % (span * 2);
-    drawProp(ctx, zf, 1640 + (zt < span ? zt : span * 2 - zt), GROUND_Y, 2, zt < span);
-
-    // warm flickering lights, plus a magic shimmer on the wardrobe
-    ctx.globalCompositeOperation = 'lighter';
-    for (let i = 0; i < LIGHTS.length; i++) {
-      const [x, y, r] = LIGHTS[i];
-      glow(x, GROUND_Y + y, r, WARM, 0.16 + 0.04 * Math.sin(t * 7 + i * 1.7) + 0.02 * Math.sin(t * 13 + i));
-    }
-    glow(WARDROBE_X, GROUND_Y - 120, 150, MAGIC, wardrobeOpen || nearWardrobe() ? 0.22 : 0.1 + 0.04 * Math.sin(t * 2.2));
-    ctx.globalCompositeOperation = 'source-over';
-
-    drawFish(t, false);
+    drawScenery(t);
+    if (theme.spec.scene.fish !== false) drawFish(t, false);
 
     // Chair (behind the character). It idles on its current color and animates when in use.
     const cf = player.sitting ? frameAt(chairVariants[chair.variant], chair.t) : chairVariants[chair.variant][0];
     drawSprite(ctx, cf.img, cf.ox, cf.oy, CHAIR_X, GROUND_Y, false);
 
-    const pf = frameAt(petAnims[pet.anim], pet.t);
-    drawSprite(ctx, pf.img, pf.ox, pf.oy, pet.x, pet.y, pet.faceRight);
+    // back of the line first, so the closest pet overlaps the others
+    for (let i = pets.length - 1; i >= 0; i--) {
+      const pet = pets[i];
+      pet.frame = frameAt(pet.data.anims[pet.anim], pet.t);
+      drawSprite(ctx, pet.frame.img, pet.frame.ox, pet.frame.oy, pet.x, pet.y, pet.faceRight);
+    }
 
     const state = player.sitting ? 'sit' : player.state;
     const ff = frameAt(charAnims[state], player.t, state === 'stand1');
@@ -765,17 +989,17 @@
     const fx = player.x + (player.faceRight ? -seat.x : seat.x);
     drawSprite(ctx, ff.img, ff.ox, ff.oy, fx, player.y + seat.y, player.faceRight);
 
-    ctx.drawImage(strips.front, -STRIP_PAD, GROUND_Y - strips.frontH);
-    drawFish(t, true);
+    drawFrontScenery(t);
+    if (theme.spec.scene.fish !== false) drawFish(t, true);
     ctx.restore();
 
+    drawParticles(t, 'front');
     ctx.drawImage(vignetteCache, 0, 0);
 
     // overlay: name tags and prompts
     uiBegin(camX, camY);
-    nameTag(currentPet.name, pet.x, pet.y + 3);
-    if (pet.say) bubble(pet.say, pet.x, pet.y - pf.oy - 4);
-    nameTag('You', player.x, player.y + 3);
+    nameTags([{ text: 'You', x: player.x, y: player.y + 3 }, ...pets.map(p => ({ text: p.data.name, x: p.x, y: (p.data.fly ? GROUND_Y : p.y) + 3 }))]);
+    for (const pet of pets) if (pet.say) bubble(pet.say, pet.x, pet.y - pet.frame.oy - 4);
     if (!player.sitting && player.onGround && Math.abs(player.x - CHAIR_X) < SIT_RANGE) bubble('↓ Sit', CHAIR_X, GROUND_Y - 150);
     if (!wardrobeOpen && player.onGround && nearWardrobe()) {
       bubble('↓ Open wardrobe', WARDROBE_X, GROUND_Y - BG.wardrobe[0].img.height - 8);
@@ -806,19 +1030,28 @@
     }
     return (swatchCache[v] = `rgb(${best.join(',')})`);
   }
-  function showPetInfo(p) {
-    const entry = A.wardrobe.pets.find(x => x.id === p.id);
-    document.getElementById('petIcon').src = entry ? entry.icon : A.pet.anims.stand0[0].src;
-    document.getElementById('petName').textContent = p.name;
-    document.getElementById('petDesc').textContent = cleanDesc(p.desc);
+  // The info panel shows the newest pet's picture and blurb, plus everyone who's out.
+  function petIcon(id) {
+    const known = [...A.wardrobe.pets, ...Object.values(window.MAPLE_THEMES || {}).flatMap(m => m.pets || [])];
+    const entry = known.find(x => x.id === id);
+    return entry ? entry.icon : A.pet.anims.stand0[0].src;
+  }
+  function showPetInfo() {
+    const newest = pets[pets.length - 1];
+    const icon = document.getElementById('petIcon');
+    icon.hidden = !newest;
+    if (newest) icon.src = petIcon(newest.data.id);
+    document.getElementById('petName').textContent = pets.length ? pets.map(p => p.data.name).join(' · ') : 'No pets out';
+    document.getElementById('petDesc').textContent = newest ? cleanDesc(newest.data.desc) : 'Pick up to three in the wardrobe’s Pets tab.';
   }
   // Game text uses \n and #c…# color codes; keep just the first line as plain text.
   const cleanDesc = s => (s || '').split(/\\n|\n/)[0].replace(/#c|#/g, '').trim();
 
   // ---------- wardrobe: looks ----------
-  const BASE_BODY = [12000, 21000, 31000]; // head, face, hair
-  const SLOTS = ['hat', 'outfit', 'cape', 'shoes', 'faceAcc', 'eyeAcc', 'weapon', 'mount'];
-  const DEFAULT_LOOK = { hat: 1002738, outfit: 1052926, shoes: 1073062 };
+  const BASE_BODY = [12000]; // head
+  const SLOTS = ['hair', 'face', 'hat', 'outfit', 'cape', 'shoes', 'faceAcc', 'eyeAcc', 'weapon', 'mount'];
+  const DEFAULT_HAIR_FACE = { hair: 31000, face: 21000 };
+  const DEFAULT_LOOK = { ...DEFAULT_HAIR_FACE, hat: 1002738, outfit: 1052926, shoes: 1073062 };
   const FRAME_COUNTS = Object.fromEntries(Object.entries(A.character.anims).map(([k, v]) => [k, v.length]));
   const FRAME_DELAYS = Object.fromEntries(Object.entries(A.character.anims).map(([k, v]) => [k, v[0].delay]));
   const lookItems = look => [...BASE_BODY, ...SLOTS.map(s => look[s]).filter(Boolean)];
@@ -874,13 +1107,23 @@
   // ---------- wardrobe: pets ----------
   const petCache = new Map();
   function loadPet(id) {
+    const custom = A.wardrobe.customPets && A.wardrobe.customPets[id];
+    if (custom && !petCache.has(id)) {
+      const p = (async () => {
+        const anims = {};
+        for (const [k, v] of Object.entries(custom.anims)) anims[k] = await loadFrames(v);
+        return { id, name: custom.name, desc: custom.desc, fly: !!custom.fly, anims };
+      })();
+      p.catch(() => petCache.delete(id));
+      petCache.set(id, p);
+    }
     if (!petCache.has(id)) {
       const p = (async () => {
         const d = await withRetry(async () => {
           const res = await fetch(`${API}/pet/${id}`);
           if (!res.ok) throw new Error('pet request failed: ' + res.status);
           return res.json();
-        });
+        }, 5, true);
         const anims = {};
         for (const [name, books] of Object.entries(d.frameBooks)) {
           const book = Array.isArray(books) ? books[0] : books;
@@ -902,17 +1145,27 @@
 
   // ---------- wardrobe: UI ----------
   const TABS = [
-    ['pet', 'Pets'], ['mount', 'Mounts'], ['hat', 'Hats'], ['outfit', 'Outfits'], ['cape', 'Capes'],
-    ['shoes', 'Shoes'], ['face', 'Face'], ['weapon', 'Weapons'],
+    ['pet', 'Pets'], ['mount', 'Mounts'], ['hair', 'Hair'], ['faces', 'Face'], ['hat', 'Hats'], ['outfit', 'Outfits'],
+    ['cape', 'Capes'], ['shoes', 'Shoes'], ['face', 'Face Acc.'], ['weapon', 'Weapons'],
   ];
+  // Hair color is the last digit of a hair ID; eye color is the hundreds digit of a face ID.
+  const HAIR_COLORS = [['Black', '#2b2730'], ['Red', '#c8342c'], ['Orange', '#e8822a'], ['Blonde', '#f0d060'],
+    ['Green', '#4fa64a'], ['Blue', '#3a6fd8'], ['Purple', '#8a4fc8'], ['Brown', '#8a5a32']];
+  const EYE_COLORS = [['Black', '#2b2730'], ['Blue', '#3a7fe0'], ['Red', '#d0343a'], ['Green', '#3fa060'], ['Hazel', '#a07838'],
+    ['Sapphire', '#2a50c0'], ['Violet', '#9050d0'], ['Amethyst', '#b070c8'], ['White', '#e8e8f0']];
+  const COLOR_KIND = {
+    hair: { list: () => A.wardrobe.hair, colors: HAIR_COLORS, base: id => id - (id % 10), color: id => id % 10, make: (b, c) => b + c, label: 'Hair color' },
+    faces: { list: () => A.wardrobe.faces, colors: EYE_COLORS, base: id => id - Math.floor(id / 100 % 10) * 100, color: id => Math.floor(id / 100 % 10), make: (b, c) => b + c * 100, label: 'Eye color' },
+  };
+  const COLOR_SLOT = { hair: 'hair', faces: 'face' };
   const NONE_ALLOWED = new Set(['hat', 'cape', 'shoes', 'face', 'weapon', 'mount']);
   const tabsEl = document.getElementById('tabs');
   const gridEl = document.getElementById('grid');
   const statusEl = document.getElementById('status');
   let activeTab = 'pet';
   let look = { ...DEFAULT_LOOK };
-  let currentPet = null;
-  let lookToken = 0, petToken = 0;
+  let lookToken = 0;
+  const petsLoading = new Set();
 
   // Outfit and pet loads report separately so one finishing can't hide the other's error.
   const statusBy = { look: null, pet: null };
@@ -922,6 +1175,15 @@
     statusEl.textContent = s ? s.text : '';
     statusEl.classList.toggle('error', !!(s && s.isError));
   }
+
+  // Seasonal tabs come from the active map; mounts and favorite pets are shared by every map. Adriano is always first.
+  const tabItems = tab => (tab === 'mount' ? A.wardrobe.items.mount : theme && theme.spec.wardrobe[tab]) || [];
+  const ADRIANO_ENTRY = { id: A.pet.id, name: A.pet.name, icon: A.pet.anims.stand0[0].src };
+  const petChoices = () => {
+    const seen = new Set();
+    return [ADRIANO_ENTRY, ...A.wardrobe.pets, ...((theme && theme.spec.pets) || [])]
+      .filter(p => !seen.has(p.id) && seen.add(p.id));
+  };
 
   function renderTabs() {
     tabsEl.innerHTML = '';
@@ -934,25 +1196,56 @@
     }
   }
 
-  function tile({ icon, name, pressed, onClick, none }) {
+  function tile({ icon, name, pressed, onClick, none, badge }) {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'tile'; b.title = name;
     b.setAttribute('aria-pressed', String(pressed));
-    b.innerHTML = `<div class="icon">${none ? '<span class="none">∅</span>' : `<img alt="" loading="lazy" src="${icon}">`}</div><span></span>`;
+    b.innerHTML = `${badge ? `<b class="badge" aria-hidden="true">${badge}</b>` : ''}<div class="icon">${none ? '<span class="none">∅</span>' : `<img alt="" loading="lazy" src="${icon}">`}</div><span></span>`;
     b.lastElementChild.textContent = name;
     b.addEventListener('click', onClick);
     return b;
   }
 
+  // Hair and Face: a row of color swatches, then styles. Picking a style keeps the current color when it exists.
+  function renderStyleGrid(tab) {
+    const kind = COLOR_KIND[tab], slot = COLOR_SLOT[tab];
+    const current = look[slot], curBase = kind.base(current), curColor = kind.color(current);
+    const style = kind.list().find(h => h.id === curBase);
+    const row = document.createElement('div');
+    row.className = 'swatches'; row.setAttribute('role', 'group'); row.setAttribute('aria-label', kind.label);
+    kind.colors.forEach(([name, css], c) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'swatch-btn'; b.title = name; b.setAttribute('aria-label', `${kind.label}: ${name}`);
+      b.style.background = css;
+      b.setAttribute('aria-pressed', String(c === curColor));
+      b.disabled = !!style && !style.colors.includes(c);
+      b.addEventListener('click', () => applyLook({ ...look, [slot]: kind.make(curBase, c) }));
+      row.appendChild(b);
+    });
+    gridEl.appendChild(row);
+    for (const h of kind.list()) {
+      gridEl.appendChild(tile({
+        icon: h.icon, name: h.name, pressed: h.id === curBase,
+        onClick: () => applyLook({ ...look, [slot]: kind.make(h.id, h.colors.includes(curColor) ? curColor : h.colors[0]) }),
+      }));
+    }
+  }
+
   function renderGrid() {
     gridEl.innerHTML = '';
+    if (COLOR_KIND[activeTab]) { renderStyleGrid(activeTab); return; }
     if (activeTab === 'pet') {
-      for (const p of A.wardrobe.pets) {
-        gridEl.appendChild(tile({ icon: p.icon, name: p.name, pressed: currentPet && currentPet.id === p.id, onClick: () => choosePet(p.id) }));
+      for (const p of petChoices()) {
+        const slot = pets.findIndex(x => x.data.id === p.id);
+        const loading = petsLoading.has(p.id);
+        gridEl.appendChild(tile({
+          icon: p.icon, name: p.name, pressed: slot >= 0 || loading,
+          badge: slot >= 0 ? String(slot + 1) : loading ? '…' : '', onClick: () => togglePet(p.id),
+        }));
       }
       return;
     }
-    const items = A.wardrobe.items[activeTab];
+    const items = tabItems(activeTab);
     const slots = [...new Set(items.map(i => i.slot))];
     if (NONE_ALLOWED.has(activeTab)) {
       gridEl.appendChild(tile({
@@ -987,23 +1280,46 @@
     }
   }
 
-  async function choosePet(id) {
-    const token = ++petToken;
-    setStatus('pet', 'Fetching pet…');
-    try {
-      const p = await loadPet(id);
-      if (token !== petToken) return;
-      currentPet = p; petAnims = p.anims;
-      pet.anim = 'stand0'; pet.emote = null; pet.t = 0; pet.idle = 0; pet.say = null;
-      showPetInfo(p); renderGrid(); save(); setStatus('pet', '');
-    } catch {
-      if (token === petToken) setStatus('pet', 'maplestory.io is busy. Click the pet again to retry.', true);
+  // Click a pet to take it out (up to three) or put it away.
+  function togglePet(id) {
+    const slot = pets.findIndex(x => x.data.id === id);
+    if (slot >= 0) { pets.splice(slot, 1); afterPetsChanged(); return; }
+    if (petsLoading.has(id)) return;
+    if (pets.length + petsLoading.size >= MAX_PETS) {
+      const msg = `You can have ${MAX_PETS} pets out. Click one to put it away first.`;
+      setStatus('pet', msg, true);
+      setTimeout(() => { if (statusBy.pet && statusBy.pet.text === msg) setStatus('pet', ''); }, 4000);
+      return;
     }
+    addPet(id);
+  }
+  async function addPet(id) {
+    petsLoading.add(id);
+    setStatus('pet', 'Fetching pet…');
+    renderGrid();
+    try {
+      const data = await loadPet(id);
+      if (!petsLoading.has(id)) return; // reset or removed while loading
+      const last = pets[pets.length - 1];
+      pets.push(makePet(data, last ? last.x : player.x));
+    } catch {
+      if (petsLoading.has(id)) setStatus('pet', 'maplestory.io is busy. Click the pet again to retry.', true);
+      petsLoading.delete(id); renderGrid();
+      return;
+    }
+    petsLoading.delete(id);
+    afterPetsChanged();
+  }
+  function afterPetsChanged() {
+    if (!petsLoading.size) setStatus('pet', '');
+    showPetInfo(); renderGrid(); save();
   }
 
   document.getElementById('randomize').addEventListener('click', () => {
-    const next = {};
-    for (const [tab, items] of Object.entries(A.wardrobe.items)) {
+    const next = { hair: look.hair, face: look.face }; // keep your hair and face; shuffle the outfit
+    for (const [tab] of TABS) {
+      const items = tab === 'pet' ? [] : tabItems(tab);
+      if (!items.length) continue;
       const skipChance = tab === 'mount' ? 0.6 : NONE_ALLOWED.has(tab) && tab !== 'hat' && tab !== 'shoes' ? 0.35 : 0;
       if (Math.random() < skipChance) continue;
       const it = pick(items);
@@ -1013,16 +1329,59 @@
   });
   document.getElementById('reset').addEventListener('click', () => {
     applyLook({ ...DEFAULT_LOOK });
-    choosePet(A.pet.id);
+    petsLoading.clear();
+    pets = pets.filter(p => p.data.id === A.pet.id);
+    if (!pets.length) addPet(A.pet.id); else afterPetsChanged();
   });
 
   // Remember the last look and pet in this browser.
   const STORE_KEY = 'mapleLounge.v1';
   function save() {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify({ look, pet: currentPet && currentPet.id })); } catch { }
+    try { localStorage.setItem(STORE_KEY, JSON.stringify({ look, pets: pets.map(p => p.data.id) })); } catch { }
   }
   function restore() {
     try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; }
+  }
+
+  // ---------- map picker ----------
+  // Shown while the wardrobe is minimized. Each month has its own event map.
+  const mapPicker = document.getElementById('mapPicker');
+  const mapSelect = document.getElementById('mapSelect');
+  const mapStatus = document.getElementById('mapStatus');
+  function buildMapPicker(selected) {
+    const thisMonth = MAPS[new Date().getMonth()][0];
+    mapSelect.innerHTML = '';
+    for (const [key, month, event] of MAPS) {
+      const o = document.createElement('option');
+      o.value = key; o.textContent = `${month} · ${event}${key === thisMonth ? '  (this month)' : ''}`;
+      mapSelect.appendChild(o);
+    }
+    mapSelect.value = selected;
+  }
+  let mapToken = 0;
+  mapSelect.addEventListener('change', async () => {
+    const key = mapSelect.value, token = ++mapToken;
+    mapStatus.textContent = 'Loading map…'; mapStatus.classList.remove('error');
+    try {
+      const t = await loadTheme(key);
+      if (token !== mapToken) return;
+      applyTheme(t);
+      mapStatus.textContent = '';
+    } catch {
+      if (token !== mapToken) return;
+      mapStatus.textContent = 'That map isn’t available yet.'; mapStatus.classList.add('error');
+      mapSelect.value = theme.spec.key;
+    }
+    mapSelect.blur(); // hand the arrow keys back to the game
+  });
+  function applyTheme(t) {
+    theme = t; S = t.sprites;
+    skyCache = vignetteCache = null;
+    resetParticles();
+    document.getElementById('themeName').textContent = t.spec.name;
+    if (t.spec.accent) document.documentElement.style.setProperty('--accent', t.spec.accent);
+    canvas.setAttribute('aria-label', `${t.spec.name} scene with your character, a pet, and the Rabbit Lamp Chair`);
+    renderGrid();
   }
 
   // ---------- boot ----------
@@ -1037,7 +1396,7 @@
     for (const [k, v] of Object.entries(A.pet.anims)) baked[k] = await loadFrames(v);
     const adriano = { id: A.pet.id, name: A.pet.name, desc: A.pet.desc, anims: baked };
     petCache.set(adriano.id, Promise.resolve(adriano));
-    currentPet = adriano; petAnims = baked;
+    pets = [makePet(adriano, START_X - 60)];
 
     defaultCharAnims = {};
     for (const [k, v] of Object.entries(A.character.anims)) defaultCharAnims[k] = await loadFrames(v);
@@ -1049,26 +1408,41 @@
     const bgEntries = await Promise.all(Object.entries(A.bg).map(async ([k, v]) =>
       [k, await loadFrames(v).catch(() => { console.warn('scenery failed to load:', k); return [blank]; })]));
     BG = Object.fromEntries(bgEntries);
-    buildStrips();
+    // Start on this month's map (or ?map=jan … ?map=dec), falling back to Halloween if it's missing.
+    const asked = new URLSearchParams(location.search).get('map');
+    const startKey = MAPS.some(m => m[0] === asked) ? asked : MAPS[new Date().getMonth()][0];
+    buildMapPicker(startKey);
+    try { applyTheme(await loadTheme(startKey)); }
+    catch { mapSelect.value = 'oct'; applyTheme(await loadTheme('oct')); }
     document.getElementById('loading').hidden = true;
 
     document.getElementById('chairIcon').src = A.chair.variants[0][0].src;
     document.getElementById('chairName').textContent = A.chair.name;
-    showPetInfo(adriano);
+    showPetInfo();
     updateChairLabel();
     renderTabs(); renderGrid();
 
     const saved = restore();
-    if (saved.look && typeof saved.look === 'object') applyLook(saved.look, { quiet: true });
-    if (saved.pet && saved.pet !== adriano.id && A.wardrobe.pets.some(p => p.id === saved.pet)) choosePet(saved.pet);
+    // Older saves have no hair/face entries; fill them with the defaults.
+    if (saved.look && typeof saved.look === 'object') applyLook({ ...DEFAULT_HAIR_FACE, ...saved.look }, { quiet: true });
+    // Bring back the pets that were out last time (older saves stored a single `pet`).
+    const savedPets = Array.isArray(saved.pets) ? saved.pets : Number.isInteger(saved.pet) ? [saved.pet] : null;
+    if (savedPets) {
+      const known = id => Number.isInteger(id) || !!(A.wardrobe.customPets && A.wardrobe.customPets[id]);
+      const ids = savedPets.filter(known).slice(0, MAX_PETS);
+      pets = pets.filter(p => ids.includes(p.data.id));
+      for (const id of ids) if (id !== adriano.id) addPet(id);
+      showPetInfo(); renderGrid();
+    }
 
     let last = performance.now();
     function tick(now) {
       const dt = Math.min(0.05, (now - last) / 1000); last = now;
       clock += dt;
       updatePlayer(dt);
-      updatePet(dt);
+      updatePets(dt);
       updateFish(dt);
+      updateParticles(dt);
       chair.t += dt;
       render(clock);
       requestAnimationFrame(tick);

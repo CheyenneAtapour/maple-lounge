@@ -1,0 +1,727 @@
+{
+ "key": "dec",
+ "month": 12,
+ "name": "Maplemas",
+ "accent": "#e8483f",
+ "sprites": {
+  "sky": "Map/Back/Christmas.img/back/2",
+  "stars": "Map/Back/Christmas.img/ani/0/0",
+  "moon": "Map/Back/Christmas.img/back/1",
+  "aurora0": "Map/Back/Christmas.img/back/3",
+  "aurora1": "Map/Back/Christmas.img/back/4",
+  "aurora2": "Map/Back/Christmas.img/back/5",
+  "sleigh": "Map/Back/Christmas.img/ani/2",
+  "treeline": "Map/Back/Christmas.img/back/9",
+  "pines0": "Map/Back/Christmas.img/back/6",
+  "pines1": "Map/Back/Christmas.img/back/8",
+  "pine0": "Map/Back/Christmas.img/back/7",
+  "pine1": "Map/Back/Christmas.img/back/10",
+  "toyHouse": "Map/Obj/Christmas.img/HappyVillage/ani/5",
+  "gingerHouse": "Map/Obj/Christmas.img/HappyVillage/house5/0",
+  "barnHouse": "Map/Obj/Christmas.img/HappyVillage/house0/1",
+  "snowRock": "Map/Tile/christmas.img/bsc/0",
+  "tree0": "Map/Obj/Christmas.img/Field/ani/0",
+  "tree1": "Map/Obj/Christmas.img/Field/ani/1",
+  "tree2": "Map/Obj/Christmas.img/Field/ani/2",
+  "wreathTree0": "Map/Obj/Christmas.img/HappyVillage/acc/0",
+  "lamp": "Map/Obj/Christmas.img/HappyVillage/acc/2",
+  "sleighGifts": "Map/Obj/Christmas.img/HappyVillage/acc/3",
+  "fence0": "Map/Obj/Christmas.img/HappyVillage/acc/5",
+  "fence1": "Map/Obj/Christmas.img/HappyVillage/acc/6",
+  "fence2": "Map/Obj/Christmas.img/HappyVillage/acc/7",
+  "lightsLong": "Map/Obj/Christmas.img/HappyVillage/acc/9",
+  "saxDeer": "Map/Obj/Christmas.img/HappyVillage/ani/10",
+  "granny": "Map/Obj/Christmas.img/HappyVillage/ani/11",
+  "campfire": "Map/Obj/Christmas.img/HappyVillage/ani/12",
+  "rockingHorse": "Map/Obj/Christmas.img/HappyVillage/ani/6",
+  "guitarSnowman": "Map/Obj/Christmas.img/HappyVillage/ani/8",
+  "logSnowman": "Map/Obj/Christmas.img/HappyVillage/ani/9",
+  "elf0": "Map/Obj/Christmas.img/Field/ani/4",
+  "elf1": "Map/Obj/Christmas.img/Field/ani/5",
+  "elf3": "Map/Obj/Christmas.img/Field/ani/7",
+  "elf4": "Map/Obj/Christmas.img/Field/ani/8",
+  "rudolph": {
+   "path": "Mob/9500320.img/move",
+   "version": "250"
+  },
+  "kidSnowman": {
+   "path": "Mob/9500317.img/move",
+   "version": "250"
+  }
+ },
+ "scene": {
+  "sky": "sky",
+  "stars": {
+   "sprite": "stars",
+   "alpha": [
+    0.55,
+    1.0
+   ],
+   "speed": 1.1
+  },
+  "celestial": {
+   "sprite": "moon",
+   "x": 0.7,
+   "y": 0.07,
+   "parallax": 0.02,
+   "glow": "200,215,255",
+   "glowRadius": 170,
+   "glowStrength": 0.2
+  },
+  "clouds": {
+   "sprites": [
+    "aurora0",
+    "aurora1",
+    "aurora2"
+   ],
+   "count": 5,
+   "alpha": 0.55,
+   "y": [
+    0.02,
+    0.2
+   ],
+   "speed": [
+    2,
+    5
+   ]
+  },
+  "flyer": {
+   "sprite": "sleigh",
+   "period": 34,
+   "duration": 20,
+   "y": 0.2,
+   "bob": 12
+  },
+  "far": [
+   {
+    "parallax": 0.15,
+    "y": -34,
+    "tile": [
+     "treeline"
+    ],
+    "start": -300,
+    "spacing": 900,
+    "darken": 0.5
+   },
+   {
+    "parallax": 0.3,
+    "y": -16,
+    "items": [
+     [
+      "pines1",
+      250,
+      0
+     ],
+     [
+      "pine1",
+      820,
+      0
+     ],
+     [
+      "pines0",
+      1250,
+      0
+     ],
+     [
+      "pine0",
+      1700,
+      0
+     ]
+    ],
+    "darken": 0.42
+   },
+   {
+    "parallax": 0.45,
+    "y": 44,
+    "items": [
+     [
+      "gingerHouse",
+      250,
+      0
+     ],
+     [
+      "pine0",
+      820,
+      0
+     ],
+     [
+      "barnHouse",
+      1500,
+      0
+     ]
+    ],
+    "darken": 0.62,
+    "alpha": 0.9
+   }
+  ],
+  "mist": "150,170,230",
+  "ground": {
+   "tile": "snowRock",
+   "darken": 0.5,
+   "lip": [
+    "#cfdcf2",
+    "#ffffff"
+   ]
+  },
+  "back": [
+   [
+    "lamp",
+    40,
+    2
+   ],
+   [
+    "tree0",
+    170,
+    6
+   ],
+   [
+    "fence0",
+    285,
+    4
+   ],
+   [
+    "fence2",
+    375,
+    4
+   ],
+   [
+    "rockingHorse",
+    470,
+    4
+   ],
+   [
+    "wreathTree0",
+    640,
+    4
+   ],
+   [
+    "fence1",
+    930,
+    4
+   ],
+   [
+    "fence0",
+    1095,
+    4
+   ],
+   [
+    "tree2",
+    1300,
+    6
+   ],
+   [
+    "lamp",
+    1150,
+    2
+   ],
+   [
+    "lightsLong",
+    1300,
+    -26
+   ],
+   [
+    "lamp",
+    1450,
+    2
+   ],
+   [
+    "sleighGifts",
+    1570,
+    4
+   ],
+   [
+    "toyHouse",
+    1850,
+    4
+   ],
+   [
+    "tree1",
+    2250,
+    6
+   ]
+  ],
+  "front": [],
+  "idlers": [
+   [
+    "elf0",
+    225,
+    2
+   ],
+   [
+    "guitarSnowman",
+    650,
+    2
+   ],
+   [
+    "elf3",
+    1240,
+    2
+   ],
+   [
+    "elf4",
+    1370,
+    2,
+    true
+   ],
+   [
+    "saxDeer",
+    1700,
+    2
+   ],
+   [
+    "campfire",
+    795,
+    2
+   ],
+   [
+    "granny",
+    762,
+    2,
+    true
+   ],
+   [
+    "logSnowman",
+    2030,
+    2
+   ],
+   [
+    "elf1",
+    1125,
+    2
+   ]
+  ],
+  "walkers": [
+   {
+    "sprite": "rudolph",
+    "x": 250,
+    "span": 150,
+    "speed": 16
+   },
+   {
+    "sprite": "kidSnowman",
+    "x": 1480,
+    "span": 160,
+    "speed": 14
+   }
+  ],
+  "lights": {
+   "color": "255,205,130",
+   "items": [
+    [
+     40,
+     -140,
+     70
+    ],
+    [
+     1150,
+     -140,
+     70
+    ],
+    [
+     1450,
+     -140,
+     70
+    ],
+    [
+     640,
+     -200,
+     90,
+     "255,120,120"
+    ],
+    [
+     170,
+     -150,
+     110,
+     "255,240,170"
+    ],
+    [
+     1300,
+     -170,
+     130,
+     "255,240,170"
+    ],
+    [
+     2250,
+     -130,
+     100,
+     "255,240,170"
+    ],
+    [
+     795,
+     -14,
+     50,
+     "255,140,60"
+    ],
+    [
+     1850,
+     -90,
+     120,
+     "255,220,140"
+    ],
+    [
+     1960,
+     -170,
+     60,
+     "255,230,150"
+    ]
+   ]
+  },
+  "particles": {
+   "type": "snow",
+   "count": 110,
+   "alpha": 0.9
+  },
+  "vignette": "5,10,40"
+ },
+ "wardrobe": {
+  "hat": [
+   [
+    1002738,
+    "Bunny Earmuffs"
+   ],
+   [
+    1003738,
+    "Santa Hat"
+   ],
+   [
+    1001036,
+    "Santa Girl Hat"
+   ],
+   [
+    1002368,
+    "Reindeer Hat"
+   ],
+   [
+    1002714,
+    "Christmas Tree Hat"
+   ],
+   [
+    1003048,
+    "Maplemas Wreath"
+   ],
+   [
+    1003043,
+    "Maplemas Bell"
+   ],
+   [
+    1004099,
+    "Christmas Antlers"
+   ],
+   [
+    1004179,
+    "Red Elf Hat"
+   ],
+   [
+    1004692,
+    "Kid Snowman"
+   ],
+   [
+    1005046,
+    "Christmas Bunny Hat"
+   ],
+   [
+    1005253,
+    "Sweet Rudolph Hood"
+   ],
+   [
+    1005270,
+    "Winterberry Snowman Hat"
+   ],
+   [
+    1006358,
+    "Maplemas Reindeer Antlers"
+   ],
+   [
+    1006663,
+    "Maplemas Spirit Elf Hat"
+   ],
+   [
+    1007082,
+    "Round Rudolph Doll Hood"
+   ]
+  ],
+  "outfit": [
+   [
+    1052926,
+    "Cottontail Rabbit Dress"
+   ],
+   [
+    1052567,
+    "Santa Costume"
+   ],
+   [
+    1051131,
+    "Santa Girl Overall"
+   ],
+   [
+    1052031,
+    "Reindeer Suit"
+   ],
+   [
+    1052046,
+    "Snowman Costume"
+   ],
+   [
+    1052082,
+    "Elf Overall"
+   ],
+   [
+    1052145,
+    "Christmas Party Suit"
+   ],
+   [
+    1053243,
+    "Christmas Bunny Girl"
+   ],
+   [
+    1053244,
+    "Christmas Bunny Suit"
+   ],
+   [
+    1053366,
+    "Sweet Rudolph Outfit"
+   ],
+   [
+    1054068,
+    "Maplemas Reindeer Sweater"
+   ],
+   [
+    1054069,
+    "Maplemas Deer Dress"
+   ],
+   [
+    1054277,
+    "Maplemas Spirit Coat"
+   ],
+   [
+    1050874,
+    "Little Santa Outfit"
+   ],
+   [
+    1054682,
+    "Round Rudolph Suit"
+   ],
+   [
+    1052568,
+    "Decked-Out Santa Outfit"
+   ]
+  ],
+  "cape": [
+   [
+    1102065,
+    "Christmas Cape"
+   ],
+   [
+    1102233,
+    "Snowman Cape"
+   ],
+   [
+    1102288,
+    "Piggyback Snowman"
+   ],
+   [
+    1102359,
+    "Floaty Snowman Balloon"
+   ],
+   [
+    1102978,
+    "Christmas Tree Ornament Cape"
+   ],
+   [
+    1103058,
+    "Christmas Bunny Cape"
+   ],
+   [
+    1103452,
+    "Gift Is Here"
+   ],
+   [
+    1103524,
+    "Full of Joy Maplemas Decoration"
+   ],
+   [
+    1103537,
+    "Shining Winter Tree Effect Cape"
+   ],
+   [
+    1103776,
+    "Maplemas Spirit Snowman"
+   ],
+   [
+    1103985,
+    "Maplemas Personal Wreath"
+   ],
+   [
+    1102908,
+    "Winter Snowman Cape"
+   ],
+   [
+    1103299,
+    "Snowflake on Tree"
+   ]
+  ],
+  "shoes": [
+   [
+    1073062,
+    "Cottontail Rabbit Shoes"
+   ],
+   [
+    1070096,
+    "Santa Boots"
+   ],
+   [
+    1071016,
+    "Santa Girl Boots"
+   ],
+   [
+    1072278,
+    "Rudolph Slippers"
+   ],
+   [
+    1072427,
+    "Red Christmas Sock"
+   ],
+   [
+    1072428,
+    "Green Christmas Sock"
+   ],
+   [
+    1072277,
+    "Red Elf shoes"
+   ],
+   [
+    1073316,
+    "Sweet Rudolph Anklet"
+   ],
+   [
+    1073718,
+    "Reindeer Red Boots"
+   ],
+   [
+    1073719,
+    "Reindeer Green Boots"
+   ],
+   [
+    1074016,
+    "Maplemas Spirit Blasters"
+   ],
+   [
+    1074017,
+    "Maplemas Spirit Tappers"
+   ],
+   [
+    1074316,
+    "Little Santa Shoes"
+   ]
+  ],
+  "face": [
+   [
+    1012007,
+    "Santa Beard"
+   ],
+   [
+    1012011,
+    "Rudolph's Red Nose"
+   ],
+   [
+    1012161,
+    "Rudolph's Shiny Nose"
+   ],
+   [
+    1012179,
+    "Reindeer Red Nose"
+   ],
+   [
+    1012915,
+    "Rudolph's Glowing Nose"
+   ],
+   [
+    1012916,
+    "Rudolph's Bright Nose"
+   ],
+   [
+    1012611,
+    "Snowy Eyeliner (F)"
+   ],
+   [
+    1012758,
+    "Puffed Up Cheeks Snow Squirrel"
+   ],
+   [
+    1022273,
+    "Frost Fiends Snowflake Mask"
+   ]
+  ],
+  "weapon": [
+   [
+    1702006,
+    "Red Candy Cane"
+   ],
+   [
+    1702166,
+    "Holiday Candy Cane"
+   ],
+   [
+    1702008,
+    "Santa Sack"
+   ],
+   [
+    1702100,
+    "Christmas Bell"
+   ],
+   [
+    1702210,
+    "Santa Buddy"
+   ],
+   [
+    1702248,
+    "Rudolph"
+   ],
+   [
+    1702562,
+    "Winter Snowman"
+   ],
+   [
+    1702660,
+    "Snowman Weapon"
+   ],
+   [
+    1702798,
+    "Christmas Bunny Weapon"
+   ],
+   [
+    1703278,
+    "Green Maplemas Wreath"
+   ],
+   [
+    1703564,
+    "Maplemas Spirit Bell"
+   ],
+   [
+    1703818,
+    "Maplemas Stocking"
+   ],
+   [
+    1703058,
+    "Heartfelt Gift"
+   ]
+  ]
+ },
+ "pets": [
+  5000014,
+  5000055,
+  5000362,
+  5000041,
+  5000023,
+  5000020,
+  5000006,
+  5000750,
+  5002141,
+  5002226,
+  5002668,
+  5002669,
+  5002670,
+  5002787,
+  5002139
+ ]
+}

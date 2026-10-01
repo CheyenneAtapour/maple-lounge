@@ -1,0 +1,903 @@
+{
+ "key": "apr",
+ "month": 4,
+ "name": "Easter",
+ "accent": "#9be36a",
+ "sprites": {
+  "sky": "Map/Back/event.img/back/40",
+  "rainbow": "Map/Back/event.img/back/36",
+  "cloud0": "Map/Back/event.img/back/21",
+  "cloud1": "Map/Back/event.img/back/22",
+  "cloud2": "Map/Back/event.img/back/23",
+  "cloud3": "Map/Back/event.img/back/26",
+  "hills0": "Map/Back/event.img/back/34",
+  "hills1": "Map/Back/event.img/back/35",
+  "pinkRow": "Map/Back/event.img/back/45",
+  "tree0": "Map/Obj/SpringValley.img/SpringValley/tree/0",
+  "tree2": "Map/Obj/SpringValley.img/SpringValley/tree/2",
+  "tree3": "Map/Obj/SpringValley.img/SpringValley/tree/3",
+  "bushA": "Map/Obj/SpringValley.img/SpringValley/tree/5",
+  "bushB": "Map/Obj/SpringValley.img/SpringValley/tree/6",
+  "fence1": "Map/Obj/acc1.img/heneFarmFD/fence/1",
+  "fence2": "Map/Obj/acc1.img/heneFarmFD/fence/2",
+  "fence4": "Map/Obj/acc1.img/heneFarmFD/fence/4",
+  "fence5": "Map/Obj/acc1.img/heneFarmFD/fence/5",
+  "fencePost": "Map/Obj/acc1.img/heneFarmFD/fence/0",
+  "coop": "Map/Obj/acc1.img/heneFarmFD/chicken/2",
+  "eggShell": "Map/Obj/acc1.img/heneFarmFD/obj/8",
+  "nestChicks": "Map/Obj/acc1.img/heneFarmFD/obj/9",
+  "tulip0": "Map/Obj/acc1.img/heneFarmFD/nature/14",
+  "tulip1": "Map/Obj/acc1.img/heneFarmFD/nature/15",
+  "roses0": "Map/Obj/acc1.img/heneFarmFD/nature/16",
+  "roses1": "Map/Obj/acc1.img/heneFarmFD/nature/17",
+  "flowersP": "Map/Obj/acc1.img/heneFarmFD/nature/12",
+  "violet": "Map/Obj/acc1.img/heneFarmFD/nature/13",
+  "shrub2": "Map/Obj/acc1.img/heneFarmFD/nature/4",
+  "grass0": "Map/Obj/acc1.img/heneFarmFD/nature/6",
+  "grass1": "Map/Obj/acc1.img/heneFarmFD/nature/7",
+  "bunnyNest": "Item/Install/030154.img/03015446/effect",
+  "chocoBunny": "Item/Install/030158.img/03015814/effect",
+  "carrot": "Item/Install/03010.img/03010862/effect",
+  "basket0": "Item/Install/03010.img/03010120/effect/0",
+  "basket1": "Item/Install/03010.img/03010458/effect/0",
+  "bunnyFamily": "Item/Install/03010.img/03010182/effect",
+  "picnic": "Item/Install/03018.img/03018490/effect",
+  "eggY": "Item/Consume/0202.img/02022065/info/iconRaw",
+  "eggG": "Item/Consume/0202.img/02022066/info/iconRaw",
+  "eggR": "Item/Consume/0202.img/02022538/info/iconRaw",
+  "eggGold": "Item/Etc/0400.img/04001689/info/iconRaw",
+  "edge0": "Map/Tile/henesysSpring.img/enH0/0",
+  "edge1": "Map/Tile/henesysSpring.img/enH0/1",
+  "edge2": "Map/Tile/henesysSpring.img/enH0/2",
+  "edge3": "Map/Tile/henesysSpring.img/enH0/3",
+  "stones": "Map/Tile/henesysSpring.img/bsc/0",
+  "pig": {
+   "path": "Mob/9300312.img/move",
+   "version": "250"
+  },
+  "eggyG": {
+   "path": "Mob/9400510.img/move",
+   "version": "250"
+  },
+  "eggyY": {
+   "path": "Mob/9400511.img/move",
+   "version": "250"
+  },
+  "eggyR": {
+   "path": "Mob/9400749.img/move",
+   "version": "250"
+  },
+  "flowerBunny": {
+   "path": "Mob/8645227.img/move",
+   "version": "250"
+  },
+  "moonBunny": {
+   "path": "Mob/4230300.img/move",
+   "version": "250"
+  }
+ },
+ "scene": {
+  "sky": "sky",
+  "celestial": {
+   "sprite": "rainbow",
+   "x": 0.48,
+   "y": 0.12,
+   "parallax": 0.03
+  },
+  "clouds": {
+   "sprites": [
+    "cloud0",
+    "cloud1",
+    "cloud2",
+    "cloud3"
+   ],
+   "count": 7,
+   "alpha": 0.95,
+   "y": [
+    0.03,
+    0.3
+   ],
+   "speed": [
+    4,
+    9
+   ]
+  },
+  "flyer": {
+   "sprite": "pig",
+   "period": 32,
+   "duration": 20,
+   "y": 0.22,
+   "bob": 12
+  },
+  "far": [
+   {
+    "parallax": 0.15,
+    "y": 110,
+    "tile": [
+     "hills0",
+     "hills1"
+    ],
+    "start": -200,
+    "spacing": 660
+   },
+   {
+    "parallax": 0.32,
+    "y": 150,
+    "tile": [
+     "pinkRow"
+    ],
+    "start": -100,
+    "spacing": 1300
+   },
+   {
+    "parallax": 0.6,
+    "y": 130,
+    "items": [
+     [
+      "tree0",
+      150,
+      0
+     ],
+     [
+      "tree3",
+      700,
+      0,
+      true
+     ],
+     [
+      "tree0",
+      1250,
+      0,
+      true
+     ],
+     [
+      "tree3",
+      1700,
+      0
+     ]
+    ],
+    "darken": 0.12
+   }
+  ],
+  "mist": "255,235,250",
+  "ground": {
+   "tile": "stones",
+   "darken": 0.06,
+   "lip": [
+    "#6cc04a",
+    "#a8e86a"
+   ]
+  },
+  "back": [
+   [
+    "tree2",
+    60,
+    6
+   ],
+   [
+    "fencePost",
+    150,
+    3
+   ],
+   [
+    "fence1",
+    280,
+    3
+   ],
+   [
+    "fence4",
+    520,
+    3
+   ],
+   [
+    "picnic",
+    560,
+    8
+   ],
+   [
+    "tulip0",
+    215,
+    2
+   ],
+   [
+    "roses0",
+    420,
+    2
+   ],
+   [
+    "coop",
+    780,
+    3
+   ],
+   [
+    "nestChicks",
+    860,
+    1
+   ],
+   [
+    "bushA",
+    1110,
+    4
+   ],
+   [
+    "tulip1",
+    1060,
+    2
+   ],
+   [
+    "chocoBunny",
+    1250,
+    3
+   ],
+   [
+    "fence2",
+    1400,
+    3
+   ],
+   [
+    "fence5",
+    1610,
+    3
+   ],
+   [
+    "bunnyNest",
+    1520,
+    3
+   ],
+   [
+    "carrot",
+    1770,
+    3
+   ],
+   [
+    "roses1",
+    1830,
+    2
+   ],
+   [
+    "tree3",
+    1960,
+    6
+   ],
+   [
+    "basket0",
+    1905,
+    2
+   ],
+   [
+    "bushB",
+    2060,
+    4
+   ],
+   [
+    "fence1",
+    2235,
+    3
+   ],
+   [
+    "eggShell",
+    345,
+    4
+   ],
+   [
+    "edge0",
+    -60,
+    14
+   ],
+   [
+    "edge1",
+    28,
+    14
+   ],
+   [
+    "edge2",
+    116,
+    14
+   ],
+   [
+    "edge3",
+    204,
+    14
+   ],
+   [
+    "edge0",
+    292,
+    14
+   ],
+   [
+    "edge1",
+    380,
+    14
+   ],
+   [
+    "edge2",
+    468,
+    14
+   ],
+   [
+    "edge3",
+    556,
+    14
+   ],
+   [
+    "edge0",
+    644,
+    14
+   ],
+   [
+    "edge1",
+    732,
+    14
+   ],
+   [
+    "edge2",
+    820,
+    14
+   ],
+   [
+    "edge3",
+    908,
+    14
+   ],
+   [
+    "edge0",
+    996,
+    14
+   ],
+   [
+    "edge1",
+    1084,
+    14
+   ],
+   [
+    "edge2",
+    1172,
+    14
+   ],
+   [
+    "edge3",
+    1260,
+    14
+   ],
+   [
+    "edge0",
+    1348,
+    14
+   ],
+   [
+    "edge1",
+    1436,
+    14
+   ],
+   [
+    "edge2",
+    1524,
+    14
+   ],
+   [
+    "edge3",
+    1612,
+    14
+   ],
+   [
+    "edge0",
+    1700,
+    14
+   ],
+   [
+    "edge1",
+    1788,
+    14
+   ],
+   [
+    "edge2",
+    1876,
+    14
+   ],
+   [
+    "edge3",
+    1964,
+    14
+   ],
+   [
+    "edge0",
+    2052,
+    14
+   ],
+   [
+    "edge1",
+    2140,
+    14
+   ],
+   [
+    "edge2",
+    2228,
+    14
+   ],
+   [
+    "edge3",
+    2316,
+    14
+   ],
+   [
+    "eggY",
+    300,
+    0
+   ],
+   [
+    "eggG",
+    470,
+    0
+   ],
+   [
+    "eggR",
+    690,
+    0
+   ],
+   [
+    "eggY",
+    1175,
+    0
+   ],
+   [
+    "eggG",
+    1335,
+    0
+   ],
+   [
+    "eggR",
+    1700,
+    0
+   ],
+   [
+    "eggGold",
+    1880,
+    0
+   ],
+   [
+    "eggY",
+    2010,
+    0
+   ]
+  ],
+  "front": [
+   [
+    "grass0",
+    100,
+    3
+   ],
+   [
+    "flowersP",
+    640,
+    3
+   ],
+   [
+    "violet",
+    1160,
+    2
+   ],
+   [
+    "grass1",
+    1450,
+    3
+   ],
+   [
+    "shrub2",
+    1990,
+    4
+   ],
+   [
+    "basket1",
+    2030,
+    2
+   ]
+  ],
+  "idlers": [
+   [
+    "bunnyFamily",
+    1150,
+    0
+   ]
+  ],
+  "walkers": [
+   {
+    "sprite": "eggyY",
+    "x": 330,
+    "span": 160,
+    "speed": 16
+   },
+   {
+    "sprite": "flowerBunny",
+    "x": 1150,
+    "span": 200,
+    "speed": 20
+   },
+   {
+    "sprite": "eggyR",
+    "x": 1620,
+    "span": 180,
+    "speed": 15
+   },
+   {
+    "sprite": "moonBunny",
+    "x": 1860,
+    "span": 140,
+    "speed": 18
+   },
+   {
+    "sprite": "eggyG",
+    "x": 600,
+    "span": 120,
+    "speed": 14
+   }
+  ],
+  "particles": {
+   "type": "petals",
+   "count": 60,
+   "colors": [
+    "#ffd1e8",
+    "#fff3a8",
+    "#c8f0ff",
+    "#d8ffc8",
+    "#ffb7d5"
+   ]
+  },
+  "vignette": "80,60,120",
+  "vignetteStrength": 0.2
+ },
+ "wardrobe": {
+  "hat": [
+   [
+    1005141,
+    "Easter Bonnet"
+   ],
+   [
+    1006725,
+    "Easter Chiffon Bunny Ears (Green)"
+   ],
+   [
+    1006726,
+    "Easter Chiffon Bunny Ears (Pink)"
+   ],
+   [
+    1003998,
+    "White Choco Bunny"
+   ],
+   [
+    1004876,
+    "Broken Egg Hat"
+   ],
+   [
+    1003223,
+    "Lost Baby Chick"
+   ],
+   [
+    1004912,
+    "Yellow Chick Hat"
+   ],
+   [
+    1004977,
+    "Carrot Top"
+   ],
+   [
+    1004799,
+    "Carrot Rabbit Hairpin"
+   ],
+   [
+    1003050,
+    "Bunny Ears"
+   ],
+   [
+    1004403,
+    "Cutie Bunny Hat"
+   ],
+   [
+    1006102,
+    "Hop Hop Hop Bunny Hair Pin"
+   ],
+   [
+    1005530,
+    "Pink Bunny Pin"
+   ],
+   [
+    1003829,
+    "Bunny Top Hat"
+   ],
+   [
+    1004774,
+    "Bunny Bon Bon"
+   ]
+  ],
+  "outfit": [
+   [
+    1054347,
+    "Easter Chiffon Bodysuit"
+   ],
+   [
+    1054348,
+    "Easter Chiffon Dress"
+   ],
+   [
+    1053115,
+    "Egg Outfit"
+   ],
+   [
+    1050802,
+    "Lolo Eggwear"
+   ],
+   [
+    1051879,
+    "Lala Eggwear"
+   ],
+   [
+    1052171,
+    "Baby Chick Apron"
+   ],
+   [
+    1053133,
+    "Yellow Chick Clothes"
+   ],
+   [
+    1052892,
+    "Cutie Bunny Overall"
+   ],
+   [
+    1051070,
+    "Bunny Costume"
+   ],
+   [
+    1053420,
+    "Pink Bunny Dress"
+   ],
+   [
+    1053335,
+    "Crispy Carrot Duds"
+   ],
+   [
+    1054644,
+    "Carrot Cronch Outfit"
+   ],
+   [
+    1054645,
+    "Carrot Monch Outfit"
+   ],
+   [
+    1053489,
+    "Petite Checkered Pastel Purple Outfit"
+   ],
+   [
+    1054293,
+    "Snuggly Teddy Pastel Clothes"
+   ]
+  ],
+  "cape": [
+   [
+    1103818,
+    "Easter Chiffon Cape"
+   ],
+   [
+    1102656,
+    "Bunny Tail"
+   ],
+   [
+    1102653,
+    "Deluxe Rabbit Tail"
+   ],
+   [
+    1102574,
+    "Chicky Pile"
+   ],
+   [
+    1102726,
+    "Carrot Cape"
+   ],
+   [
+    1103980,
+    "Carrot Collecting Bag"
+   ],
+   [
+    1103455,
+    "Chick Book Bag"
+   ],
+   [
+    1103258,
+    "Peeking Bunny Cape"
+   ],
+   [
+    1103041,
+    "Pastel Wings"
+   ],
+   [
+    1103140,
+    "Pastel Angel Wings"
+   ],
+   [
+    1103565,
+    "Peekaboo Pastel Flag"
+   ],
+   [
+    1102112,
+    "Bunny Doll"
+   ],
+   [
+    1103759,
+    "Fluffball Bunny Tail"
+   ]
+  ],
+  "shoes": [
+   [
+    1074075,
+    "Easter Chiffon Shoes (Black)"
+   ],
+   [
+    1074076,
+    "Easter Chiffon Shoes (White)"
+   ],
+   [
+    1072189,
+    "Bunny Slippers"
+   ],
+   [
+    1072240,
+    "Big Rabbit Feet"
+   ],
+   [
+    1072259,
+    "Chick Slippers"
+   ],
+   [
+    1073185,
+    "Chick Shoes"
+   ],
+   [
+    1073195,
+    "Yellow Chick Shoes"
+   ],
+   [
+    1073297,
+    "Crispy Carrot Flippers"
+   ],
+   [
+    1074311,
+    "Tasty Carrot Slippers"
+   ],
+   [
+    1073037,
+    "Cutie Bunny Shoes"
+   ],
+   [
+    1074031,
+    "Snuggly Teddy Pastel Boots"
+   ],
+   [
+    1071007,
+    "Bunny Boots"
+   ],
+   [
+    1072274,
+    "Moon Bunny Paws"
+   ]
+  ],
+  "face": [
+   [
+    1012741,
+    "Cutie Bunny Face Accessory"
+   ],
+   [
+    1012760,
+    "Chick Beak"
+   ],
+   [
+    1012770,
+    "Hop Hop Hop Bunny Face Accessory"
+   ],
+   [
+    1012810,
+    "Carrot on My Nose"
+   ],
+   [
+    1022230,
+    "Bunny Glasses"
+   ],
+   [
+    1022316,
+    "Round Rabbit-Eared Glasses"
+   ],
+   [
+    1012656,
+    "Round Blush"
+   ],
+   [
+    1012028,
+    "Blush"
+   ],
+   [
+    1012763,
+    "Cute Heart Blusher"
+   ],
+   [
+    1012379,
+    "Flushed Cheeks"
+   ],
+   [
+    1012479,
+    "Ruddy Kitten Nose"
+   ]
+  ],
+  "weapon": [
+   [
+    1703597,
+    "Easter Chiffon Easter Egg"
+   ],
+   [
+    1703601,
+    "Egg Maracas"
+   ],
+   [
+    1702628,
+    "Farmer's Glorious Egg Stick"
+   ],
+   [
+    1702305,
+    "Carrot"
+   ],
+   [
+    1702401,
+    "Rabbit with Carrot"
+   ],
+   [
+    1702416,
+    "Lord of the Carrots"
+   ],
+   [
+    1702461,
+    "Chicky-Chicky Boom"
+   ],
+   [
+    1702740,
+    "Go Yellow Chicks!"
+   ],
+   [
+    1702772,
+    "Carrot Cake Shake"
+   ],
+   [
+    1703545,
+    "Plump Carrot"
+   ],
+   [
+    1703269,
+    "Hop-Hop-Hop Bunny Weapon"
+   ],
+   [
+    1702340,
+    "Rabbit in a Hat"
+   ],
+   [
+    1702694,
+    "Pastel Rose"
+   ],
+   [
+    1703216,
+    "Sprout Class Chick"
+   ]
+  ]
+ },
+ "pets": [
+  5002186,
+  5002187,
+  5002188,
+  5000595,
+  5002212,
+  5002248,
+  5000002,
+  5002550,
+  5002551,
+  5002552,
+  5002841,
+  5002861,
+  5002770,
+  5002824,
+  5000592
+ ]
+}

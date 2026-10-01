@@ -1,0 +1,697 @@
+{
+ "key": "nov",
+ "month": 11,
+ "name": "Thanksgiving",
+ "accent": "#e8833a",
+ "sprites": {
+  "sun": "Map/Back/sun.img/back/1",
+  "cloud0": "Map/Back/JP_Zipang_Kinoko_SunSet.img/back/4",
+  "cloud1": "Map/Back/JP_Zipang_Kinoko_SunSet.img/back/5",
+  "cloud2": "Map/Back/JP_Zipang_Kinoko_SunSet.img/back/6",
+  "cloud3": "Map/Back/JP_Zipang_Kinoko_SunSet.img/back/7",
+  "fields": "Map/Back/event2.img/back/63",
+  "mapleCanopy": "Map/Obj/acc1.img/mapleIsland/maple/1",
+  "treeOrange": "Map/Obj/2509VictoriaAdventure.img/midForest/nature/4",
+  "treeYellow": "Map/Obj/2509VictoriaAdventure.img/midForest/nature/3",
+  "treeSmall": "Map/Obj/2509VictoriaAdventure.img/midForest/nature/2",
+  "silo": "Map/Obj/acc1.img/heneFarmFD/chicken/2",
+  "hut": "Map/Obj/2509VictoriaAdventure.img/grassySoil/market/15",
+  "fenceA": "Map/Obj/acc1.img/heneFarmFD/fence/1",
+  "fenceB": "Map/Obj/acc1.img/heneFarmFD/fence/4",
+  "fenceC": "Map/Obj/acc1.img/heneFarmFD/fence/5",
+  "fencePost": "Map/Obj/acc1.img/heneFarmFD/fence/0",
+  "farmSign": "Map/Obj/acc1.img/heneFarmFD/obj/18",
+  "rooster": "Map/Obj/acc1.img/heneFarmFD/obj/13",
+  "cart": "Map/Obj/acc1.img/heneFarmFD/obj/15",
+  "cow": "Map/Obj/acc1.img/heneFarmFD/cow/4",
+  "chicken": "Map/Obj/acc1.img/heneFarmFD/chicken/4",
+  "chicks": "Map/Obj/acc1.img/heneFarmFD/obj/9",
+  "hayBales": "Map/Obj/2509VictoriaAdventure.img/grassySoil/market/16",
+  "hayStack": "Map/Obj/2509VictoriaAdventure.img/grassySoil/market/17",
+  "hayBale": "Map/Obj/2509VictoriaAdventure.img/grassySoil/market/19",
+  "wheat": "Map/Obj/2509VictoriaAdventure.img/grassySoil/market/20",
+  "veggieStall": "Map/Obj/2509VictoriaAdventure.img/grassySoil/market/8",
+  "produceStall": "Map/Obj/2509VictoriaAdventure.img/grassySoil/market/10",
+  "wagon": "Map/Obj/2509VictoriaAdventure.img/grassySoil/market/24",
+  "sack": "Map/Obj/2509VictoriaAdventure.img/grassySoil/market/25",
+  "basket": "Map/Obj/2509VictoriaAdventure.img/grassySoil/market/38",
+  "sunflower0": "Map/Obj/2509VictoriaAdventure.img/grassySoil/nature/22",
+  "sunflower1": "Map/Obj/2509VictoriaAdventure.img/grassySoil/nature/23",
+  "carrots": "Map/Obj/2509VictoriaAdventure.img/grassySoil/nature/8",
+  "pumpkinVine0": "Map/Obj/halloween.img/field/amber/5",
+  "pumpkinVine1": "Map/Obj/halloween.img/field/amber/6",
+  "apples": "Map/Obj/event.img/2013Hangawi/play/13",
+  "chestnuts": "Map/Obj/event.img/2013Hangawi/play/10",
+  "leaves0": "Map/Obj/acc1.img/mapleIsland/maple/4",
+  "leaves1": "Map/Obj/acc1.img/mapleIsland/maple/5",
+  "leaves2": "Map/Obj/acc1.img/mapleIsland/maple/6",
+  "leaves3": "Map/Obj/acc1.img/mapleIsland/maple/7",
+  "ground": "Map/Tile/folkvillige2.img/bsc/0",
+  "turkey": {
+   "path": "Mob/9400505.img/move",
+   "version": "250"
+  },
+  "turkeyIdle": {
+   "path": "Mob/9400505.img/stand",
+   "version": "250"
+  },
+  "plumpTurkey": {
+   "path": "Mob/9400799.img/move",
+   "version": "250"
+  },
+  "squirrel": {
+   "path": "Mob/9010115.img/move",
+   "version": "250"
+  },
+  "sparrow": {
+   "path": "Mob/3645302.img/move",
+   "version": "250"
+  }
+ },
+ "scene": {
+  "sky": {
+   "gradient": [
+    "#2b2350",
+    "#f0a060"
+   ]
+  },
+  "celestial": {
+   "sprite": "sun",
+   "x": 0.58,
+   "y": 0.1,
+   "parallax": 0.03,
+   "glow": "255,150,70",
+   "glowRadius": 280,
+   "glowStrength": 0.3
+  },
+  "clouds": {
+   "sprites": [
+    "cloud0",
+    "cloud1",
+    "cloud2",
+    "cloud3"
+   ],
+   "count": 7,
+   "alpha": 0.85,
+   "y": [
+    0.04,
+    0.36
+   ],
+   "speed": [
+    3,
+    7
+   ]
+  },
+  "flyer": {
+   "sprite": "sparrow",
+   "period": 30,
+   "duration": 20,
+   "y": 0.18,
+   "bob": 8,
+   "dir": 1
+  },
+  "far": [
+   {
+    "parallax": 0.15,
+    "y": 95,
+    "tile": [
+     "fields"
+    ],
+    "start": -300,
+    "spacing": 1000,
+    "darken": 0.15
+   },
+   {
+    "parallax": 0.35,
+    "y": 20,
+    "items": [
+     [
+      "mapleCanopy",
+      150,
+      0
+     ],
+     [
+      "treeYellow",
+      300,
+      0
+     ],
+     [
+      "mapleCanopy",
+      1050,
+      0,
+      true
+     ],
+     [
+      "treeOrange",
+      1500,
+      0
+     ]
+    ],
+    "darken": 0.4
+   },
+   {
+    "parallax": 0.6,
+    "y": 0,
+    "items": [
+     [
+      "hut",
+      260,
+      4
+     ],
+     [
+      "silo",
+      1110,
+      4
+     ],
+     [
+      "treeSmall",
+      1380,
+      4
+     ],
+     [
+      "hut",
+      1560,
+      4,
+      true
+     ]
+    ],
+    "darken": 0.25
+   }
+  ],
+  "mist": "255,170,110",
+  "ground": {
+   "tile": "ground",
+   "darken": 0.42,
+   "lip": [
+    "#7a5a22",
+    "#c9a048"
+   ]
+  },
+  "back": [
+   [
+    "fenceA",
+    250,
+    2
+   ],
+   [
+    "fenceB",
+    490,
+    2
+   ],
+   [
+    "hayBales",
+    230,
+    2
+   ],
+   [
+    "produceStall",
+    420,
+    2
+   ],
+   [
+    "wheat",
+    600,
+    2
+   ],
+   [
+    "pumpkinVine1",
+    690,
+    4
+   ],
+   [
+    "cow",
+    760,
+    2
+   ],
+   [
+    "wagon",
+    1160,
+    2
+   ],
+   [
+    "sunflower0",
+    1260,
+    2
+   ],
+   [
+    "sunflower1",
+    1290,
+    2
+   ],
+   [
+    "farmSign",
+    1400,
+    2
+   ],
+   [
+    "pumpkinVine0",
+    1330,
+    6
+   ],
+   [
+    "hayStack",
+    1530,
+    2
+   ],
+   [
+    "chestnuts",
+    1610,
+    2
+   ],
+   [
+    "veggieStall",
+    1720,
+    2
+   ],
+   [
+    "fenceC",
+    1900,
+    2
+   ],
+   [
+    "rooster",
+    1870,
+    2
+   ],
+   [
+    "chicken",
+    1960,
+    2
+   ],
+   [
+    "hayBale",
+    2040,
+    2
+   ],
+   [
+    "treeYellow",
+    2250,
+    8
+   ]
+  ],
+  "front": [
+   [
+    "leaves2",
+    150,
+    3
+   ],
+   [
+    "apples",
+    560,
+    3
+   ],
+   [
+    "leaves0",
+    640,
+    3
+   ],
+   [
+    "leaves1",
+    1460,
+    3
+   ],
+   [
+    "leaves3",
+    1990,
+    3
+   ]
+  ],
+  "idlers": [
+   [
+    "turkeyIdle",
+    1235,
+    2,
+    true
+   ]
+  ],
+  "walkers": [
+   {
+    "sprite": "turkey",
+    "x": 280,
+    "span": 200,
+    "speed": 18
+   },
+   {
+    "sprite": "plumpTurkey",
+    "x": 1150,
+    "span": 200,
+    "speed": 14
+   },
+   {
+    "sprite": "squirrel",
+    "x": 1780,
+    "span": 180,
+    "speed": 26
+   }
+  ],
+  "lights": {
+   "color": "255,170,90",
+   "steady": true,
+   "strength": 0.8,
+   "items": [
+    [
+     420,
+     -120,
+     90
+    ],
+    [
+     1720,
+     -120,
+     90
+    ],
+    [
+     1235,
+     -40,
+     50
+    ]
+   ]
+  },
+  "particles": {
+   "type": "leaves",
+   "count": 70
+  },
+  "vignette": "45,18,10",
+  "vignetteStrength": 0.4
+ },
+ "wardrobe": {
+  "hat": [
+   [
+    1002742,
+    "Baby Turkey Hat"
+   ],
+   [
+    1002746,
+    "Sleepy Turkey"
+   ],
+   [
+    1002542,
+    "Acorn Headgear"
+   ],
+   [
+    1002543,
+    "Acorn Helmet"
+   ],
+   [
+    1005944,
+    "Acorn Bud Hat"
+   ],
+   [
+    1004279,
+    "Squirrel Fedora"
+   ],
+   [
+    1005152,
+    "Squirrel Hairband"
+   ],
+   [
+    1007068,
+    "Roasted Chestnut Teddy Hat"
+   ],
+   [
+    1002434,
+    "Autumn Hat"
+   ],
+   [
+    1005560,
+    "Autumn Morning Hat"
+   ],
+   [
+    1006128,
+    "Autumn Wind Hat"
+   ],
+   [
+    1006282,
+    "Magica in the Autumn Forest Hairpin"
+   ],
+   [
+    1006381,
+    "Autumn Story"
+   ],
+   [
+    1006384,
+    "Autumn Mushroom Beret"
+   ],
+   [
+    1005096,
+    "Chunky Cable-Knit Hat"
+   ],
+   [
+    1006625,
+    "Cozy Beanie"
+   ]
+  ],
+  "outfit": [
+   [
+    1050672,
+    "Autumn Wind Outfit"
+   ],
+   [
+    1051745,
+    "Autumn Wind Outfit"
+   ],
+   [
+    1050727,
+    "Autumn Sunlight"
+   ],
+   [
+    1051799,
+    "Autumn Sunshine"
+   ],
+   [
+    1052069,
+    "Flamboyant Autumn Gear"
+   ],
+   [
+    1053597,
+    "Autumn Morning Suit"
+   ],
+   [
+    1053598,
+    "Autumn Morning Dress"
+   ],
+   [
+    1054018,
+    "Magica in the Autumn Forest Suit"
+   ],
+   [
+    1054019,
+    "Magica in the Autumn Forest Dress"
+   ],
+   [
+    1053247,
+    "Fall Oversized Jacket"
+   ],
+   [
+    1051459,
+    "Pure Farmer One-piece"
+   ],
+   [
+    1052844,
+    "Corn Overalls"
+   ],
+   [
+    1054077,
+    "Orange Knitwear"
+   ],
+   [
+    1054248,
+    "Cozy Cardigan"
+   ],
+   [
+    1050504,
+    "Lovely Plaid"
+   ]
+  ],
+  "cape": [
+   [
+    1103222,
+    "Falling Leaves"
+   ],
+   [
+    1103265,
+    "Autumn Morning Cape"
+   ],
+   [
+    1103566,
+    "Country Autumn Village"
+   ],
+   [
+    1103653,
+    "Colored Autumn"
+   ],
+   [
+    1103096,
+    "Squirrel Tail"
+   ],
+   [
+    1103595,
+    "Squirrel Entourage"
+   ],
+   [
+    1103158,
+    "Plaid Pashmina (Brown)"
+   ],
+   [
+    1103162,
+    "Plaid Pashmina (Red)"
+   ],
+   [
+    1104005,
+    "Cozy Beige Muffler"
+   ],
+   [
+    1103736,
+    "Cozy Explorer Sweater"
+   ],
+   [
+    1102756,
+    "Corn Cape"
+   ],
+   [
+    1103970,
+    "Warm Fluffy Scarf"
+   ]
+  ],
+  "shoes": [
+   [
+    1070158,
+    "Autumn Wind Shoes"
+   ],
+   [
+    1071174,
+    "Autumn Wind Shoes"
+   ],
+   [
+    1073453,
+    "Autumn Morning Shoes"
+   ],
+   [
+    1073784,
+    "Magica in the Autumn Forest Shoes"
+   ],
+   [
+    1073812,
+    "Autumn Path"
+   ],
+   [
+    1073261,
+    "Chunky Cable-Knit Shoes"
+   ],
+   [
+    1073009,
+    "Corn Shoes"
+   ],
+   [
+    1073315,
+    "Lovely Plaid Shoes"
+   ],
+   [
+    1073129,
+    "Cozy Fur Shoes"
+   ],
+   [
+    1073127,
+    "Cozy Fluffy Slippers"
+   ],
+   [
+    1073509,
+    "Squirrelbear Explorer Shoes"
+   ]
+  ],
+  "face": [
+   [
+    1012129,
+    "Maple Leaf Paint (Canada)"
+   ],
+   [
+    1012031,
+    "Leaf"
+   ],
+   [
+    1012485,
+    "Sweet Persimmon Blush"
+   ],
+   [
+    1012852,
+    "Warm Tone Blush"
+   ],
+   [
+    1012176,
+    "Orange Blush"
+   ],
+   [
+    1012744,
+    "Cozy Sleepy"
+   ],
+   [
+    1012867,
+    "Blushing Yummy"
+   ],
+   [
+    1012656,
+    "Round Blush"
+   ],
+   [
+    1012758,
+    "Puffed Up Cheeks Snow Squirrel"
+   ]
+  ],
+  "weapon": [
+   [
+    1702156,
+    "Forked Turkey"
+   ],
+   [
+    1703169,
+    "Snowy Squirrel Acorn"
+   ],
+   [
+    1702869,
+    "Autumn Lantern Weapon"
+   ],
+   [
+    1703012,
+    "Autumn Morning Weapon"
+   ],
+   [
+    1703424,
+    "Sweet Autumn"
+   ],
+   [
+    1702551,
+    "Korean Thanksgiving Persimmon Branch"
+   ],
+   [
+    1702547,
+    "Sweet Persimmon"
+   ],
+   [
+    1702114,
+    "Wonky's Leaf"
+   ],
+   [
+    1703061,
+    "Squirrelbear Camera"
+   ],
+   [
+    1702382,
+    "Persimmon Branch"
+   ]
+  ]
+ },
+ "pets": [
+  5000022,
+  5000500,
+  5000086,
+  5000475,
+  5000343,
+  5002511,
+  5002512,
+  5002875,
+  5002876,
+  5002183,
+  5002185,
+  5000043,
+  5002252
+ ]
+}

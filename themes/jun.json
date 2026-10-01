@@ -1,0 +1,713 @@
+{
+ "key": "jun",
+ "month": 6,
+ "name": "Beach Summer",
+ "accent": "#2ec4d6",
+ "sprites": {
+  "sky": "Map/Back/sandBeach.img/back/11",
+  "sun": "Map/Back/2025Summer.img/spine/10/Sun.png",
+  "cloud0": "Map/Back/sandBeach.img/back/3",
+  "cloud1": "Map/Back/sandBeach.img/back/4",
+  "cloud2": "Map/Back/sandBeach.img/back/5",
+  "cloud3": "Map/Back/sandBeach.img/back/6",
+  "gull": {
+   "path": "Mob/8645113.img/move",
+   "version": "250"
+  },
+  "island0": "Map/Back/goldBeach.img/back/4",
+  "island1": "Map/Back/goldBeach.img/back/5",
+  "coast": "Map/Back/sandBeach.img/back/12",
+  "ship": "Map/Back/sandBeach.img/back/13",
+  "sea": "Map/Back/goldBeach.img/back/9",
+  "pier": "Map/Back/goldBeach.img/back/7",
+  "rocks0": "Map/Obj/goldBeach.img/sea/stone/0",
+  "rocks1": "Map/Obj/goldBeach.img/sea/stone/1",
+  "rocks2": "Map/Obj/goldBeach.img/sea/stone/2",
+  "palm": "Map/Obj/goldBeach.img/beach/palmtree/4",
+  "sand": "Map/Tile/goldBeach1.img/bsc/0",
+  "starfish": "Map/Obj/goldBeach.img/beach/obj/0",
+  "bottle": "Map/Obj/goldBeach.img/beach/obj/1",
+  "shell": "Map/Obj/goldBeach.img/beach/obj/2",
+  "plant0": "Map/Obj/goldBeach.img/beach/plant/0",
+  "plant1": "Map/Obj/goldBeach.img/beach/plant/1",
+  "plant2": "Map/Obj/goldBeach.img/beach/plant/2",
+  "plant3": "Map/Obj/goldBeach.img/beach/plant/3",
+  "umbrella": "Map/Obj/goldBeach.img/foot/acc/2",
+  "windsurf": "Map/Obj/goldBeach.img/resort/back/0",
+  "lounger": "Map/Obj/goldBeach.img/resort/beachChair/0",
+  "clam": "Map/Obj/goldBeach.img/resort/obj/0",
+  "ring": "Map/Obj/goldBeach.img/resort/obj/1",
+  "lorang": {
+   "path": "Mob/3230102.img/move",
+   "version": "250"
+  },
+  "clang": {
+   "path": "Mob/4230104.img/move",
+   "version": "250"
+  },
+  "tortie": {
+   "path": "Mob/4130101.img/move",
+   "version": "250"
+  },
+  "seal": {
+   "path": "Mob/3230405.img/stand",
+   "version": "250"
+  }
+ },
+ "scene": {
+  "sky": "sky",
+  "celestial": {
+   "sprite": "sun",
+   "x": 0.74,
+   "y": 0.04,
+   "parallax": 0.02,
+   "glow": "255,236,180",
+   "glowRadius": 190,
+   "glowStrength": 0.22
+  },
+  "clouds": {
+   "sprites": [
+    "cloud0",
+    "cloud1",
+    "cloud2",
+    "cloud3"
+   ],
+   "count": 6,
+   "alpha": 0.95,
+   "y": [
+    0.02,
+    0.26
+   ],
+   "speed": [
+    3,
+    7
+   ]
+  },
+  "flyer": {
+   "sprite": "gull",
+   "period": 30,
+   "duration": 18,
+   "y": 0.2,
+   "bob": 12
+  },
+  "far": [
+   {
+    "parallax": 0.06,
+    "y": -112,
+    "items": [
+     [
+      "island0",
+      150,
+      6
+     ],
+     [
+      "ship",
+      430,
+      4
+     ],
+     [
+      "island1",
+      700,
+      6
+     ],
+     [
+      "coast",
+      1000,
+      6,
+      true
+     ]
+    ],
+    "alpha": 0.95
+   },
+   {
+    "parallax": 0.12,
+    "y": 78,
+    "tile": [
+     "sea"
+    ],
+    "start": -200,
+    "spacing": 400
+   },
+   {
+    "parallax": 0.3,
+    "y": 46,
+    "items": [
+     [
+      "pier",
+      120,
+      0
+     ],
+     [
+      "rocks1",
+      480,
+      0
+     ],
+     [
+      "rocks2",
+      1050,
+      0,
+      true
+     ],
+     [
+      "pier",
+      1450,
+      0,
+      true
+     ]
+    ],
+    "darken": 0.15
+   },
+   {
+    "parallax": 0.6,
+    "y": 8,
+    "items": [
+     [
+      "palm",
+      260,
+      0,
+      true
+     ],
+     [
+      "plant2",
+      520,
+      0
+     ],
+     [
+      "palm",
+      1180,
+      0
+     ],
+     [
+      "plant0",
+      1500,
+      0
+     ]
+    ],
+    "darken": 0.3
+   }
+  ],
+  "mist": "235,248,255",
+  "ground": {
+   "tile": "sand",
+   "darken": 0.1,
+   "lip": [
+    "#e3c27a",
+    "#fff1c2"
+   ]
+  },
+  "back": [
+   [
+    "plant3",
+    20,
+    4
+   ],
+   [
+    "windsurf",
+    140,
+    4
+   ],
+   [
+    "lounger",
+    360,
+    4
+   ],
+   [
+    "ring",
+    560,
+    2
+   ],
+   [
+    "starfish",
+    625,
+    2
+   ],
+   [
+    "palm",
+    700,
+    4
+   ],
+   [
+    "shell",
+    880,
+    1
+   ],
+   [
+    "umbrella",
+    1190,
+    4
+   ],
+   [
+    "plant2",
+    1330,
+    4
+   ],
+   [
+    "rocks0",
+    1490,
+    8
+   ],
+   [
+    "clam",
+    1440,
+    4
+   ],
+   [
+    "starfish",
+    1660,
+    2
+   ],
+   [
+    "lounger",
+    1830,
+    4,
+    true
+   ],
+   [
+    "palm",
+    2010,
+    4,
+    true
+   ],
+   [
+    "bottle",
+    2075,
+    1
+   ],
+   [
+    "plant1",
+    2245,
+    4
+   ]
+  ],
+  "front": [
+   [
+    "plant1",
+    480,
+    6
+   ],
+   [
+    "starfish",
+    1330,
+    2
+   ],
+   [
+    "plant1",
+    1560,
+    6,
+    true
+   ],
+   [
+    "shell",
+    1960,
+    1
+   ]
+  ],
+  "idlers": [
+   [
+    "seal",
+    240,
+    2,
+    true
+   ]
+  ],
+  "walkers": [
+   {
+    "sprite": "lorang",
+    "x": 540,
+    "span": 160,
+    "speed": 22
+   },
+   {
+    "sprite": "tortie",
+    "x": 1250,
+    "span": 150,
+    "speed": 10
+   },
+   {
+    "sprite": "clang",
+    "x": 1700,
+    "span": 150,
+    "speed": 20
+   }
+  ],
+  "lights": {
+   "color": "255,236,170",
+   "steady": true,
+   "strength": 0.6,
+   "items": [
+    [
+     1190,
+     -150,
+     90
+    ],
+    [
+     360,
+     -160,
+     90
+    ],
+    [
+     1860,
+     -110,
+     90
+    ]
+   ]
+  },
+  "particles": {
+   "type": "sparkles",
+   "count": 30,
+   "alpha": 0.8
+  },
+  "vignette": "20,70,120",
+  "vignetteStrength": 0.25
+ },
+ "wardrobe": {
+  "hat": [
+   [
+    1002309,
+    "Watermelon Hat"
+   ],
+   [
+    1002396,
+    "Hawaiian Flower"
+   ],
+   [
+    1003141,
+    "Straw Sun Hat"
+   ],
+   [
+    1003594,
+    "Cool Summer Snorkeling"
+   ],
+   [
+    1003920,
+    "Hawaiian Sunhat"
+   ],
+   [
+    1004805,
+    "Sky-blue Straw Hat"
+   ],
+   [
+    1004820,
+    "Goggled Watermelon Hat"
+   ],
+   [
+    1004981,
+    "Summer Pom Pom Straw Hat"
+   ],
+   [
+    1005192,
+    "Super Summer Snorkel"
+   ],
+   [
+    1005591,
+    "Beach Fedora"
+   ],
+   [
+    1006043,
+    "Beach Party Head Decoration"
+   ],
+   [
+    1006855,
+    "Summer Beach Hat"
+   ],
+   [
+    1006886,
+    "Jumbo Ducky Swimming Cap"
+   ],
+   [
+    1006023,
+    "Daisy Vacation Panama Hat"
+   ],
+   [
+    1002195,
+    "Flowery Swimming Cap"
+   ]
+  ],
+  "outfit": [
+   [
+    1051118,
+    "Pink Strapless Bikini"
+   ],
+   [
+    1051174,
+    "Bikini"
+   ],
+   [
+    1051358,
+    "Pink Cutie Bikini"
+   ],
+   [
+    1053060,
+    "Colorful Bikini"
+   ],
+   [
+    1050519,
+    "Blue Retro Swimsuit"
+   ],
+   [
+    1051588,
+    "Red Retro Swimsuit"
+   ],
+   [
+    1050650,
+    "Beach Party Swimsuit"
+   ],
+   [
+    1053197,
+    "Red Striped Swimsuit"
+   ],
+   [
+    1053198,
+    "Blue Striped Swimsuit"
+   ],
+   [
+    1050337,
+    "Hawaiian Couple"
+   ],
+   [
+    1051406,
+    "Hawaiian Couple"
+   ],
+   [
+    1050469,
+    "Fab Beachwear"
+   ],
+   [
+    1053621,
+    "White Sand Beach"
+   ],
+   [
+    1054493,
+    "Summer Beach Shirt"
+   ],
+   [
+    1054494,
+    "Summer Beach Dress"
+   ]
+  ],
+  "cape": [
+   [
+    1102938,
+    "Fantastic Beach Cape"
+   ],
+   [
+    1103737,
+    "Sunny Beach Vacation"
+   ],
+   [
+    1103886,
+    "Summer Beach Cape"
+   ],
+   [
+    1103098,
+    "Super Summer Pink Ribbon"
+   ],
+   [
+    1103099,
+    "Super Summer Blue Ribbon"
+   ],
+   [
+    1103239,
+    "Well-Deserved Vacation Cape"
+   ],
+   [
+    1103266,
+    "Swimming Light"
+   ],
+   [
+    1103644,
+    "Ducky Bubble Time"
+   ],
+   [
+    1103659,
+    "Summer and Winter Island Cape"
+   ],
+   [
+    1102091,
+    "Summer Kite"
+   ],
+   [
+    1102421,
+    "Lemon Floating Smile"
+   ]
+  ],
+  "shoes": [
+   [
+    1073229,
+    "Red Flipflops"
+   ],
+   [
+    1073230,
+    "Blue Flipflops"
+   ],
+   [
+    1072843,
+    "Bubble Flip Flops"
+   ],
+   [
+    1073156,
+    "Fab Beach Sandals"
+   ],
+   [
+    1073668,
+    "Beach Party Slippers"
+   ],
+   [
+    1073677,
+    "Sandy Beach Shoes"
+   ],
+   [
+    1074197,
+    "Summer Beach Sandals"
+   ],
+   [
+    1074219,
+    "Ducky Tube Slides"
+   ],
+   [
+    1072092,
+    "Yellow Flippers"
+   ],
+   [
+    1072708,
+    "Cool Summer Flippers"
+   ],
+   [
+    1073274,
+    "Super Summer Pink Shoes"
+   ],
+   [
+    1073275,
+    "Super Summer Blue Shoes"
+   ],
+   [
+    1073945,
+    "Green Summer Sandals"
+   ],
+   [
+    1073946,
+    "Coral Summer Sandals"
+   ]
+  ],
+  "face": [
+   [
+    1022295,
+    "Beach Sunglasses"
+   ],
+   [
+    1022296,
+    "Sunset Sunglasses"
+   ],
+   [
+    1022353,
+    "Cobra's Hawaiian Sunglasses"
+   ],
+   [
+    1022270,
+    "Oversized Sunglasses"
+   ],
+   [
+    1022321,
+    "Heart-Heart Sunglasses"
+   ],
+   [
+    1022177,
+    "Star Sunglasses"
+   ],
+   [
+    1022055,
+    "Pink Sunglasses"
+   ],
+   [
+    1022110,
+    "Big White Sunglasses"
+   ],
+   [
+    1012782,
+    "Watermelon Popsicle"
+   ],
+   [
+    1022374,
+    "Tiny Sunglasses"
+   ],
+   [
+    1022039,
+    "Orange Round Shades"
+   ]
+  ],
+  "weapon": [
+   [
+    1702699,
+    "Colorful Beach Ball"
+   ],
+   [
+    1703026,
+    "Bouncy Beach Ball"
+   ],
+   [
+    1702217,
+    "Ducky Tube"
+   ],
+   [
+    1702208,
+    "Alligator Tube"
+   ],
+   [
+    1702855,
+    "White Ducky Inner Tube"
+   ],
+   [
+    1702782,
+    "Surf's Up"
+   ],
+   [
+    1703670,
+    "Green Surfboard"
+   ],
+   [
+    1703673,
+    "Sky Blue Surfboard"
+   ],
+   [
+    1702775,
+    "Watermelon Slice"
+   ],
+   [
+    1703519,
+    "Tropical Ice"
+   ],
+   [
+    1703245,
+    "Sandy Beach Toy"
+   ],
+   [
+    1703006,
+    "Cool Summer Ice Bucket"
+   ],
+   [
+    1703264,
+    "Midnight Coconut Water"
+   ],
+   [
+    1703370,
+    "Enjoy Surfing With Yeti"
+   ]
+  ]
+ },
+ "pets": [
+  5000460,
+  5000461,
+  5000462,
+  5002277,
+  5002339,
+  5002225,
+  5002259,
+  5002260,
+  5002261,
+  5002792,
+  5000466,
+  5002581,
+  5002835,
+  5000146
+ ]
+}

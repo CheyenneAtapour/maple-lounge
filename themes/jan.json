@@ -1,0 +1,674 @@
+{
+ "key": "jan",
+ "month": 1,
+ "name": "New Year",
+ "accent": "#f2b632",
+ "sprites": {
+  "sky": "Map/Back/festivalCN.img/back/2",
+  "stars": "Map/Back/EventCN.img/ani/0/0",
+  "moon": "Map/Back/EventCN.img/back/2",
+  "cloud0": "Map/Back/festivalCN.img/back/4",
+  "cloud1": "Map/Back/festivalCN.img/back/5",
+  "cloud2": "Map/Back/festivalCN.img/back/6",
+  "cloud3": "Map/Back/festivalCN.img/back/7",
+  "carp": "Map/Obj/EventCN.img/2016_Chunjie/acc/0",
+  "mtn0": "Map/Back/EventCN.img/back/5",
+  "mtn1": "Map/Back/EventCN.img/back/4",
+  "pine": "Map/Obj/event.img/2018sul/tree/1",
+  "bush0": "Map/Obj/event.img/2018sul/tree/3",
+  "bush1": "Map/Obj/event.img/2018sul/tree/5",
+  "stone": "Map/Obj/festivalCN.img/tile/foot/0",
+  "persimmon": "Map/Obj/event2.img/2017NewYear/NewYearObj/4",
+  "shed": "Map/Obj/event2.img/2017NewYear/NewYearObj/15",
+  "stall": "Map/Obj/event2.img/2017NewYear/NewYearObj/1",
+  "wall": "Map/Obj/event2.img/2017NewYear/NewYearObj/21",
+  "postL": "Map/Obj/event2.img/2017NewYear/NewYearObj/20",
+  "postR": "Map/Obj/event2.img/2017NewYear/NewYearObj/22",
+  "luckyBag": "Map/Obj/event2.img/2017NewYear/NewYearObj/5",
+  "gateHouse": "Map/Obj/event2.img/2017NewYear/NewYearObj/16",
+  "jars": "Map/Obj/event2.img/2017NewYear/NewYearObj/0",
+  "gifts": "Map/Obj/event2.img/2017NewYear/NewYearObj/10",
+  "riceCakes": "Map/Obj/event2.img/2017NewYear/NewYearObj/13",
+  "pot": "Map/Obj/event.img/2015sul/gamasot/1",
+  "snow0": "Map/Obj/event2.img/2017NewYear/LsnowObj/0",
+  "snow1": "Map/Obj/event2.img/2017NewYear/LsnowObj/2",
+  "kiteBunnies": "Map/Obj/event2.img/2017NewYear/NewYearObj/3",
+  "readingBunnies": "Map/Obj/event.img/2011newYear/homeTown/2",
+  "bunny0": "Map/Obj/event.img/2012sul/play/4",
+  "bunny1": "Map/Obj/event.img/2012sul/play/5",
+  "bunnyGroup": "Map/Obj/event.img/2011newYear/homeTown/9",
+  "pig": {
+   "path": "Mob/1210101.img/move",
+   "version": "250"
+  },
+  "tiger": {
+   "path": "Mob/9500397.img/move",
+   "version": "250"
+  }
+ },
+ "scene": {
+  "sky": "sky",
+  "stars": {
+   "sprite": "stars",
+   "alpha": [
+    0.4,
+    0.9
+   ],
+   "speed": 1.2
+  },
+  "celestial": {
+   "sprite": "moon",
+   "x": 0.58,
+   "y": 0.04,
+   "parallax": 0.02,
+   "glow": "255,230,150",
+   "glowRadius": 200,
+   "glowStrength": 0.16
+  },
+  "clouds": {
+   "sprites": [
+    "cloud0",
+    "cloud1",
+    "cloud2",
+    "cloud3"
+   ],
+   "count": 6,
+   "alpha": 0.7,
+   "y": [
+    0.06,
+    0.34
+   ],
+   "speed": [
+    3,
+    7
+   ]
+  },
+  "flyer": {
+   "sprite": "carp",
+   "period": 40,
+   "duration": 24,
+   "y": 0.22,
+   "bob": 14
+  },
+  "far": [
+   {
+    "parallax": 0.12,
+    "y": 110,
+    "tile": [
+     "mtn0",
+     "mtn1"
+    ],
+    "start": -250,
+    "spacing": 620,
+    "darken": 0.35
+   },
+   {
+    "parallax": 0.3,
+    "y": 90,
+    "items": [
+     [
+      "pine",
+      60,
+      0
+     ],
+     [
+      "pine",
+      820,
+      0,
+      true
+     ],
+     [
+      "pine",
+      1500,
+      0
+     ]
+    ],
+    "darken": 0.6
+   },
+   {
+    "parallax": 0.55,
+    "y": 0,
+    "items": [
+     [
+      "bush0",
+      80,
+      0
+     ],
+     [
+      "bush1",
+      520,
+      0
+     ],
+     [
+      "bush0",
+      1050,
+      0
+     ],
+     [
+      "bush1",
+      1400,
+      0
+     ],
+     [
+      "bush0",
+      1760,
+      0
+     ]
+    ],
+    "darken": 0.4
+   }
+  ],
+  "mist": "80,80,150",
+  "ground": {
+   "tile": "stone",
+   "darken": 0.25,
+   "lip": [
+    "#c9d3e6",
+    "#f2f6ff"
+   ]
+  },
+  "back": [
+   [
+    "persimmon",
+    60,
+    0
+   ],
+   [
+    "shed",
+    330,
+    4
+   ],
+   [
+    "stall",
+    590,
+    4
+   ],
+   [
+    "postL",
+    850,
+    2
+   ],
+   [
+    "wall",
+    1010,
+    2
+   ],
+   [
+    "postR",
+    1170,
+    2
+   ],
+   [
+    "pot",
+    1310,
+    2
+   ],
+   [
+    "luckyBag",
+    1530,
+    4
+   ],
+   [
+    "gifts",
+    1700,
+    2
+   ],
+   [
+    "gateHouse",
+    1890,
+    4
+   ],
+   [
+    "jars",
+    2245,
+    4
+   ]
+  ],
+  "front": [
+   [
+    "snow0",
+    180,
+    4
+   ],
+   [
+    "snow1",
+    500,
+    2
+   ],
+   [
+    "snow0",
+    1420,
+    4
+   ],
+   [
+    "snow1",
+    1650,
+    2
+   ],
+   [
+    "snow0",
+    2020,
+    4
+   ]
+  ],
+  "idlers": [
+   [
+    "kiteBunnies",
+    250,
+    2
+   ],
+   [
+    "bunny0",
+    790,
+    2
+   ],
+   [
+    "bunny1",
+    1215,
+    2
+   ],
+   [
+    "readingBunnies",
+    1105,
+    2
+   ],
+   [
+    "bunnyGroup",
+    1720,
+    2
+   ],
+   [
+    "bunny1",
+    2045,
+    2,
+    true
+   ]
+  ],
+  "walkers": [
+   {
+    "sprite": "tiger",
+    "x": 360,
+    "span": 200,
+    "speed": 16
+   },
+   {
+    "sprite": "pig",
+    "x": 1380,
+    "span": 220,
+    "speed": 20
+   }
+  ],
+  "lights": {
+   "color": "255,170,90",
+   "items": [
+    [
+     590,
+     -120,
+     110
+    ],
+    [
+     1310,
+     -40,
+     70,
+     "255,120,50"
+    ],
+    [
+     1890,
+     -150,
+     120
+    ],
+    [
+     330,
+     -120,
+     90
+    ],
+    [
+     1530,
+     -80,
+     90,
+     "255,210,120"
+    ]
+   ]
+  },
+  "particles": {
+   "type": "fireworks"
+  },
+  "vignette": "10,8,30"
+ },
+ "wardrobe": {
+  "hat": [
+   [
+    1002738,
+    "Bunny Earmuffs"
+   ],
+   [
+    1000027,
+    "Lunar Festivities Cap"
+   ],
+   [
+    1001039,
+    "Lunar Festivities Ornament"
+   ],
+   [
+    1001001,
+    "Hanbok Jobawi"
+   ],
+   [
+    1000001,
+    "Fine Black Hanbok Hat"
+   ],
+   [
+    1004096,
+    "New Year's Lion Head"
+   ],
+   [
+    1004465,
+    "Firework Hat"
+   ],
+   [
+    1004822,
+    "Floral Fireworks Hat"
+   ],
+   [
+    1004724,
+    "Bright New Year Hat"
+   ],
+   [
+    1005095,
+    "Lunar New Year Fireworks Mask"
+   ],
+   [
+    1005279,
+    "Lunar New Year Pudgy Piggy Hat"
+   ],
+   [
+    1005936,
+    "Omnom Rice Cake Hat"
+   ],
+   [
+    1004615,
+    "Honey Rice Cake Hat"
+   ],
+   [
+    1002734,
+    "Chinese Lion Headgear"
+   ],
+   [
+    1004073,
+    "Year of Horse Hat (Peach)"
+   ],
+   [
+    1003745,
+    "White Sheep Hat"
+   ],
+   [
+    1002771,
+    "Tiger Cub Hat"
+   ]
+  ],
+  "outfit": [
+   [
+    1052926,
+    "Cottontail Rabbit Dress"
+   ],
+   [
+    1050124,
+    "Lunar Festivities Suit"
+   ],
+   [
+    1051138,
+    "Lunar Festivities Dress"
+   ],
+   [
+    1050123,
+    "Royal Hanbok"
+   ],
+   [
+    1051136,
+    "Royal Palace Hanbok"
+   ],
+   [
+    1050188,
+    "Flower Heir Hanbok"
+   ],
+   [
+    1051229,
+    "Flower Heiress Hanbok"
+   ],
+   [
+    1051302,
+    "Pink Fluffy Hanbok"
+   ],
+   [
+    1050229,
+    "Gentle Hanbok"
+   ],
+   [
+    1051280,
+    "Gentle Hanbok"
+   ],
+   [
+    1053381,
+    "Lunar New Year Pudgy Piggy Dress"
+   ],
+   [
+    1053382,
+    "Lunar New Year Pudgy Piggy Shorts"
+   ],
+   [
+    1051073,
+    "Red Kimono"
+   ],
+   [
+    1052779,
+    "Peach Camellia Kimono"
+   ],
+   [
+    1051705,
+    "Festival Flower"
+   ]
+  ],
+  "cape": [
+   [
+    1102620,
+    "My Own Fireworks"
+   ],
+   [
+    1102688,
+    "Boom Boom Fireworks"
+   ],
+   [
+    1103076,
+    "Lunar New Year VIP Cape"
+   ],
+   [
+    1103156,
+    "Lunar New Year Pudgy Piggy Cape"
+   ],
+   [
+    1103424,
+    "Lunar Revolution"
+   ],
+   [
+    1103429,
+    "Night Walk Lantern Cape"
+   ],
+   [
+    1102815,
+    "Lucky Charm Bag"
+   ],
+   [
+    1103279,
+    "17th Anniversary Fireworks Cape"
+   ],
+   [
+    1103969,
+    "Shimmering Festive Feathers"
+   ],
+   [
+    1102901,
+    "Sparkler"
+   ],
+   [
+    1103693,
+    "Colorful Confetti"
+   ],
+   [
+    1103079,
+    "Plum Blossom Perfume Pouch"
+   ]
+  ],
+  "shoes": [
+   [
+    1073062,
+    "Cottontail Rabbit Shoes"
+   ],
+   [
+    1070147,
+    "Flower Shoes"
+   ],
+   [
+    1074144,
+    "Banquet Flower Shoes"
+   ],
+   [
+    1070002,
+    "Kimono Shoes"
+   ],
+   [
+    1071008,
+    "Kimono Sandals"
+   ],
+   [
+    1072684,
+    "Lunar Shoes"
+   ],
+   [
+    1073262,
+    "Lunar New Year VIP Shoes"
+   ],
+   [
+    1073328,
+    "Lunar New Year Pudgy Piggy Shoes"
+   ],
+   [
+    1073532,
+    "Lunar Reverie"
+   ],
+   [
+    1074245,
+    "Festive Grin Shoes"
+   ]
+  ],
+  "face": [
+   [
+    1012061,
+    "Lucky Tree Branch Nose"
+   ],
+   [
+    1012485,
+    "Sweet Persimmon Blush"
+   ],
+   [
+    1012656,
+    "Round Blush"
+   ],
+   [
+    1012852,
+    "Warm Tone Blush"
+   ],
+   [
+    1012454,
+    "Pointy Fox Whiskers"
+   ],
+   [
+    1012693,
+    "Tigris Whiskers"
+   ],
+   [
+    1012283,
+    "Blazing Sun Face Paint"
+   ],
+   [
+    1012137,
+    "Star Face Painting"
+   ],
+   [
+    1012639,
+    "Rainbow Blush"
+   ]
+  ],
+  "weapon": [
+   [
+    1702346,
+    "Lucky Pouch Weapon"
+   ],
+   [
+    1702347,
+    "Fortune Flash"
+   ],
+   [
+    1702458,
+    "Fireworks Fan"
+   ],
+   [
+    1702492,
+    "Red Lantern"
+   ],
+   [
+    1702812,
+    "Lunar New Year VIP Weapon"
+   ],
+   [
+    1702885,
+    "Lunar New Year Pudgy Piggy"
+   ],
+   [
+    1703470,
+    "Colorful Fireworks"
+   ],
+   [
+    1703740,
+    "Zodiac Staff"
+   ],
+   [
+    1703905,
+    "Neon Mint Monster Fireworks"
+   ],
+   [
+    1703906,
+    "Neon Red Monster Fireworks"
+   ],
+   [
+    1702223,
+    "Sparkler"
+   ],
+   [
+    1702824,
+    "Golden Mochi"
+   ],
+   [
+    1702744,
+    "Starlight Lantern"
+   ]
+  ]
+ },
+ "pets": [
+  5002871,
+  5002872,
+  5002873,
+  5000424,
+  5002802,
+  5002202,
+  5002800,
+  5002748,
+  5002539,
+  5000025,
+  5002203,
+  5000028,
+  5002214,
+  5002372,
+  5000592,
+  5002738
+ ]
+}

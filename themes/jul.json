@@ -1,0 +1,719 @@
+{
+ "key": "jul",
+ "month": 7,
+ "name": "Summer Fireworks",
+ "accent": "#ff5f8f",
+ "sprites": {
+  "stars": "Map/Back/JPSengokuNight.img/back/24",
+  "moon": "Map/Back/festivalCN.img/back/0",
+  "cloud0": "Map/Back/JPSengokuNight.img/back/17",
+  "cloud1": "Map/Back/JPSengokuNight.img/back/18",
+  "cloud2": "Map/Back/JPSengokuNight.img/back/21",
+  "cloud3": "Map/Back/JPSengokuNight.img/back/22",
+  "lanternGhost": {
+   "path": "Mob/9400011.img/move",
+   "version": "250"
+  },
+  "mountains": "Map/Back/JPSengokuNight.img/back/14",
+  "torii": "Map/Obj/JPZipang.img/Kinoko/shrine/4",
+  "lanternTower": "Map/Obj/JPZipang.img/Kinoko/shrine/9",
+  "stoneLantern": "Map/Obj/JPZipang.img/Kinoko/common_Articifial/2",
+  "stoneLanternLit": "Map/Obj/JPZipang.img/Kinoko/common_Articifial/3",
+  "tallLantern": "Map/Obj/JPZipang.img/Kinoko/common_Articifial/12",
+  "fence0": "Map/Obj/JPZipang.img/Kinoko/common_Articifial/13",
+  "fence1": "Map/Obj/JPZipang.img/Kinoko/common_Articifial/14",
+  "shrineHut": "Map/Obj/JPZipang.img/Kinoko/shrine/6",
+  "lanternW": "Map/Obj/JPZipang.img/Kinoko/shrine/7",
+  "lanternR": "Map/Obj/JPZipang.img/Kinoko/shrine/8",
+  "bench": "Map/Obj/JPZipang.img/Kinoko/shrine/10",
+  "shavedIce": "Map/Obj/event.img/bingsoo/bingsoo/0",
+  "cart0": "Map/Obj/NightMarketTW.img/NightMarket/StreetVender0/2",
+  "cart1": "Map/Obj/NightMarketTW.img/NightMarket/StreetVender0/3",
+  "cart2": "Map/Obj/NightMarketTW.img/NightMarket/StreetVender0/4",
+  "stone": "Map/Tile/JPSengokuNight.img/bsc/0",
+  "tanuki": {
+   "path": "Mob/9400001.img/move",
+   "version": "250"
+  },
+  "fox": {
+   "path": "Mob/9400002.img/move",
+   "version": "250"
+  },
+  "rocket": {
+   "path": "Mob/9601231.img/move",
+   "version": "250"
+  },
+  "kappa": {
+   "path": "Mob/9400020.img/stand",
+   "version": "250"
+  },
+  "pagoda": "Map/Back/JP_Zipang_Kinoko_SunSet.img/back/11"
+ },
+ "scene": {
+  "sky": {
+   "gradient": [
+    "#070b26",
+    "#2b3a86"
+   ]
+  },
+  "stars": {
+   "sprite": "stars",
+   "alpha": [
+    0.5,
+    1.0
+   ],
+   "speed": 1.1
+  },
+  "celestial": {
+   "sprite": "moon",
+   "x": 0.78,
+   "y": 0.05,
+   "parallax": 0.02,
+   "glow": "170,200,255",
+   "glowRadius": 150,
+   "glowStrength": 0.16
+  },
+  "clouds": {
+   "sprites": [
+    "cloud0",
+    "cloud1",
+    "cloud2",
+    "cloud3"
+   ],
+   "count": 6,
+   "alpha": 0.55,
+   "y": [
+    0.06,
+    0.32
+   ],
+   "speed": [
+    3,
+    7
+   ]
+  },
+  "flyer": {
+   "sprite": "lanternGhost",
+   "period": 34,
+   "duration": 24,
+   "y": 0.22,
+   "bob": 12
+  },
+  "far": [
+   {
+    "parallax": 0.08,
+    "y": 250,
+    "items": [
+     [
+      "mountains",
+      700,
+      0
+     ]
+    ],
+    "darken": 0.35
+   },
+   {
+    "parallax": 0.2,
+    "y": 40,
+    "items": [
+     [
+      "pagoda",
+      520,
+      0
+     ],
+     [
+      "pagoda",
+      1300,
+      0,
+      true
+     ]
+    ],
+    "darken": 0.55,
+    "alpha": 0.85
+   },
+   {
+    "parallax": 0.7,
+    "y": 110,
+    "items": [
+     [
+      "torii",
+      330,
+      0
+     ],
+     [
+      "lanternTower",
+      1250,
+      0
+     ],
+     [
+      "torii",
+      1950,
+      0,
+      true
+     ]
+    ],
+    "darken": 0.45
+   }
+  ],
+  "mist": "60,50,110",
+  "ground": {
+   "tile": "stone",
+   "darken": 0.45,
+   "lip": [
+    "#3b3248",
+    "#5a4d6e"
+   ]
+  },
+  "back": [
+   [
+    "fence0",
+    40,
+    2
+   ],
+   [
+    "cart2",
+    210,
+    4
+   ],
+   [
+    "stoneLanternLit",
+    420,
+    2
+   ],
+   [
+    "fence0",
+    530,
+    2
+   ],
+   [
+    "fence1",
+    656,
+    2
+   ],
+   [
+    "shavedIce",
+    760,
+    4
+   ],
+   [
+    "stoneLantern",
+    905,
+    2
+   ],
+   [
+    "shrineHut",
+    1140,
+    2
+   ],
+   [
+    "fence1",
+    1245,
+    2
+   ],
+   [
+    "cart0",
+    1420,
+    4
+   ],
+   [
+    "bench",
+    1610,
+    2
+   ],
+   [
+    "cart1",
+    1790,
+    4
+   ],
+   [
+    "tallLantern",
+    1975,
+    2
+   ],
+   [
+    "fence0",
+    2065,
+    2
+   ],
+   [
+    "bench",
+    2240,
+    2
+   ]
+  ],
+  "front": [
+   [
+    "lanternR",
+    360,
+    1
+   ],
+   [
+    "lanternW",
+    1080,
+    1
+   ],
+   [
+    "lanternR",
+    1580,
+    1
+   ],
+   [
+    "lanternW",
+    1640,
+    1
+   ],
+   [
+    "lanternR",
+    2000,
+    1
+   ]
+  ],
+  "idlers": [
+   [
+    "kappa",
+    1210,
+    2,
+    true
+   ]
+  ],
+  "walkers": [
+   {
+    "sprite": "tanuki",
+    "x": 470,
+    "span": 180,
+    "speed": 18
+   },
+   {
+    "sprite": "fox",
+    "x": 1500,
+    "span": 200,
+    "speed": 22
+   },
+   {
+    "sprite": "rocket",
+    "x": 1880,
+    "span": 120,
+    "speed": 14
+   }
+  ],
+  "lights": {
+   "color": "255,150,70",
+   "items": [
+    [
+     420,
+     -70,
+     50
+    ],
+    [
+     210,
+     -110,
+     80
+    ],
+    [
+     760,
+     -140,
+     80
+    ],
+    [
+     905,
+     -60,
+     40
+    ],
+    [
+     360,
+     -40,
+     40,
+     "255,90,80"
+    ],
+    [
+     1080,
+     -40,
+     40
+    ],
+    [
+     1580,
+     -40,
+     40,
+     "255,90,80"
+    ],
+    [
+     1640,
+     -40,
+     40
+    ],
+    [
+     2000,
+     -40,
+     40,
+     "255,90,80"
+    ],
+    [
+     1420,
+     -120,
+     80
+    ],
+    [
+     1790,
+     -120,
+     80
+    ],
+    [
+     1975,
+     -120,
+     45
+    ],
+    [
+     1140,
+     -90,
+     45
+    ]
+   ]
+  },
+  "particles": {
+   "type": "fireworks"
+  },
+  "vignette": "8,6,30",
+  "vignetteStrength": 0.5
+ },
+ "wardrobe": {
+  "hat": [
+   [
+    1005221,
+    "Starry Summer Night Hat"
+   ],
+   [
+    1006314,
+    "Midsummer Night Clip"
+   ],
+   [
+    1006315,
+    "Midsummer Night Bow"
+   ],
+   [
+    1007254,
+    "Sweet Apple Fox Mask"
+   ],
+   [
+    1003843,
+    "Bizarre Fox Mask"
+   ],
+   [
+    1006330,
+    "God of Destruction Fox Mask"
+   ],
+   [
+    1005441,
+    "Cherry Blossom Fox Hairpin (Night)"
+   ],
+   [
+    1005577,
+    "Night Glimmerfox Hat"
+   ],
+   [
+    1005509,
+    "Sparkling Firefly Night Hat"
+   ],
+   [
+    1005095,
+    "Lunar New Year Fireworks Mask"
+   ],
+   [
+    1006221,
+    "Sweet Cotton Candy"
+   ],
+   [
+    1004851,
+    "Japanese Veil"
+   ],
+   [
+    1005363,
+    "Red Lotus Spirit Walker's Flower"
+   ],
+   [
+    1005856,
+    "Mid-Summer Morning Glory"
+   ]
+  ],
+  "outfit": [
+   [
+    1051071,
+    "Pink Kimono"
+   ],
+   [
+    1051072,
+    "White Kimono"
+   ],
+   [
+    1051073,
+    "Red Kimono"
+   ],
+   [
+    1052779,
+    "Peach Camellia Kimono"
+   ],
+   [
+    1053054,
+    "Hydrangea Kimono"
+   ],
+   [
+    1053548,
+    "Violet Kimono Uniform"
+   ],
+   [
+    1053549,
+    "Pink Kimono Uniform"
+   ],
+   [
+    1052435,
+    "Princess Hakama"
+   ],
+   [
+    1054457,
+    "Hanafuda Outfit (Hakama)"
+   ],
+   [
+    1053344,
+    "Starry Summer Night Dress"
+   ],
+   [
+    1053345,
+    "Starry Summer Night Pants"
+   ],
+   [
+    1050712,
+    "Midsummer Night Spirit"
+   ],
+   [
+    1051785,
+    "Midsummer Night Fairy"
+   ],
+   [
+    1053554,
+    "Firefly Night"
+   ],
+   [
+    1053611,
+    "Night Glimmerfox Outfit"
+   ]
+  ],
+  "cape": [
+   [
+    1102620,
+    "My Own Fireworks"
+   ],
+   [
+    1102688,
+    "Boom Boom Fireworks"
+   ],
+   [
+    1102901,
+    "Sparkler"
+   ],
+   [
+    1103279,
+    "17th Anniversary Fireworks Cape"
+   ],
+   [
+    1103429,
+    "Night Walk Lantern Cape"
+   ],
+   [
+    1103462,
+    "Midnight Festival"
+   ],
+   [
+    1103617,
+    "Midsummer Night Flutterings"
+   ],
+   [
+    1104086,
+    "Midsummer Wind Chimes"
+   ],
+   [
+    1103870,
+    "Firefly Glow"
+   ],
+   [
+    1103101,
+    "Cotton Candy Wings"
+   ],
+   [
+    1103276,
+    "Night Glimmerfox Cape"
+   ],
+   [
+    1102267,
+    "Friendly Nine-Tailed Fox Tails"
+   ]
+  ],
+  "shoes": [
+   [
+    1072865,
+    "Camellia Flower Geta"
+   ],
+   [
+    1073357,
+    "Red Lotus Spirit Walker's Geta"
+   ],
+   [
+    1071008,
+    "Kimono Sandals"
+   ],
+   [
+    1072812,
+    "Kimono Sandals"
+   ],
+   [
+    1070002,
+    "Kimono Shoes"
+   ],
+   [
+    1072813,
+    "Kimono Shoes"
+   ],
+   [
+    1073303,
+    "Starry Summer Night Shoes"
+   ],
+   [
+    1073787,
+    "Midsummer Night Shoes"
+   ],
+   [
+    1073461,
+    "Night Glimmerfox Shoes"
+   ],
+   [
+    1074173,
+    "Firefly Shoes"
+   ],
+   [
+    1073163,
+    "Starry Night Flowers"
+   ],
+   [
+    1073753,
+    "Soft Cotton Candy"
+   ]
+  ],
+  "face": [
+   [
+    1012159,
+    "Foxy Mask"
+   ],
+   [
+    1012687,
+    "Fox Fire Grin"
+   ],
+   [
+    1012784,
+    "Pointy Fox Whiskers"
+   ],
+   [
+    1012704,
+    "Twinkle Glitter"
+   ],
+   [
+    1012746,
+    "Twinkle Star Face Accessory"
+   ],
+   [
+    1012699,
+    "Stargazer Face Accessory"
+   ],
+   [
+    1012525,
+    "Smile! It's the Sweet Maple Festival!"
+   ],
+   [
+    1012730,
+    "Nom Nom Fish Pastry"
+   ],
+   [
+    1012468,
+    "Yummy Candy"
+   ],
+   [
+    1012137,
+    "Star Face Painting"
+   ],
+   [
+    1012656,
+    "Round Blush"
+   ]
+  ],
+  "weapon": [
+   [
+    1702223,
+    "Sparkler"
+   ],
+   [
+    1702458,
+    "Fireworks Fan"
+   ],
+   [
+    1703470,
+    "Colorful Fireworks"
+   ],
+   [
+    1703905,
+    "Neon Mint Monster Fireworks"
+   ],
+   [
+    1703906,
+    "Neon Red Monster Fireworks"
+   ],
+   [
+    1702492,
+    "Red Lantern"
+   ],
+   [
+    1702866,
+    "Firefly Firelight Lantern"
+   ],
+   [
+    1702744,
+    "Starlight Lantern"
+   ],
+   [
+    1702577,
+    "Lalala Goldfish Fishing Net"
+   ],
+   [
+    1702459,
+    "Cotton Candy"
+   ],
+   [
+    1702860,
+    "Starry Summer Night Weapon"
+   ],
+   [
+    1702084,
+    "Toy Pinwheel"
+   ],
+   [
+    1703391,
+    "Midsummer Night Flower Basket"
+   ],
+   [
+    1702538,
+    "Dewdrop Lantern"
+   ]
+  ]
+ },
+ "pets": [
+  5002232,
+  5002233,
+  5002251,
+  5002252,
+  5002253,
+  5000521,
+  5000198,
+  5002605,
+  5002606,
+  5002640,
+  5002641,
+  5002642,
+  5002876,
+  5000565
+ ]
+}

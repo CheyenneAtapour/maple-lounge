@@ -1,0 +1,839 @@
+{
+ "key": "mar",
+ "month": 3,
+ "name": "Cherry Blossoms",
+ "accent": "#ff8fb8",
+ "sprites": {
+  "sky": "Map/Back/JP_Zipang_Kinoko.img/back/0",
+  "cloud0": "Map/Back/TD_sakuraCastle.img/back/37",
+  "cloud1": "Map/Back/TD_sakuraCastle.img/back/40",
+  "cloud2": "Map/Back/TD_sakuraCastle.img/back/41",
+  "cloud3": "Map/Back/TD_sakuraCastle.img/back/42",
+  "cloud4": "Map/Back/TD_sakuraCastle.img/back/39",
+  "fuji": "Map/Back/JP_Zipang_Kinoko.img/back/1",
+  "pagoda": "Map/Back/JP_Zipang_Kinoko.img/back/3",
+  "treeline0": "Map/Back/JP_Zipang_Kinoko.img/back/2",
+  "treeline1": "Map/Back/JP_Zipang_Kinoko.img/back/4",
+  "castle": "Map/Back/TD_sakuraCastle.img/back/15",
+  "bigSakura1": "Map/Back/JP_Zipang_Kinoko.img/back/7",
+  "sakuraB": "Map/Obj/JPZipang.img/Kinoko/sakura_Normal/6",
+  "sakuraC": "Map/Obj/JPZipang.img/Kinoko/sakura_Normal/7",
+  "sakuraD": "Map/Obj/JPZipang.img/Kinoko/sakura_Normal/8",
+  "torii": "Map/Obj/JPZipang.img/Kinoko/shrine/4",
+  "toriiTall": "Map/Obj/JPZipang.img/Kinoko/shrine/5",
+  "shrineSign": "Map/Obj/JPZipang.img/Kinoko/shrine/2",
+  "foxStatue": "Map/Obj/JPZipang.img/Kinoko/shrine/3",
+  "shrineBox": "Map/Obj/JPZipang.img/Kinoko/shrine/6",
+  "bench": "Map/Obj/JPZipang.img/Kinoko/shrine/10",
+  "shop": "Map/Obj/JPZipang.img/Kinoko/shrine/1",
+  "stoneLantern": "Map/Obj/JPZipang.img/Kinoko/common_Articifial/12",
+  "stoneLanternF": "Map/Obj/JPZipang.img/Kinoko/common_Articifial/2",
+  "stoneLanternG": "Map/Obj/JPZipang.img/Kinoko/common_Articifial/3",
+  "jizo": "Map/Obj/JPZipang.img/Kinoko/common_Articifial/4",
+  "jizo2": "Map/Obj/JPZipang.img/Kinoko/common_Articifial/5",
+  "redFence": "Map/Obj/JPZipang.img/Kinoko/common_Articifial/13",
+  "redFence2": "Map/Obj/JPZipang.img/Kinoko/common_Articifial/14",
+  "woodFence": "Map/Obj/JPZipang.img/Kinoko/common_Articifial/7",
+  "grass0": "Map/Obj/JPZipang.img/Kinoko/common_Nature/0",
+  "grass1": "Map/Obj/JPZipang.img/Kinoko/common_Nature/1",
+  "flowers0": "Map/Obj/JPZipang.img/Kinoko/common_Nature/10",
+  "flowers1": "Map/Obj/JPZipang.img/Kinoko/common_Nature/11",
+  "reeds": "Map/Obj/JPZipang.img/Kinoko/common_Nature/3",
+  "bush0": "Map/Obj/JPZipang.img/Kinoko/common_Nature/5",
+  "bush1": "Map/Obj/JPZipang.img/Kinoko/common_Nature/6",
+  "bushBig": "Map/Obj/JPZipang.img/Kinoko/common_Nature/9",
+  "edge0": "Map/Tile/JPZipang_Kinoko.img/enH0/0",
+  "edge1": "Map/Tile/JPZipang_Kinoko.img/enH0/1",
+  "edge2": "Map/Tile/JPZipang_Kinoko.img/enH0/2",
+  "edge3": "Map/Tile/JPZipang_Kinoko.img/enH0/3",
+  "earth": "Map/Tile/JPZipang_Kinoko.img/bsc/0",
+  "crow": {
+   "path": "Mob/9400000.img/fly",
+   "version": "250"
+  },
+  "cloudFox": {
+   "path": "Mob/9400002.img/move",
+   "version": "250"
+  },
+  "raccoon": {
+   "path": "Mob/9400001.img/move",
+   "version": "250"
+  },
+  "mushroom": {
+   "path": "Mob/9400026.img/move",
+   "version": "250"
+  }
+ },
+ "scene": {
+  "sky": "sky",
+  "clouds": {
+   "sprites": [
+    "cloud0",
+    "cloud1",
+    "cloud2",
+    "cloud3",
+    "cloud4"
+   ],
+   "count": 7,
+   "alpha": 0.9,
+   "y": [
+    0.04,
+    0.3
+   ],
+   "speed": [
+    4,
+    9
+   ]
+  },
+  "flyer": {
+   "sprite": "crow",
+   "period": 34,
+   "duration": 20,
+   "y": 0.2,
+   "bob": 12
+  },
+  "far": [
+   {
+    "parallax": 0.12,
+    "y": 150,
+    "items": [
+     [
+      "fuji",
+      520,
+      0
+     ],
+     [
+      "pagoda",
+      1120,
+      0
+     ],
+     [
+      "castle",
+      1480,
+      0
+     ]
+    ],
+    "alpha": 0.95
+   },
+   {
+    "parallax": 0.3,
+    "y": 205,
+    "tile": [
+     "treeline0",
+     "treeline1"
+    ],
+    "start": -200,
+    "spacing": 700
+   },
+   {
+    "parallax": 0.55,
+    "y": 120,
+    "items": [
+     [
+      "bigSakura1",
+      80,
+      0
+     ],
+     [
+      "bigSakura1",
+      820,
+      0,
+      true
+     ],
+     [
+      "bigSakura1",
+      1500,
+      0
+     ]
+    ],
+    "darken": 0.1
+   }
+  ],
+  "mist": "255,215,235",
+  "ground": {
+   "tile": "earth",
+   "darken": 0.15,
+   "lip": [
+    "#4f8a2c",
+    "#8ccf4a"
+   ]
+  },
+  "back": [
+   [
+    "toriiTall",
+    40,
+    2
+   ],
+   [
+    "stoneLanternF",
+    150,
+    4
+   ],
+   [
+    "sakuraB",
+    330,
+    6,
+    true
+   ],
+   [
+    "shrineSign",
+    470,
+    3
+   ],
+   [
+    "jizo",
+    560,
+    6
+   ],
+   [
+    "sakuraC",
+    700,
+    6
+   ],
+   [
+    "stoneLantern",
+    880,
+    3
+   ],
+   [
+    "sakuraC",
+    1100,
+    6
+   ],
+   [
+    "bench",
+    1150,
+    3
+   ],
+   [
+    "torii",
+    1300,
+    3
+   ],
+   [
+    "stoneLanternG",
+    1410,
+    4
+   ],
+   [
+    "shop",
+    1600,
+    4
+   ],
+   [
+    "foxStatue",
+    1850,
+    4
+   ],
+   [
+    "sakuraD",
+    1990,
+    6,
+    true
+   ],
+   [
+    "shrineBox",
+    1740,
+    3
+   ],
+   [
+    "bushBig",
+    590,
+    4
+   ],
+   [
+    "jizo2",
+    1225,
+    4
+   ],
+   [
+    "bush1",
+    2010,
+    5
+   ],
+   [
+    "reeds",
+    2245,
+    3
+   ],
+   [
+    "woodFence",
+    -40,
+    4
+   ],
+   [
+    "redFence",
+    2080,
+    3
+   ],
+   [
+    "redFence2",
+    2206,
+    3
+   ],
+   [
+    "edge0",
+    -60,
+    26
+   ],
+   [
+    "edge1",
+    28,
+    26
+   ],
+   [
+    "edge2",
+    116,
+    26
+   ],
+   [
+    "edge3",
+    204,
+    26
+   ],
+   [
+    "edge0",
+    292,
+    26
+   ],
+   [
+    "edge1",
+    380,
+    26
+   ],
+   [
+    "edge2",
+    468,
+    26
+   ],
+   [
+    "edge3",
+    556,
+    26
+   ],
+   [
+    "edge0",
+    644,
+    26
+   ],
+   [
+    "edge1",
+    732,
+    26
+   ],
+   [
+    "edge2",
+    820,
+    26
+   ],
+   [
+    "edge3",
+    908,
+    26
+   ],
+   [
+    "edge0",
+    996,
+    26
+   ],
+   [
+    "edge1",
+    1084,
+    26
+   ],
+   [
+    "edge2",
+    1172,
+    26
+   ],
+   [
+    "edge3",
+    1260,
+    26
+   ],
+   [
+    "edge0",
+    1348,
+    26
+   ],
+   [
+    "edge1",
+    1436,
+    26
+   ],
+   [
+    "edge2",
+    1524,
+    26
+   ],
+   [
+    "edge3",
+    1612,
+    26
+   ],
+   [
+    "edge0",
+    1700,
+    26
+   ],
+   [
+    "edge1",
+    1788,
+    26
+   ],
+   [
+    "edge2",
+    1876,
+    26
+   ],
+   [
+    "edge3",
+    1964,
+    26
+   ],
+   [
+    "edge0",
+    2052,
+    26
+   ],
+   [
+    "edge1",
+    2140,
+    26
+   ],
+   [
+    "edge2",
+    2228,
+    26
+   ],
+   [
+    "edge3",
+    2316,
+    26
+   ]
+  ],
+  "front": [
+   [
+    "flowers0",
+    250,
+    4
+   ],
+   [
+    "grass0",
+    620,
+    3
+   ],
+   [
+    "flowers1",
+    1250,
+    4
+   ],
+   [
+    "grass1",
+    1520,
+    3
+   ],
+   [
+    "bush0",
+    1760,
+    4
+   ],
+   [
+    "grass0",
+    2010,
+    3
+   ]
+  ],
+  "idlers": [
+   [
+    "raccoon",
+    520,
+    2,
+    true
+   ]
+  ],
+  "walkers": [
+   {
+    "sprite": "cloudFox",
+    "x": 1380,
+    "span": 200,
+    "speed": 20
+   },
+   {
+    "sprite": "mushroom",
+    "x": 200,
+    "span": 180,
+    "speed": 14
+   }
+  ],
+  "lights": {
+   "color": "255,190,120",
+   "items": [
+    [
+     150,
+     -95,
+     55
+    ],
+    [
+     880,
+     -90,
+     50
+    ],
+    [
+     1410,
+     -100,
+     55
+    ]
+   ]
+  },
+  "particles": {
+   "type": "petals",
+   "count": 80
+  },
+  "vignette": "90,30,70",
+  "vignetteStrength": 0.25
+ },
+ "wardrobe": {
+  "hat": [
+   [
+    1003000,
+    "Cherry Blossom Hair"
+   ],
+   [
+    1004609,
+    "Head Sakura"
+   ],
+   [
+    1004505,
+    "Pink Blossom Ribbon"
+   ],
+   [
+    1004504,
+    "Noble Blossom Casquette"
+   ],
+   [
+    1005138,
+    "Sakura's Hair Ornament"
+   ],
+   [
+    1005179,
+    "Perched Sakura-chan"
+   ],
+   [
+    1005354,
+    "Cherry Blossom Candy Cap"
+   ],
+   [
+    1005440,
+    "Cherry Blossom Bunny Hairpin (Day)"
+   ],
+   [
+    1005441,
+    "Cherry Blossom Fox Hairpin (Night)"
+   ],
+   [
+    1006173,
+    "Green Leaf's Cherry Blossom Hairpin"
+   ],
+   [
+    1006175,
+    "Cherry Blossom Vine Decoration Hairpin"
+   ],
+   [
+    1007059,
+    "Cherry Blossom Bunny Pin"
+   ],
+   [
+    1007060,
+    "Cherry Blossom Fox Pin"
+   ],
+   [
+    1005177,
+    "Sakura Battle Costume Hat"
+   ],
+   [
+    1006761,
+    "Spring Bloom Festival Hat"
+   ]
+  ],
+  "outfit": [
+   [
+    1051071,
+    "Pink Kimono"
+   ],
+   [
+    1051073,
+    "Red Kimono"
+   ],
+   [
+    1052779,
+    "Peach Camellia Kimono"
+   ],
+   [
+    1053054,
+    "Hydrangea Kimono"
+   ],
+   [
+    1053549,
+    "Pink Kimono Uniform"
+   ],
+   [
+    1053548,
+    "Violet Kimono Uniform"
+   ],
+   [
+    1052212,
+    "Cherry Blossom Suit"
+   ],
+   [
+    1052924,
+    "Noble Blossom Coat"
+   ],
+   [
+    1052925,
+    "Pink Blossom Dress"
+   ],
+   [
+    1053435,
+    "Cherry Blossom Raincoat"
+   ],
+   [
+    1053521,
+    "Baggy Cardigan (Cherry Blossom)"
+   ],
+   [
+    1053322,
+    "Sakura Battle Costume Outfit"
+   ],
+   [
+    1051652,
+    "Spring Petal"
+   ],
+   [
+    1054374,
+    "Spring Bloom Festival Outfit"
+   ],
+   [
+    1054497,
+    "White Blossom Traveling Clothes"
+   ]
+  ],
+  "cape": [
+   [
+    1103013,
+    "Blossom Breeze"
+   ],
+   [
+    1103185,
+    "Rain of Blossoms"
+   ],
+   [
+    1103441,
+    "Dancing Flower Petals"
+   ],
+   [
+    1103444,
+    "Swirl of Petals"
+   ],
+   [
+    1103469,
+    "Petal Falls"
+   ],
+   [
+    1103568,
+    "Falling Flowers"
+   ],
+   [
+    1102267,
+    "Friendly Nine-Tailed Fox Tails"
+   ],
+   [
+    1103464,
+    "Floral Fox Tail"
+   ],
+   [
+    1103397,
+    "Plum Flower Painting"
+   ],
+   [
+    1103079,
+    "Plum Blossom Perfume Pouch"
+   ],
+   [
+    1103844,
+    "Spring Festival Cape"
+   ],
+   [
+    1102822,
+    "Flowery Breeze"
+   ]
+  ],
+  "shoes": [
+   [
+    1071008,
+    "Kimono Sandals"
+   ],
+   [
+    1070002,
+    "Kimono Shoes"
+   ],
+   [
+    1072812,
+    "Kimono Sandals"
+   ],
+   [
+    1072813,
+    "Kimono Shoes"
+   ],
+   [
+    1073355,
+    "Cherry Blossom Boots"
+   ],
+   [
+    1073060,
+    "Noble Blossom Shoes"
+   ],
+   [
+    1073061,
+    "Pink Blossom Shoes"
+   ],
+   [
+    1073284,
+    "Sakura Battle Costume Shoes"
+   ],
+   [
+    1073898,
+    "Dangle Dangle Flower Petals"
+   ],
+   [
+    1073899,
+    "Sway Sway Flower Petals"
+   ],
+   [
+    1074198,
+    "White Blossom Slides"
+   ],
+   [
+    1074202,
+    "Plum Blossom Reverberations"
+   ],
+   [
+    1073056,
+    "Blooming Spring"
+   ]
+  ],
+  "face": [
+   [
+    1012641,
+    "Peach Blossom"
+   ],
+   [
+    1012159,
+    "Foxy Mask"
+   ],
+   [
+    1012687,
+    "Fox Fire Grin"
+   ],
+   [
+    1012784,
+    "Pointy Fox Whiskers"
+   ],
+   [
+    1012028,
+    "Blush"
+   ],
+   [
+    1012656,
+    "Round Blush"
+   ],
+   [
+    1012763,
+    "Cute Heart Blusher"
+   ],
+   [
+    1012826,
+    "Gentle Blush"
+   ],
+   [
+    1022302,
+    "Small Flower Garden"
+   ],
+   [
+    1012533,
+    "Spring Cloud Piece"
+   ],
+   [
+    1012852,
+    "Warm Tone Blush"
+   ]
+  ],
+  "weapon": [
+   [
+    1702261,
+    "Cherry Blossom Weapon"
+   ],
+   [
+    1702308,
+    "Spring Blossoms"
+   ],
+   [
+    1702437,
+    "Spring Blossoms"
+   ],
+   [
+    1702627,
+    "Sakura Sword"
+   ],
+   [
+    1702589,
+    "Fairy Blossom"
+   ],
+   [
+    1702918,
+    "Cherry Blossom Umbrella"
+   ],
+   [
+    1703167,
+    "Lucky Cherry Blossom Bracelet Weapon"
+   ],
+   [
+    1703223,
+    "Petal Promise"
+   ],
+   [
+    1703599,
+    "Scattered Petals"
+   ],
+   [
+    1702815,
+    "Plum Blossom"
+   ],
+   [
+    1703490,
+    "Lute of Blossoming Memories"
+   ],
+   [
+    1703623,
+    "Spring Festival Staff"
+   ]
+  ]
+ },
+ "pets": [
+  5002251,
+  5002252,
+  5002253,
+  5002232,
+  5002233,
+  5002876,
+  5000585,
+  5000521,
+  5002574,
+  5002127,
+  5002128,
+  5002129,
+  5002186,
+  5000139,
+  5002033
+ ]
+}

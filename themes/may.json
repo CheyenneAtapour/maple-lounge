@@ -1,0 +1,927 @@
+{
+ "key": "may",
+ "month": 5,
+ "name": "Maple Anniversary",
+ "accent": "#ff7a3d",
+ "sprites": {
+  "sky": "Map/Back/20thEvent.img/back/1",
+  "cloud0": "Map/Back/20thEvent.img/back/13",
+  "cloud1": "Map/Back/20thEvent.img/back/15",
+  "cloud2": "Map/Back/20thEvent.img/back/16",
+  "cloud3": "Map/Back/20thEvent.img/back/19",
+  "cloud4": "Map/Back/20thEvent.img/back/29",
+  "airBalloon0": "Map/Back/20thEvent.img/back/24",
+  "airBalloon1": "Map/Back/20thEvent.img/back/25",
+  "airBalloon2": "Map/Back/20thEvent.img/back/26",
+  "airBalloon3": "Map/Back/20thEvent.img/back/28",
+  "hills0": "Map/Back/11thFestival.img/back/5",
+  "hills1": "Map/Back/11thFestival.img/back/6",
+  "hills2": "Map/Back/11thFestival.img/back/7",
+  "farMaple0": "Map/Back/event.img/back/56",
+  "farMaple1": "Map/Back/event.img/back/57",
+  "sideMaple0": "Map/Obj/19thEvent.img/obj/portal/0",
+  "sideMaple1": "Map/Obj/19thEvent.img/obj/portal/1",
+  "mapleTree": "Map/Obj/event.img/2012Maple9th/deco/9",
+  "mapleTreeBow": "Map/Obj/event.img/2012Maple9th/deco/0",
+  "ribbonL": "Map/Obj/event.img/2012Maple9th/deco/6",
+  "ribbonM": "Map/Obj/event.img/2012Maple9th/deco/7",
+  "ribbonR": "Map/Obj/event.img/2012Maple9th/deco/8",
+  "cake8": "Map/Obj/event.img/2012Maple9th/deco/3",
+  "leafR": "Map/Obj/event.img/2012Maple9th/decoLight/10",
+  "leafG": "Map/Obj/event.img/2012Maple9th/decoLight/11",
+  "leafB": "Map/Obj/event.img/2012Maple9th/decoLight/12",
+  "leafY": "Map/Obj/event.img/2012Maple9th/decoLight/9",
+  "cakeBig": "Map/Obj/eventGL.img/CakeObj/Cake_Walk/2",
+  "gummyG": "Map/Obj/eventGL.img/CakeObj/Decoration/7",
+  "muffin": "Map/Obj/eventGL.img/CakeObj/Decoration/11",
+  "lM": "Map/Obj/eventGL.img/CakeObj/EnSchool_Walk/10",
+  "lA": "Map/Obj/eventGL.img/CakeObj/EnSchool_Walk/0",
+  "lP": "Map/Obj/eventGL.img/CakeObj/EnSchool_Walk/13",
+  "lL": "Map/Obj/eventGL.img/CakeObj/EnSchool_Walk/9",
+  "lE": "Map/Obj/eventGL.img/CakeObj/EnSchool_Walk/4",
+  "anniTable": "Map/Obj/GL_21_StackCake.img/obj/table/0",
+  "slimeBalloon": "Map/Back/eventGL.img/back/9",
+  "shroomBalloon": "Map/Back/eventGL.img/back/10",
+  "flowerBush": "Map/Obj/11thFestival.img/object/bush/1",
+  "gift": "Map/Obj/20thEvent.img/obj/noname/10",
+  "starTree0": "Map/Obj/20thEvent.img/obj/tree/0",
+  "creamEdge0": "Map/Tile/cakeVillageTW.img/enH0/0",
+  "creamEdge1": "Map/Tile/cakeVillageTW.img/enH0/1",
+  "creamEdge2": "Map/Tile/cakeVillageTW.img/enH0/2",
+  "cakeGround": "Map/Tile/cakeVillageTW.img/bsc/2",
+  "adminBalloon": {
+   "path": "Mob/9010053.img/move",
+   "version": "250"
+  },
+  "bdayCake": {
+   "path": "Mob/9300340.img/move",
+   "version": "250"
+  },
+  "candle": {
+   "path": "Mob/9400601.img/move",
+   "version": "250"
+  },
+  "cakeMob1": {
+   "path": "Mob/9400507.img/move",
+   "version": "250"
+  },
+  "cakeMob2": {
+   "path": "Mob/9400512.img/move",
+   "version": "250"
+  },
+  "punkShroom": {
+   "path": "Mob/9010127.img/move",
+   "version": "250"
+  },
+  "punkSlime": {
+   "path": "Mob/9010128.img/move",
+   "version": "250"
+  },
+  "punkPinkBean": {
+   "path": "Mob/9010126.img/move",
+   "version": "250"
+  }
+ },
+ "scene": {
+  "sky": "sky",
+  "clouds": {
+   "sprites": [
+    "cloud0",
+    "cloud1",
+    "cloud2",
+    "cloud3",
+    "cloud4"
+   ],
+   "count": 7,
+   "alpha": 0.95,
+   "y": [
+    0.02,
+    0.3
+   ],
+   "speed": [
+    4,
+    8
+   ]
+  },
+  "flyer": {
+   "sprite": "adminBalloon",
+   "period": 30,
+   "duration": 22,
+   "y": 0.2,
+   "bob": 14,
+   "dir": 1
+  },
+  "far": [
+   {
+    "parallax": 0.1,
+    "y": 120,
+    "tile": [
+     "hills0",
+     "hills1",
+     "hills2"
+    ],
+    "start": -200,
+    "spacing": 480,
+    "items": [
+     [
+      "airBalloon0",
+      120,
+      -260
+     ],
+     [
+      "airBalloon2",
+      640,
+      -220
+     ],
+     [
+      "airBalloon1",
+      1050,
+      -280
+     ],
+     [
+      "airBalloon3",
+      1420,
+      -240
+     ]
+    ]
+   },
+   {
+    "parallax": 0.3,
+    "y": 110,
+    "items": [
+     [
+      "farMaple0",
+      60,
+      0
+     ],
+     [
+      "farMaple1",
+      380,
+      0
+     ],
+     [
+      "anniTable",
+      820,
+      0
+     ],
+     [
+      "farMaple1",
+      1240,
+      0,
+      true
+     ],
+     [
+      "farMaple0",
+      1560,
+      0
+     ]
+    ],
+    "darken": 0.08
+   },
+   {
+    "parallax": 0.55,
+    "y": 60,
+    "items": [
+     [
+      "sideMaple0",
+      300,
+      0
+     ],
+     [
+      "sideMaple1",
+      1000,
+      0
+     ],
+     [
+      "sideMaple0",
+      1650,
+      0,
+      true
+     ]
+    ],
+    "darken": 0.1
+   }
+  ],
+  "mist": "255,225,240",
+  "ground": {
+   "tile": "cakeGround",
+   "darken": 0.05,
+   "lip": [
+    "#f6e7d8",
+    "#ffffff"
+   ]
+  },
+  "back": [
+   [
+    "creamEdge0",
+    -60,
+    16
+   ],
+   [
+    "creamEdge1",
+    28,
+    16
+   ],
+   [
+    "creamEdge2",
+    116,
+    16
+   ],
+   [
+    "creamEdge0",
+    204,
+    16
+   ],
+   [
+    "creamEdge1",
+    292,
+    16
+   ],
+   [
+    "creamEdge2",
+    380,
+    16
+   ],
+   [
+    "creamEdge0",
+    468,
+    16
+   ],
+   [
+    "creamEdge1",
+    556,
+    16
+   ],
+   [
+    "creamEdge2",
+    644,
+    16
+   ],
+   [
+    "creamEdge0",
+    732,
+    16
+   ],
+   [
+    "creamEdge1",
+    820,
+    16
+   ],
+   [
+    "creamEdge2",
+    908,
+    16
+   ],
+   [
+    "creamEdge0",
+    996,
+    16
+   ],
+   [
+    "creamEdge1",
+    1084,
+    16
+   ],
+   [
+    "creamEdge2",
+    1172,
+    16
+   ],
+   [
+    "creamEdge0",
+    1260,
+    16
+   ],
+   [
+    "creamEdge1",
+    1348,
+    16
+   ],
+   [
+    "creamEdge2",
+    1436,
+    16
+   ],
+   [
+    "creamEdge0",
+    1524,
+    16
+   ],
+   [
+    "creamEdge1",
+    1612,
+    16
+   ],
+   [
+    "creamEdge2",
+    1700,
+    16
+   ],
+   [
+    "creamEdge0",
+    1788,
+    16
+   ],
+   [
+    "creamEdge1",
+    1876,
+    16
+   ],
+   [
+    "creamEdge2",
+    1964,
+    16
+   ],
+   [
+    "creamEdge0",
+    2052,
+    16
+   ],
+   [
+    "creamEdge1",
+    2140,
+    16
+   ],
+   [
+    "creamEdge2",
+    2228,
+    16
+   ],
+   [
+    "creamEdge0",
+    2316,
+    16
+   ],
+   [
+    "mapleTree",
+    90,
+    4
+   ],
+   [
+    "leafR",
+    40,
+    -150
+   ],
+   [
+    "leafY",
+    120,
+    -185
+   ],
+   [
+    "leafG",
+    170,
+    -140
+   ],
+   [
+    "ribbonL",
+    250,
+    3
+   ],
+   [
+    "ribbonM",
+    405,
+    3
+   ],
+   [
+    "ribbonR",
+    562,
+    3
+   ],
+   [
+    "cakeBig",
+    700,
+    6
+   ],
+   [
+    "cake8",
+    870,
+    3
+   ],
+   [
+    "gummyG",
+    1110,
+    2
+   ],
+   [
+    "mapleTreeBow",
+    1250,
+    4
+   ],
+   [
+    "leafB",
+    1205,
+    -170
+   ],
+   [
+    "leafR",
+    1300,
+    -200
+   ],
+   [
+    "slimeBalloon",
+    1400,
+    70
+   ],
+   [
+    "muffin",
+    1520,
+    3
+   ],
+   [
+    "lM",
+    1600,
+    0
+   ],
+   [
+    "lA",
+    1656,
+    0
+   ],
+   [
+    "lP",
+    1712,
+    0
+   ],
+   [
+    "lL",
+    1768,
+    0
+   ],
+   [
+    "lE",
+    1824,
+    0
+   ],
+   [
+    "shroomBalloon",
+    1905,
+    30
+   ],
+   [
+    "gift",
+    1960,
+    3
+   ],
+   [
+    "starTree0",
+    2040,
+    4
+   ],
+   [
+    "slimeBalloon",
+    2245,
+    70,
+    true
+   ]
+  ],
+  "front": [
+   [
+    "flowerBush",
+    470,
+    22
+   ],
+   [
+    "flowerBush",
+    1180,
+    22
+   ],
+   [
+    "flowerBush",
+    -20,
+    22
+   ]
+  ],
+  "idlers": [
+   [
+    "bdayCake",
+    560,
+    2
+   ],
+   [
+    "candle",
+    1530,
+    2,
+    true
+   ]
+  ],
+  "walkers": [
+   {
+    "sprite": "punkShroom",
+    "x": 250,
+    "span": 180,
+    "speed": 18
+   },
+   {
+    "sprite": "punkSlime",
+    "x": 1120,
+    "span": 150,
+    "speed": 16
+   },
+   {
+    "sprite": "cakeMob1",
+    "x": 1380,
+    "span": 120,
+    "speed": 14
+   },
+   {
+    "sprite": "punkPinkBean",
+    "x": 1820,
+    "span": 200,
+    "speed": 20
+   },
+   {
+    "sprite": "cakeMob2",
+    "x": 620,
+    "span": 120,
+    "speed": 12
+   }
+  ],
+  "lights": {
+   "color": "255,200,120",
+   "items": [
+    [
+     870,
+     -130,
+     45
+    ],
+    [
+     1250,
+     -170,
+     120,
+     "255,170,120"
+    ],
+    [
+     90,
+     -160,
+     110,
+     "255,170,120"
+    ]
+   ]
+  },
+  "particles": {
+   "type": "confetti",
+   "count": 70
+  },
+  "vignette": "120,60,110",
+  "vignetteStrength": 0.2
+ },
+ "wardrobe": {
+  "hat": [
+   [
+    1002513,
+    "Maple Party Hat"
+   ],
+   [
+    1002345,
+    "Party Hat"
+   ],
+   [
+    1002775,
+    "3rd Anniversary Hat"
+   ],
+   [
+    1002930,
+    "6th Anniversary Cone Hat"
+   ],
+   [
+    1003241,
+    "6th Anniversary Party Hat"
+   ],
+   [
+    1006016,
+    "18th Anniversary Birthday Hat"
+   ],
+   [
+    1005545,
+    "Congratulations Cake Hat"
+   ],
+   [
+    1004825,
+    "Time-Traveling Anniversary Headband"
+   ],
+   [
+    1004893,
+    "Maple 5000-Day Hat"
+   ],
+   [
+    1000120,
+    "Maple Momentree Crown"
+   ],
+   [
+    1004778,
+    "Noble Maple Crown"
+   ],
+   [
+    1005805,
+    "Royal Maple Crown"
+   ],
+   [
+    1004911,
+    "Sweet Fresh Cream Cake Hat"
+   ],
+   [
+    1006940,
+    "Star Party Hat"
+   ],
+   [
+    1006931,
+    "Maple Leaf Samo"
+   ]
+  ],
+  "outfit": [
+   [
+    1050606,
+    "Exciting Birthday"
+   ],
+   [
+    1051679,
+    "Joyful Birthday"
+   ],
+   [
+    1050644,
+    "Maple Momentree Robe"
+   ],
+   [
+    1051717,
+    "Maple Momentree Robe"
+   ],
+   [
+    1052136,
+    "2nd Anniversary Mushroom Suit"
+   ],
+   [
+    1053050,
+    "Noble Maple Suit"
+   ],
+   [
+    1050751,
+    "Lively Party Planner"
+   ],
+   [
+    1051830,
+    "Zesty Party Planner"
+   ],
+   [
+    1050322,
+    "Party Prince"
+   ],
+   [
+    1051392,
+    "Party Princess"
+   ],
+   [
+    1050447,
+    "Maple M Shirt and Pants"
+   ],
+   [
+    1051515,
+    "Maple M Dress"
+   ],
+   [
+    1053914,
+    "MapleStory Fest 2022 Outfit"
+   ],
+   [
+    1054074,
+    "MapleStory Fest 2023 Outfit"
+   ],
+   [
+    1054343,
+    "Sweet Pancake Outfit"
+   ]
+  ],
+  "cape": [
+   [
+    1103093,
+    "Anniversary Cape"
+   ],
+   [
+    1103111,
+    "15th Anniversary Cape"
+   ],
+   [
+    1103657,
+    "20th Anniversary Cape"
+   ],
+   [
+    1103279,
+    "17th Anniversary Fireworks Cape"
+   ],
+   [
+    1102171,
+    "3rd Anniversary Balloon"
+   ],
+   [
+    1102300,
+    "6th B-Day Party Ball"
+   ],
+   [
+    1102488,
+    "Cupcake Balloon"
+   ],
+   [
+    1103370,
+    "Celebration Effect Cape"
+   ],
+   [
+    1103448,
+    "Maple 5000-Day Cape"
+   ],
+   [
+    1103461,
+    "Maple Momentree Wings"
+   ],
+   [
+    1102931,
+    "Noble Maple Cape"
+   ],
+   [
+    1102688,
+    "Boom Boom Fireworks"
+   ],
+   [
+    1103598,
+    "Toddling Party Decorations"
+   ],
+   [
+    1102675,
+    "Candy Party Ribbon"
+   ],
+   [
+    1103761,
+    "MapleStory Fest 2024 Cape"
+   ]
+  ],
+  "shoes": [
+   [
+    1073595,
+    "Birthday Socks"
+   ],
+   [
+    1070146,
+    "Maple Momentree Shoes"
+   ],
+   [
+    1071162,
+    "Maple Momentree Shoes"
+   ],
+   [
+    1072520,
+    "6th Anniversary Item"
+   ],
+   [
+    1073149,
+    "Noble Maple Shoes"
+   ],
+   [
+    1073869,
+    "Party Promise"
+   ],
+   [
+    1074182,
+    "Magical Sweets Sponge Cake"
+   ],
+   [
+    1074183,
+    "Fantastical Sweets Cake"
+   ],
+   [
+    1073040,
+    "Maple Mouse Shoes"
+   ],
+   [
+    1072438,
+    "Green Leaf Shoes"
+   ],
+   [
+    1073988,
+    "Party Breaker Shoes"
+   ],
+   [
+    1074071,
+    "Sweet Pancake Shoes"
+   ],
+   [
+    1073446,
+    "Maple Vacation Sandals"
+   ]
+  ],
+  "face": [
+   [
+    1012129,
+    "Maple Leaf Paint (Canada)"
+   ],
+   [
+    1012275,
+    "6th Anniversary Party Glasses"
+   ],
+   [
+    1022122,
+    "6th B-Day Party Glasses"
+   ],
+   [
+    1012515,
+    "Strawberry Cake"
+   ],
+   [
+    1012525,
+    "Smile! It's the Sweet Maple Festival!"
+   ],
+   [
+    1012822,
+    "Colorful Party Sticker"
+   ],
+   [
+    1022286,
+    "Party-Hearty Shades"
+   ],
+   [
+    1012050,
+    "Maple-Stein Face"
+   ],
+   [
+    1012617,
+    "Strawberry Cake"
+   ],
+   [
+    1012526,
+    "So Delish Ice Cream"
+   ]
+  ],
+  "weapon": [
+   [
+    1702171,
+    "Party Popper"
+   ],
+   [
+    1703144,
+    "Birthday Popper"
+   ],
+   [
+    1702186,
+    "3rd Anniversary Weapon"
+   ],
+   [
+    1702310,
+    "6th Anniversary Party Wand"
+   ],
+   [
+    1702561,
+    "Sweet Fork Cake"
+   ],
+   [
+    1702734,
+    "Maple 5000-Day Flag"
+   ],
+   [
+    1702805,
+    "Party Scepter"
+   ],
+   [
+    1702690,
+    "Noble Maple Rod"
+   ],
+   [
+    1702195,
+    "Maple Girl Wand"
+   ],
+   [
+    1703343,
+    "Maple Umbrella"
+   ],
+   [
+    1702958,
+    "Maple Bubbler"
+   ],
+   [
+    1702992,
+    "Fluffy Cloud Balloon"
+   ],
+   [
+    1703227,
+    "Arcana Party Balloon - Wind and Rock Spirits"
+   ],
+   [
+    1702854,
+    "Maple Alliance Flag"
+   ]
+  ]
+ },
+ "pets": [
+  5000085,
+  5000108,
+  5000474,
+  5000568,
+  5000352,
+  5000353,
+  5000354,
+  5002511,
+  5002512,
+  5002513,
+  5002190,
+  5000060,
+  5002347,
+  5002340,
+  5002038
+ ]
+}

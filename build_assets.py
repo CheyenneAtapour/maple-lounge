@@ -3,7 +3,7 @@
 
 Run once: python3 build_assets.py
 Output: assets.js, which defines window.ASSETS so index.html works when opened directly from disk,
-plus scenery and wardrobe icon PNGs under assets/.
+plus shared scenery and mount icon PNGs under assets/. Each month's map is built by build_theme.py.
 Outfit changes and non-default pets are fetched live from maplestory.io by the page itself.
 """
 import base64
@@ -11,6 +11,8 @@ import io
 import json
 import os
 import re
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -35,96 +37,8 @@ OUTFIT = [
 ]
 CHAR_ACTIONS = {"stand1": 700, "walk1": 180, "jump": 200, "sit": 1000}
 
-# Wardrobe: Halloween-leaning picks, each checked to render on the character.
-# Face accessories (101xxxx) and eye decorations (102xxxx) share the Face tab but are separate slots.
+# Shared wardrobe tabs. Seasonal tabs (hats, outfits, ...) and pets live in each theme spec (themes/*.json).
 WARDROBE = {
-    "hat": [
-        (1002738, "Bunny Earmuffs"),
-        (1001002, "Witch Hat"),
-        (1004342, "Witch Hat"),
-        (1002544, "Pumpkin Headgear"),
-        (1002839, "Pumpkin Hat"),
-        (1004385, "Pumpkin Cake Hat"),
-        (1002525, "Mummy Hat"),
-        (1003386, "Bat Costume Hood"),
-        (1003682, "Jiangshi Hat"),
-        (1004001, "Vampire Phantom Hat"),
-        (1004343, "Skull Hat"),
-        (1004738, "Baby Ghost Hat"),
-        (1004841, "Ghost Hat"),
-        (1003022, "Devil Horns"),
-        (1000003, "Ghost Mask"),
-    ],
-    "outfit": [
-        (1052926, "Cottontail Rabbit Dress"),
-        (1051048, "Witch Clothes"),
-        (1051700, "Nomad Witch"),
-        (1050057, "Ghost Costume"),
-        (1051076, "Ghost Suit"),
-        (1050476, "Halloween Pumpkin Suit"),
-        (1051543, "Halloween Pumpkin Suit"),
-        (1050848, "Pumpkin Witch Tailcoat"),
-        (1050849, "Haunted Punk Leather Fit"),
-        (1051793, "Spooky Soul"),
-        (1050724, "Ghost Groom Tuxedo"),
-        (1050248, "Halloween Leopard Costume"),
-        (1051376, "Halloweenroid Dress"),
-        (1050012, "Grey Skull Overall"),
-        (1051542, "Spooky Skirt"),
-    ],
-    "cape": [
-        (1102769, "Witch Cape"),
-        (1102066, "Dracula Cloak"),
-        (1102150, "Count Dracula Cape"),
-        (1102631, "Vampire Phantom Cape"),
-        (1102098, "Coffin of Gloom"),
-        (1102673, "Ghost Balloon"),
-        (1102773, "Ghost Cape"),
-        (1102868, "Triple Bat Cape"),
-        (1102006, "Devil Wings"),
-        (1103911, "Halloween Magic Cape"),
-        (1103946, "Ghost Shadow"),
-        (1103796, "Will's Spider Legs"),
-        (1103649, "Chubby Ghost Kitty"),
-    ],
-    "shoes": [
-        (1073062, "Cottontail Rabbit Shoes"),
-        (1070094, "Spooky Shoes"),
-        (1071111, "Spooky Heels"),
-        (1070207, "Pumpkin Witch Sneakers"),
-        (1071218, "Pumpkin Witch Pumps"),
-        (1072878, "Vampire Phantom Boots"),
-        (1073096, "Little Vampire Shoes"),
-        (1073183, "Pumpkin Cookie"),
-        (1073184, "Pumpkin Soup"),
-        (1074267, "Skeleton Shoes"),
-        (1073487, "Ruffled Ghost Shoes"),
-        (1074227, "Halloween Magic Shoes"),
-    ],
-    "face": [
-        (1012814, "Witch Cat Face Accessory"),
-        (1012815, "Spooky Blush"),
-        (1012556, "Vampire Eyes (Ruby)"),
-        (1012555, "Vampire Eyes (Sapphire)"),
-        (1012044, "Mummy Mask"),
-        (1012495, "Skull Mask"),
-        (1012645, "Skeleton Surgeon Mask"),
-        (1022258, "Bat Wing Monocle"),
-        (1022024, "Skull Patch"),
-    ],
-    "weapon": [
-        (1702036, "Witch's Broomstick"),
-        (1702092, "Glowing Pumpkin Basket"),
-        (1702714, "Witch's Staff"),
-        (1702726, "Pumpkin Star"),
-        (1702203, "Halloween Teddy"),
-        (1702146, "Skull Staff"),
-        (1702472, "Vampire Phantom's Fate"),
-        (1702785, "Cursed Bat Weapon"),
-        (1702962, "Magical Bat"),
-        (1702861, "One-Eyed Grim Reaper Weapon"),
-        (1702246, "Ghost Weapon"),
-    ],
     # Mounts render with the character riding them (the sitting pose dismounts, like on chairs).
     "mount": [
         (1902012, "Yeti"),
@@ -146,62 +60,55 @@ WARDROBE = {
         (1902021, "Robot"),
     ],
 }
-PETS = [5000144, 5000036, 5000256, 5000257, 5000258, 5000502, 5000697, 5000296, 5002531,
-        5000903, 5000904, 5000905, 5002519, 5002076, 5002327, 5002328, 5002329, 5002502, 5000476]
 
-# Halloween scenery from the game's map files: name -> WZ path (a canvas or a folder of frames).
+# Scenery shared by every map: the wardrobe and the Bubble Fish. Seasonal scenery is in themes/*.json.
+# Favorite pets offered on every map, right after Adriano (seasonal pets come from each theme).
+SHARED_PETS = [
+    5000041,  # Snowman
+    5000025,  # Golden Pig (the yellow flying pig)
+    5000014,  # Rudolph
+    5000058,  # White Duck
+    5000466,  # Ducky
+    5000135,  # Gingerbready
+    5002399,  # Lil Cactus
+    5000768,  # Microslime
+    5002085,  # Cookie Bear
+]
+
+# Pets made from other game art. Penni is one of Lynn's Spirit Guides; it only exists as a skill
+# summon, so it's built from those frames and flies alongside you.
+CUSTOM_PETS = {
+    "penni": {
+        "name": "Penni",
+        "desc": "Penni, the Sky Guardian, one of Lynn's Spirit Guides.",
+        "fly": True,
+        "anims": {
+            "stand0": "Skill/_Canvas/17210.img/skill/172101003/summon/stand",
+            "move": "Skill/_Canvas/17210.img/skill/172101003/summon/move/LayerSlots/Slots/loop",
+        },
+    },
+}
 BG_SPRITES = {
-    "sky": "Map/Back/HalloweenBack.img/back/0",
-    "moon": "Map/Back/HalloweenBack.img/back/11",
-    "stars": "Map/Back/HalloweenBack.img/back/12",
-    "cloud0": "Map/Back/HalloweenBack.img/back/5",
-    "cloud1": "Map/Back/HalloweenBack.img/back/8",
-    "cloud2": "Map/Back/HalloweenBack.img/back/9",
-    "cloud3": "Map/Back/HalloweenBack.img/back/10",
-    "treeline0": "Map/Back/HalloweenBack.img/back/13",
-    "treeline1": "Map/Back/HalloweenBack.img/back/14",
-    "stone": "Map/Back/HalloweenBack.img/back/15",
-    "witch": "Map/Back/HalloweenBack.img/ani/3",
-    "zombie": "Map/Back/HalloweenBack.img/ani/4",
-    "jester": "Map/Back/HalloweenBack.img/ani/2",
-    "mansion": "Map/Obj/halloween.img/2019halloween/etc/0",
-    "faceTree0": "Map/Obj/halloween.img/field/wood/0",
-    "faceTree1": "Map/Obj/halloween.img/field/wood/2",
-    "faceTree2": "Map/Obj/halloween.img/field/wood/3",
-    "deadTree0": "Map/Obj/halloween.img/field/2011halloween/0",
-    "deadTree1": "Map/Obj/halloween.img/field/2011halloween/2",
-    "deadTree2": "Map/Obj/halloween.img/field/2011halloween/3",
-    "wallEnd": "Map/Obj/halloween.img/field/2011halloween/4",
-    "wall0": "Map/Obj/halloween.img/field/2011halloween/5",
-    "wall1": "Map/Obj/halloween.img/field/2011halloween/6",
-    "wallStart": "Map/Obj/halloween.img/field/2011halloween/8",
-    "pumpkinPillarL": "Map/Obj/halloween.img/2020halloween/outside/4",
-    "pumpkinPillarR": "Map/Obj/halloween.img/2020halloween/outside/5",
-    "signpost": "Map/Obj/halloween.img/field/2011halloween/13",
-    "pumpkinTree": "Map/Obj/halloween.img/field/2011halloween/15",
-    "floatingPumpkins": "Map/Obj/halloween.img/field/2011halloween/16",
-    "grave0": "Map/Obj/halloween.img/field/acc/0",
-    "grave1": "Map/Obj/halloween.img/field/acc/1",
-    "grave2": "Map/Obj/halloween.img/field/acc/2",
-    "grave3": "Map/Obj/halloween.img/field/acc/3",
-    "weeds0": "Map/Obj/halloween.img/field/acc/4",
-    "weeds1": "Map/Obj/halloween.img/field/acc/5",
-    "woodSign": "Map/Obj/halloween.img/field/acc/7",
-    "vines0": "Map/Obj/halloween.img/field/amber/5",
-    "vines1": "Map/Obj/halloween.img/field/amber/6",
     "wardrobe": "Map/Obj/halloween.img/inside/room7/3",
     # Off-theme guests from Aqua Road. GMS v270's API doesn't serve this monster, so use v250.
     "bubbleFish": ("Mob/2230109.img/move", "250"),
-    "candles0": "Map/Obj/halloween.img/2019halloween/ani/4",
-    "candles1": "Map/Obj/halloween.img/2019halloween/ani/6",
-    "candles2": "Map/Obj/halloween.img/2019halloween/ani/7",
 }
 
 
-def fetch(url):
-    req = urllib.request.Request(url, headers=UA)
-    with urllib.request.urlopen(req, timeout=90) as r:
-        return r.read(), r.headers.get("Content-Type", "")
+def fetch(url, tries=6):
+    """GET with retries: maplestory.io is a free service that returns 5xx errors under load."""
+    for attempt in range(1, tries + 1):
+        try:
+            req = urllib.request.Request(url, headers=UA)
+            with urllib.request.urlopen(req, timeout=90) as r:
+                return r.read(), r.headers.get("Content-Type", "")
+        except urllib.error.HTTPError as e:
+            if e.code < 500 or attempt == tries:
+                raise
+        except (urllib.error.URLError, TimeoutError):
+            if attempt == tries:
+                raise
+        time.sleep(1.0 * attempt)
 
 
 def fetch_json(url):
@@ -346,18 +253,64 @@ def build_wardrobe():
             wardrobe[tab].append({"id": item_id, "name": name, "slot": slot, "icon": icon})
         print(f"wardrobe {tab}: {len(entries)} items")
     pets = []
-    for pet_id in PETS:
+    for pet_id in SHARED_PETS:
         d = fetch_json(f"{API}/{REGION}/{VERSION}/pet/{pet_id}")
         icon = save_png(fetch(f"{API}/{REGION}/{VERSION}/item/{pet_id}/iconRaw")[0], f"assets/icons/{pet_id}.png")
         pets.append({"id": pet_id, "name": d["description"]["name"],
                      "desc": d["description"].get("description", ""), "icon": icon})
-    print(f"wardrobe pets: {len(pets)}")
-    return {"items": wardrobe, "pets": pets}
+    print(f"shared pets: {len(pets)}")
+    custom = {}
+    for key, spec in CUSTOM_PETS.items():
+        anims = {}
+        for anim, path in spec["anims"].items():
+            frames = wz_sprite(path, f"assets/pets/{key}_{anim}")
+            for f in frames:
+                if f["ox"] == 0 and f["oy"] == 0:  # skill frames carry no anchor; center them
+                    f["ox"], f["oy"] = f["w"] // 2, f["h"] // 2
+            anims[anim] = frames
+        custom[key] = {"id": key, "name": spec["name"], "desc": spec["desc"], "fly": spec.get("fly", False), "anims": anims}
+        pets.append({"id": key, "name": spec["name"], "desc": spec["desc"], "icon": anims["stand0"][0]["src"], "custom": True})
+    print(f"custom pets: {len(custom)}")
+    return {"items": wardrobe, "pets": pets, "customPets": custom}
+
+
+HAIR_FACES = "hair_faces.json"  # classic hairstyles and faces, with the colors each comes in
+
+
+def head_icon(items):
+    """Render just the character's head (hair + face) as a small wardrobe icon."""
+    png, _ = fetch(f"{API}/{REGION}/{VERSION}/Character/feetCenter/{SKIN}/{','.join(map(str, items))}/stand1/0")
+    img = Image.open(io.BytesIO(png)).convert("RGBA")
+    left, top, right, bottom = img.getbbox()
+    # The head is the top part of the character; keep about 44px of it, centered.
+    crop = img.crop((left, top, right, min(bottom, top + 44)))
+    out = io.BytesIO()
+    crop.save(out, "PNG")
+    return out.getvalue()
+
+
+def build_hair_faces():
+    import concurrent.futures as cf
+    data = json.load(open(HAIR_FACES))
+    def hair(entry):
+        base, name, colors = entry
+        icon = save_png(head_icon([12000, 21000, base]), f"assets/icons/hair_{base}.png")
+        return {"id": base, "name": name, "colors": colors, "icon": icon}
+    def face(entry):
+        base, name, colors = entry
+        icon = save_png(head_icon([12000, base, 31000]), f"assets/icons/face_{base}.png")
+        return {"id": base, "name": name, "colors": colors, "icon": icon}
+    with cf.ThreadPoolExecutor(3) as ex:
+        hairs = list(ex.map(hair, data["hair"]))
+        faces = list(ex.map(face, data["faces"]))
+    print(f"hairstyles: {len(hairs)}, faces: {len(faces)}")
+    return hairs, faces
 
 
 def main():
     assets = {"pet": build_pet(), "chair": build_chair(), "character": build_character(),
               "wardrobe": build_wardrobe(), "bg": build_background()}
+    assets["wardrobe"]["hair"], assets["wardrobe"]["faces"] = build_hair_faces()
     with open("assets.js", "w") as f:
         f.write("// Generated by build_assets.py from maplestory.io (GMS v%s). Do not edit.\n" % VERSION)
         f.write("window.ASSETS = ")

@@ -1,0 +1,708 @@
+{
+ "key": "sep",
+ "month": 9,
+ "name": "Harvest Moon",
+ "accent": "#ffcf6b",
+ "sprites": {
+  "moon": "Map/Back/Christmas.img/back/1",
+  "stars": "Map/Back/Wz2_AnnualEvent5.img/back/15",
+  "cloud0": "Map/Back/Wz2_AnnualEvent5.img/back/17",
+  "cloud1": "Map/Back/Wz2_AnnualEvent5.img/back/18",
+  "cloud2": "Map/Back/Wz2_AnnualEvent5.img/back/19",
+  "cloud3": "Map/Back/Wz2_AnnualEvent5.img/back/20",
+  "mount0": "Map/Back/dowonkyungDark.img/back/108",
+  "mount1": "Map/Back/dowonkyungDark.img/back/109",
+  "hills0": "Map/Back/dowonkyungDark.img/back/121",
+  "hills1": "Map/Back/dowonkyungDark.img/back/122",
+  "fields": "Map/Back/event2.img/back/63",
+  "village": "Map/Obj/event.img/2012Hangawi/play/0",
+  "treeA": "Map/Obj/event.img/2013Hangawi/play/3",
+  "treeB": "Map/Obj/event.img/2013Hangawi/play/4",
+  "storehouse": "Map/Obj/event.img/2013Hangawi/play/23",
+  "gateL": "Map/Obj/event.img/2013Hangawi/play/0",
+  "gateR": "Map/Obj/event.img/2013Hangawi/play/2",
+  "wall": "Map/Obj/event.img/2013Hangawi/play/1/0",
+  "bannerA": "Map/Obj/event.img/2012Hangawi/play/3",
+  "bannerB": "Map/Obj/event.img/2012Hangawi/play/4",
+  "persimmonBunny": "Map/Obj/event.img/2012Hangawi/play/1",
+  "bunnyPair": "Map/Obj/event.img/2012Hangawi/play/2",
+  "ropeBunny": "Map/Obj/event.img/2012Hangawi/play/5",
+  "jars": "Map/Obj/event.img/2013Hangawi/play/5",
+  "giftLong": "Map/Obj/event.img/2013Hangawi/play/6",
+  "giftSmall": "Map/Obj/event.img/2013Hangawi/play/7/0",
+  "bundle": "Map/Obj/event.img/2013Hangawi/play/9",
+  "chestnuts": "Map/Obj/event.img/2013Hangawi/play/10",
+  "riceBags": "Map/Obj/event.img/2013Hangawi/play/11",
+  "riceStack": "Map/Obj/event.img/2013Hangawi/play/12",
+  "apples": "Map/Obj/event.img/2013Hangawi/play/13",
+  "giftTable": "Map/Obj/event.img/2013Hangawi/play/17",
+  "jarsBags": "Map/Obj/event.img/2013Hangawi/play/18",
+  "songpyeon": "Map/Obj/event.img/2013Hangawi/play/19",
+  "fruitTable": "Map/Obj/event.img/2013Hangawi/play/20",
+  "lamp": "Map/Obj/eunwol.img/FoxForest/streetlight/0",
+  "ground": "Map/Tile/folkvillige.img/bsc/0",
+  "moonBunny": {
+   "path": "Mob/4230300.img/move",
+   "version": "250"
+  },
+  "pounder": {
+   "path": "Mob/9300061.img/stand",
+   "version": "250"
+  },
+  "kidBunny": {
+   "path": "Mob/9303111.img/move",
+   "version": "250"
+  },
+  "riceMouse": {
+   "path": "Mob/9303030.img/stand",
+   "version": "250"
+  }
+ },
+ "scene": {
+  "sky": {
+   "gradient": [
+    "#0e1433",
+    "#4a3a66"
+   ]
+  },
+  "stars": {
+   "sprite": "stars",
+   "alpha": [
+    0.55,
+    1.0
+   ],
+   "speed": 1.1
+  },
+  "celestial": {
+   "sprite": "moon",
+   "x": 0.62,
+   "y": 0.02,
+   "parallax": 0.02,
+   "glow": "255,214,140",
+   "glowRadius": 230,
+   "glowStrength": 0.32
+  },
+  "clouds": {
+   "sprites": [
+    "cloud0",
+    "cloud1",
+    "cloud2",
+    "cloud3"
+   ],
+   "count": 6,
+   "alpha": 0.75,
+   "y": [
+    0.06,
+    0.4
+   ],
+   "speed": [
+    3,
+    7
+   ]
+  },
+  "flyer": {
+   "sprite": "riceMouse",
+   "period": 42,
+   "duration": 26,
+   "y": 0.2,
+   "bob": 12,
+   "dir": 1
+  },
+  "far": [
+   {
+    "parallax": 0.1,
+    "y": 105,
+    "tile": [
+     "mount1",
+     "mount0"
+    ],
+    "start": -250,
+    "spacing": 330,
+    "darken": 0.3
+   },
+   {
+    "parallax": 0.18,
+    "y": 30,
+    "tile": [
+     "hills0",
+     "hills1"
+    ],
+    "start": -300,
+    "spacing": 760,
+    "darken": 0.2
+   },
+   {
+    "parallax": 0.3,
+    "y": 175,
+    "tile": [
+     "fields"
+    ],
+    "start": -300,
+    "spacing": 1000,
+    "darken": 0.5
+   },
+   {
+    "parallax": 0.5,
+    "y": 0,
+    "items": [
+     [
+      "treeA",
+      280,
+      20
+     ],
+     [
+      "storehouse",
+      1250,
+      130
+     ],
+     [
+      "treeA",
+      1420,
+      20,
+      true
+     ]
+    ],
+    "darken": 0.45
+   },
+   {
+    "parallax": 0.7,
+    "y": 0,
+    "items": [
+     [
+      "treeB",
+      250,
+      10,
+      true
+     ],
+     [
+      "treeB",
+      1180,
+      10
+     ]
+    ],
+    "darken": 0.3
+   }
+  ],
+  "mist": "150,110,170",
+  "ground": {
+   "tile": "ground",
+   "darken": 0.62,
+   "lip": [
+    "#5a3c26",
+    "#9a6a38"
+   ]
+  },
+  "back": [
+   [
+    "lamp",
+    30,
+    2
+   ],
+   [
+    "gateL",
+    225,
+    2
+   ],
+   [
+    "wall",
+    523,
+    2
+   ],
+   [
+    "wall",
+    639,
+    2
+   ],
+   [
+    "bannerA",
+    135,
+    4
+   ],
+   [
+    "riceBags",
+    420,
+    2
+   ],
+   [
+    "jars",
+    600,
+    2
+   ],
+   [
+    "lamp",
+    720,
+    2
+   ],
+   [
+    "persimmonBunny",
+    790,
+    2
+   ],
+   [
+    "songpyeon",
+    1140,
+    2
+   ],
+   [
+    "fruitTable",
+    1255,
+    2
+   ],
+   [
+    "ropeBunny",
+    1405,
+    2
+   ],
+   [
+    "gateR",
+    1860,
+    2
+   ],
+   [
+    "riceStack",
+    1670,
+    2
+   ],
+   [
+    "giftTable",
+    1905,
+    2
+   ],
+   [
+    "lamp",
+    2060,
+    2
+   ],
+   [
+    "bannerB",
+    2250,
+    4
+   ],
+   [
+    "jarsBags",
+    2255,
+    2
+   ]
+  ],
+  "front": [
+   [
+    "apples",
+    500,
+    3
+   ],
+   [
+    "chestnuts",
+    665,
+    4
+   ],
+   [
+    "bunnyPair",
+    1320,
+    2
+   ],
+   [
+    "bundle",
+    1745,
+    3
+   ]
+  ],
+  "idlers": [
+   [
+    "pounder",
+    880,
+    2
+   ]
+  ],
+  "walkers": [
+   {
+    "sprite": "moonBunny",
+    "x": 270,
+    "span": 220,
+    "speed": 16
+   },
+   {
+    "sprite": "kidBunny",
+    "x": 1170,
+    "span": 130,
+    "speed": 12
+   },
+   {
+    "sprite": "moonBunny",
+    "x": 1600,
+    "span": 200,
+    "speed": 18
+   }
+  ],
+  "lights": {
+   "color": "255,190,110",
+   "items": [
+    [
+     30,
+     -198,
+     70
+    ],
+    [
+     720,
+     -198,
+     70
+    ],
+    [
+     2060,
+     -198,
+     70
+    ],
+    [
+     1140,
+     -50,
+     55
+    ],
+    [
+     880,
+     -40,
+     45
+    ]
+   ]
+  },
+  "particles": {
+   "type": "sparkles",
+   "count": 45,
+   "colors": [
+    "#fff2b0",
+    "#ffd98a",
+    "#ffffff"
+   ],
+   "alpha": 0.85
+  },
+  "vignette": "10,8,35"
+ },
+ "wardrobe": {
+  "hat": [
+   [
+    1002552,
+    "Moon Bunny Headgear"
+   ],
+   [
+    1002870,
+    "Moon Bunny Hat"
+   ],
+   [
+    1004728,
+    "Lady Moon Bunny's Rice Drop Soup"
+   ],
+   [
+    1004729,
+    "Wee Moon Bunny's Rice Drop Soup"
+   ],
+   [
+    1004730,
+    "Hungry Moon Bunny"
+   ],
+   [
+    1004831,
+    "Moon Bunny Bell Wig (Long Hair)"
+   ],
+   [
+    1005953,
+    "Sky Moon Bunny"
+   ],
+   [
+    1005954,
+    "Pink Moon Bunny"
+   ],
+   [
+    1006146,
+    "Romantic Pink Moon Bunny Ears"
+   ],
+   [
+    1004923,
+    "Moonlight Sticky Cake"
+   ],
+   [
+    1004618,
+    "Honey Rice Cake Hat"
+   ],
+   [
+    1004620,
+    "Chestnut Rice Cake Hat"
+   ],
+   [
+    1001001,
+    "Hanbok Jobawi"
+   ],
+   [
+    1001038,
+    "Korean Dress Wig"
+   ],
+   [
+    1004294,
+    "Sweet Persimmon Hat"
+   ]
+  ],
+  "outfit": [
+   [
+    1050065,
+    "Blue Celebration Hanbok"
+   ],
+   [
+    1051051,
+    "Pink Celebration Hanbok"
+   ],
+   [
+    1050123,
+    "Royal Hanbok"
+   ],
+   [
+    1051136,
+    "Royal Palace Hanbok"
+   ],
+   [
+    1050188,
+    "Flower Heir Hanbok"
+   ],
+   [
+    1051229,
+    "Flower Heiress Hanbok"
+   ],
+   [
+    1050229,
+    "Gentle Hanbok"
+   ],
+   [
+    1051280,
+    "Gentle Hanbok"
+   ],
+   [
+    1051302,
+    "Pink Fluffy Hanbok"
+   ],
+   [
+    1052077,
+    "Moon Bunny Costume"
+   ],
+   [
+    1053089,
+    "Blue Moon Bunny Bell Outfit"
+   ],
+   [
+    1053090,
+    "Red Moon Bunny Bell Outfit"
+   ],
+   [
+    1050147,
+    "Princess Korean Traditional Costume"
+   ],
+   [
+    1053173,
+    "Roxxy's Full Moon Rhapsody"
+   ]
+  ],
+  "cape": [
+   [
+    1102955,
+    "Moon Bunny Cape"
+   ],
+   [
+    1103223,
+    "Moon Bunny Keyring"
+   ],
+   [
+    1103942,
+    "Moon Bunny Satellite"
+   ],
+   [
+    1103001,
+    "Korean Kite Cape"
+   ],
+   [
+    1103414,
+    "Under the Moonlight"
+   ],
+   [
+    1103421,
+    "Brilliant Moonlight"
+   ],
+   [
+    1103968,
+    "Clouds Draped in Moonlight"
+   ],
+   [
+    1104071,
+    "Luna Rabbit Starcatcher"
+   ],
+   [
+    1102667,
+    "Magical Misty Moon"
+   ],
+   [
+    1103218,
+    "Moon-and-Star Backpack"
+   ],
+   [
+    1103424,
+    "Lunar Revolution"
+   ],
+   [
+    1103826,
+    "White Bunny Pack"
+   ],
+   [
+    1103759,
+    "Fluffball Bunny Tail"
+   ]
+  ],
+  "shoes": [
+   [
+    1072274,
+    "Moon Bunny Paws"
+   ],
+   [
+    1070008,
+    "Korean Martial Arts Shoes"
+   ],
+   [
+    1070147,
+    "Flower Shoes"
+   ],
+   [
+    1074144,
+    "Banquet Flower Shoes"
+   ],
+   [
+    1070137,
+    "Moon Halo"
+   ],
+   [
+    1071148,
+    "Moon Boots"
+   ],
+   [
+    1070132,
+    "Moon Traveler"
+   ],
+   [
+    1072240,
+    "Big Rabbit Feet"
+   ],
+   [
+    1074390,
+    "Luna Rabbit Shoes"
+   ],
+   [
+    1074391,
+    "Luna Rabbit Heels"
+   ],
+   [
+    1073724,
+    "Porong Moon Socks"
+   ],
+   [
+    1074095,
+    "Moonbeam's Silk Shoes"
+   ]
+  ],
+  "face": [
+   [
+    1012675,
+    "White Moon"
+   ],
+   [
+    1012485,
+    "Sweet Persimmon Blush"
+   ],
+   [
+    1012741,
+    "Cutie Bunny Face Accessory"
+   ],
+   [
+    1012770,
+    "Hop Hop Hop Bunny Face Accessory"
+   ],
+   [
+    1012656,
+    "Round Blush"
+   ],
+   [
+    1012852,
+    "Warm Tone Blush"
+   ],
+   [
+    1022230,
+    "Bunny Glasses"
+   ],
+   [
+    1022316,
+    "Round Rabbit-Eared Glasses"
+   ],
+   [
+    1012028,
+    "Blush"
+   ]
+  ],
+  "weapon": [
+   [
+    1702712,
+    "Moon Bunny Bell Weapon"
+   ],
+   [
+    1703755,
+    "Moon Bunny Communicator"
+   ],
+   [
+    1703176,
+    "Moon Bunny's Attire"
+   ],
+   [
+    1702551,
+    "Korean Thanksgiving Persimmon Branch"
+   ],
+   [
+    1702382,
+    "Persimmon Branch"
+   ],
+   [
+    1703804,
+    "Korean Fan"
+   ],
+   [
+    1702956,
+    "Moonlight Lamp"
+   ],
+   [
+    1702869,
+    "Autumn Lantern Weapon"
+   ],
+   [
+    1703613,
+    "Yut and Yut"
+   ],
+   [
+    1702401,
+    "Rabbit with Carrot"
+   ],
+   [
+    1703801,
+    "Waxing Moonrise"
+   ],
+   [
+    1703329,
+    "Dark Moon Rabbit"
+   ]
+  ]
+ },
+ "pets": [
+  5000005,
+  5000002,
+  5000034,
+  5000198,
+  5000736,
+  5000737,
+  5000738,
+  5000856,
+  5002372,
+  5002606,
+  5002640,
+  5002641,
+  5002642,
+  5002691
+ ]
+}

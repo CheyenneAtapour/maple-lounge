@@ -1,0 +1,816 @@
+{
+ "key": "aug",
+ "month": 8,
+ "name": "Under the Sea",
+ "accent": "#3fb8ff",
+ "sprites": {
+  "sky": "Map/Back/aquaRoad.img/back/1",
+  "rays": "Map/Back/2023AquaAdventure.img/back/24",
+  "school0": "Map/Obj/acc5.img/aquaRoad/fish/7/0",
+  "school1": "Map/Obj/acc5.img/aquaRoad/fish/8/0",
+  "school2": "Map/Obj/acc5.img/aquaRoad/fish/13/0",
+  "shark": {
+   "path": "Mob/8150100.img/move",
+   "version": "250"
+  },
+  "reefFar": "Map/Back/aquaRoad.img/back/3",
+  "whale": "Map/Obj/acc5.img/aquaRoad/fish/24",
+  "aquaCastle": "Map/Back/aquaRoad.img/back/24",
+  "reef0": "Map/Back/aquaRoad2.img/back/2",
+  "reef1": "Map/Back/aquaRoad2.img/back/3",
+  "reef2": "Map/Back/aquaRoad2.img/back/4",
+  "wreck": "Map/Back/2023AquaAdventure.img/back/19",
+  "rockFar0": "Map/Back/aquaRoad.img/back/16",
+  "rockFar1": "Map/Back/aquaRoad.img/back/20",
+  "sand": "Map/Tile/sandySeaFloor.img/bsc/1",
+  "rockA": "Map/Obj/acc5.img/aquaRoad/rock/0",
+  "crystalRock0": "Map/Obj/acc5.img/aquaRoad/rock/13",
+  "crystalRock1": "Map/Obj/acc5.img/aquaRoad/rock/14",
+  "coralRock0": "Map/Obj/acc5.img/aquaRoad/rock/18",
+  "coralRock1": "Map/Obj/acc5.img/aquaRoad/rock/19",
+  "dolphinSign0": "Map/Obj/acc5.img/aquaRoad/signboard/0",
+  "dolphinSign1": "Map/Obj/acc5.img/aquaRoad/signboard/1",
+  "shellHouse": "Map/Obj/acc5.img/aquaRoad/acc/50",
+  "plant0": "Map/Obj/acc5.img/aquaRoad/acc/0",
+  "plant1": "Map/Obj/acc5.img/aquaRoad/acc/1",
+  "seaweed": "Map/Obj/acc5.img/aquaRoad/acc/6",
+  "coralBlue": "Map/Obj/acc5.img/aquaRoad/acc/8",
+  "coral0": "Map/Obj/acc5.img/aquaRoad/acc/40",
+  "coral1": "Map/Obj/acc5.img/aquaRoad/acc/41",
+  "coral2": "Map/Obj/acc5.img/aquaRoad/acc/43",
+  "coral3": "Map/Obj/acc5.img/aquaRoad/acc/44",
+  "coral4": "Map/Obj/acc5.img/aquaRoad/acc/46",
+  "coral5": "Map/Obj/acc5.img/aquaRoad/acc/47",
+  "coral6": "Map/Obj/acc5.img/aquaRoad/acc/48",
+  "smallCoral0": "Map/Obj/acc5.img/aquaRoad/acc/22",
+  "smallCoral1": "Map/Obj/acc5.img/aquaRoad/acc/23",
+  "conch0": "Map/Obj/acc5.img/aquaRoad/acc/24",
+  "conch1": "Map/Obj/acc5.img/aquaRoad/acc/25",
+  "clam": "Map/Obj/acc5.img/aquaRoad/acc/28",
+  "oyster": "Map/Obj/acc5.img/aquaRoad/acc/29",
+  "urchin": "Map/Obj/acc5.img/aquaRoad/acc/37",
+  "pebbles": "Map/Obj/acc5.img/aquaRoad/acc/31",
+  "jelly0": "Map/Obj/acc5.img/aquaRoad/fish/0",
+  "jelly1": "Map/Obj/acc5.img/aquaRoad/fish/1",
+  "jelly3": "Map/Obj/acc5.img/aquaRoad/fish/3",
+  "fishA": "Map/Obj/acc5.img/aquaRoad/fish/10",
+  "fishB": "Map/Obj/acc5.img/aquaRoad/fish/12",
+  "fishC": "Map/Obj/acc5.img/aquaRoad/fish/16",
+  "puffer": "Map/Obj/acc5.img/aquaRoad/fish/21",
+  "krip": {
+   "path": "Mob/3000006.img/move",
+   "version": "250"
+  },
+  "flowerFish": {
+   "path": "Mob/2230200.img/move",
+   "version": "250"
+  },
+  "seacle": {
+   "path": "Mob/2230105.img/move",
+   "version": "250"
+  },
+  "poopa": {
+   "path": "Mob/4230200.img/move",
+   "version": "250"
+  },
+  "freezer": {
+   "path": "Mob/4230124.img/stand",
+   "version": "250"
+  }
+ },
+ "scene": {
+  "sky": "sky",
+  "celestial": {
+   "sprite": "rays",
+   "x": 0.3,
+   "y": -0.02,
+   "parallax": 0.05,
+   "glow": "170,230,255",
+   "glowRadius": 220,
+   "glowStrength": 0.14
+  },
+  "clouds": {
+   "sprites": [
+    "school0",
+    "school1",
+    "school2"
+   ],
+   "count": 7,
+   "alpha": 0.75,
+   "y": [
+    0.08,
+    0.4
+   ],
+   "speed": [
+    -14,
+    -6
+   ]
+  },
+  "flyer": {
+   "sprite": "shark",
+   "period": 36,
+   "duration": 24,
+   "y": 0.2,
+   "bob": 8
+  },
+  "far": [
+   {
+    "parallax": 0.06,
+    "y": 70,
+    "tile": [
+     "reefFar"
+    ],
+    "start": -300,
+    "spacing": 800
+   },
+   {
+    "parallax": 0.12,
+    "y": -150,
+    "items": [
+     [
+      "whale",
+      260,
+      0
+     ]
+    ],
+    "alpha": 0.55,
+    "darken": 0.2
+   },
+   {
+    "parallax": 0.2,
+    "y": 90,
+    "items": [
+     [
+      "aquaCastle",
+      760,
+      0
+     ]
+    ],
+    "darken": 0.3,
+    "alpha": 0.85
+   },
+   {
+    "parallax": 0.4,
+    "y": 14,
+    "tile": [
+     "reef0",
+     "reef2",
+     "reef1"
+    ],
+    "start": -200,
+    "spacing": 520
+   },
+   {
+    "parallax": 0.5,
+    "y": 170,
+    "items": [
+     [
+      "wreck",
+      1080,
+      0
+     ]
+    ],
+    "darken": 0.35
+   },
+   {
+    "parallax": 0.65,
+    "y": 6,
+    "items": [
+     [
+      "rockFar0",
+      120,
+      0
+     ],
+     [
+      "rockFar1",
+      1250,
+      0
+     ],
+     [
+      "rockFar0",
+      1720,
+      0,
+      true
+     ]
+    ],
+    "darken": 0.3
+   }
+  ],
+  "mist": "90,170,230",
+  "ground": {
+   "tile": "sand",
+   "darken": 0.32,
+   "lip": [
+    "#6f8fc8",
+    "#a9c8f0"
+   ]
+  },
+  "back": [
+   [
+    "rockA",
+    40,
+    6
+   ],
+   [
+    "dolphinSign0",
+    175,
+    3
+   ],
+   [
+    "coral1",
+    300,
+    3
+   ],
+   [
+    "plant0",
+    395,
+    3
+   ],
+   [
+    "coral5",
+    450,
+    3
+   ],
+   [
+    "crystalRock0",
+    590,
+    6
+   ],
+   [
+    "shellHouse",
+    730,
+    4
+   ],
+   [
+    "conch0",
+    850,
+    2
+   ],
+   [
+    "coral3",
+    905,
+    3
+   ],
+   [
+    "clam",
+    1110,
+    3
+   ],
+   [
+    "coral2",
+    1215,
+    3
+   ],
+   [
+    "coralRock0",
+    1380,
+    6
+   ],
+   [
+    "seaweed",
+    1510,
+    3
+   ],
+   [
+    "coral0",
+    1555,
+    3
+   ],
+   [
+    "crystalRock1",
+    1660,
+    6
+   ],
+   [
+    "coral4",
+    1790,
+    3
+   ],
+   [
+    "coralRock1",
+    1930,
+    8
+   ],
+   [
+    "dolphinSign1",
+    2045,
+    3,
+    true
+   ],
+   [
+    "oyster",
+    2095,
+    2
+   ],
+   [
+    "coral6",
+    2245,
+    3
+   ]
+  ],
+  "front": [
+   [
+    "smallCoral0",
+    520,
+    2
+   ],
+   [
+    "pebbles",
+    780,
+    1
+   ],
+   [
+    "urchin",
+    1290,
+    2
+   ],
+   [
+    "smallCoral1",
+    1720,
+    2
+   ],
+   [
+    "conch1",
+    1990,
+    2
+   ]
+  ],
+  "idlers": [
+   [
+    "jelly1",
+    470,
+    -175
+   ],
+   [
+    "jelly0",
+    300,
+    -240
+   ],
+   [
+    "fishB",
+    660,
+    -120
+   ],
+   [
+    "jelly3",
+    1290,
+    -205
+   ],
+   [
+    "puffer",
+    1700,
+    -150
+   ],
+   [
+    "fishA",
+    1960,
+    -235
+   ],
+   [
+    "fishC",
+    1160,
+    -150
+   ],
+   [
+    "freezer",
+    1460,
+    2
+   ]
+  ],
+  "walkers": [
+   {
+    "sprite": "krip",
+    "x": 230,
+    "span": 150,
+    "speed": 16
+   },
+   {
+    "sprite": "flowerFish",
+    "x": 1080,
+    "span": 140,
+    "speed": 10
+   },
+   {
+    "sprite": "seacle",
+    "x": 1560,
+    "span": 160,
+    "speed": 14
+   },
+   {
+    "sprite": "poopa",
+    "x": 1820,
+    "span": 170,
+    "speed": 18
+   }
+  ],
+  "lights": {
+   "color": "120,220,255",
+   "steady": true,
+   "strength": 0.9,
+   "items": [
+    [
+     470,
+     -200,
+     60,
+     "190,170,255"
+    ],
+    [
+     300,
+     -258,
+     45,
+     "160,255,220"
+    ],
+    [
+     1290,
+     -230,
+     70,
+     "230,170,255"
+    ],
+    [
+     590,
+     -110,
+     90
+    ],
+    [
+     1660,
+     -110,
+     90,
+     "220,150,255"
+    ],
+    [
+     730,
+     -100,
+     70,
+     "255,220,150"
+    ],
+    [
+     1380,
+     -100,
+     80
+    ]
+   ]
+  },
+  "particles": {
+   "type": "bubbles",
+   "count": 55,
+   "alpha": 0.8
+  },
+  "vignette": "0,15,50",
+  "vignetteStrength": 0.5
+ },
+ "wardrobe": {
+  "hat": [
+   [
+    1003278,
+    "Mermaid Shell"
+   ],
+   [
+    1006339,
+    "Mermaid's Tear Scale Hat"
+   ],
+   [
+    1006340,
+    "Mermaid's Sorrow Scale Hairband"
+   ],
+   [
+    1002413,
+    "Octopus Hat"
+   ],
+   [
+    1002319,
+    "Whale Hat"
+   ],
+   [
+    1004756,
+    "Shark Hoodie"
+   ],
+   [
+    1003636,
+    "Aqua Shell"
+   ],
+   [
+    1004807,
+    "Starfish and Clam"
+   ],
+   [
+    1005217,
+    "Coral Ribbon"
+   ],
+   [
+    1005819,
+    "Shiny Coral Hairpin"
+   ],
+   [
+    1006041,
+    "Aquarium Cone Hat"
+   ],
+   [
+    1006638,
+    "Giant Squid's Hood"
+   ],
+   [
+    1006857,
+    "I Am Pink Whale Hat"
+   ],
+   [
+    1006860,
+    "Deep Sea Moon Ribbon"
+   ],
+   [
+    1006866,
+    "Crabby Hairband"
+   ]
+  ],
+  "outfit": [
+   [
+    1054050,
+    "Mermaid's Tear Outfit"
+   ],
+   [
+    1054051,
+    "Mermaid's Sorrow Outfit"
+   ],
+   [
+    1054732,
+    "Abyssal Mermaid"
+   ],
+   [
+    1054499,
+    "Deep Sea Prince Tunic"
+   ],
+   [
+    1054500,
+    "Deep Sea Princess Dress"
+   ],
+   [
+    1053040,
+    "Shark Bodysuit"
+   ],
+   [
+    1054267,
+    "Giant Squid's Costume"
+   ],
+   [
+    1054496,
+    "I Am Pink Whale Outfit"
+   ],
+   [
+    1053584,
+    "Bling Coral Tailcoat"
+   ],
+   [
+    1053585,
+    "Bling Coral Dress"
+   ],
+   [
+    1053722,
+    "Blue Ocean Prince Outfit"
+   ],
+   [
+    1053723,
+    "Violet Ocean Princess Outfit"
+   ],
+   [
+    1051115,
+    "Sea Queen Dress"
+   ],
+   [
+    1050499,
+    "Seafoam Coral Coordinates"
+   ],
+   [
+    1054058,
+    "Blue Bubble Gown"
+   ]
+  ],
+  "cape": [
+   [
+    1103027,
+    "Underwater Essentials Cape"
+   ],
+   [
+    1103350,
+    "Mysterious Underwater Cape"
+   ],
+   [
+    1103458,
+    "Deep Sea Fish's Dream Effect Cape"
+   ],
+   [
+    1103750,
+    "Delighted Dolphin"
+   ],
+   [
+    1103887,
+    "Wittle Whale Friends"
+   ],
+   [
+    1103888,
+    "Deep Sea Flower"
+   ],
+   [
+    1103766,
+    "Snorkel Shark"
+   ],
+   [
+    1102926,
+    "Shark Cape"
+   ],
+   [
+    1103130,
+    "Seafoam Coral Brilliance"
+   ],
+   [
+    1103259,
+    "Bling Coral Cape"
+   ],
+   [
+    1103197,
+    "Undersea Wonder Cape"
+   ],
+   [
+    1102949,
+    "Bubble Wings"
+   ],
+   [
+    1102950,
+    "Bu-bu-bubbles!"
+   ],
+   [
+    1103823,
+    "Shell Star"
+   ]
+  ],
+  "shoes": [
+   [
+    1074199,
+    "Deep Sea Rainbow Pearl"
+   ],
+   [
+    1073550,
+    "Deep Sea's Echo Shoes"
+   ],
+   [
+    1073549,
+    "Ocean's Echo Shoes"
+   ],
+   [
+    1073302,
+    "Seafoam Coral Anklet"
+   ],
+   [
+    1071010,
+    "Sea Queen Sandals"
+   ],
+   [
+    1072507,
+    "Pearl Anklet"
+   ],
+   [
+    1073144,
+    "Shark Bite Shoes"
+   ],
+   [
+    1073990,
+    "Crab On The Way"
+   ],
+   [
+    1074006,
+    "Giant Squid's Tentacles"
+   ],
+   [
+    1074003,
+    "Lapping Waves"
+   ],
+   [
+    1072851,
+    "Bubble Bubble Shoes"
+   ],
+   [
+    1073800,
+    "Blue Bubble Slippers"
+   ]
+  ],
+  "face": [
+   [
+    1012804,
+    "Aqua Expression"
+   ],
+   [
+    1012841,
+    "Giant Squid's Eye"
+   ],
+   [
+    1012872,
+    "Gentle Smile Oceanleli Face Accessory"
+   ],
+   [
+    1012873,
+    "Bright Smile Oceanleli Face Accessory"
+   ],
+   [
+    1012642,
+    "Bubble Pup Mask"
+   ],
+   [
+    1012759,
+    "Sweet Bubble Gum"
+   ],
+   [
+    1012085,
+    "Cherry Bubblegum"
+   ],
+   [
+    1012096,
+    "Apple Bubble Gum"
+   ],
+   [
+    1020000,
+    "Aqua Toy Shades"
+   ],
+   [
+    1012134,
+    "Tear Drop Face Tattoo"
+   ],
+   [
+    1012704,
+    "Twinkle Glitter"
+   ]
+  ],
+  "weapon": [
+   [
+    1702238,
+    "Soft Plush Dolphin"
+   ],
+   [
+    1702189,
+    "Crabby"
+   ],
+   [
+    1702606,
+    "Squid"
+   ],
+   [
+    1702597,
+    "Rainbow Seashell"
+   ],
+   [
+    1703104,
+    "Deep Sea Turban Shell Cane"
+   ],
+   [
+    1703007,
+    "Bling Coral Staff"
+   ],
+   [
+    1703014,
+    "Coral Song"
+   ],
+   [
+    1702858,
+    "Seafoam Coral Blade"
+   ],
+   [
+    1703677,
+    "Sharky Shark"
+   ],
+   [
+    1702366,
+    "Shark-sicle"
+   ],
+   [
+    1702803,
+    "Fish Bubbles Weapon"
+   ],
+   [
+    1703562,
+    "Jelly Bubble Balloon"
+   ],
+   [
+    1703669,
+    "Deep Sea Gem Tree"
+   ],
+   [
+    1703536,
+    "Stalwart Sunfish"
+   ]
+  ]
+ },
+ "pets": [
+  5002166,
+  5002167,
+  5002168,
+  5000098,
+  5000742,
+  5002165,
+  5002031,
+  5002700,
+  5002706,
+  5002707,
+  5002708,
+  5002718,
+  5002342,
+  5002341,
+  5000674
+ ]
+}

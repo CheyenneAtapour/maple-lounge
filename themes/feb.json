@@ -1,0 +1,778 @@
+{
+ "key": "feb",
+ "month": 2,
+ "name": "Valentine's Day",
+ "accent": "#ff6fa0",
+ "sprites": {
+  "stars": "Map/Back/Christmas.img/ani/0/0",
+  "moon": "Map/Obj/AmoriaGL.img/town/etc/1",
+  "pcloud0": "Map/Back/PL_Choco.img/back/4",
+  "pcloud1": "Map/Back/PL_Choco.img/back/5",
+  "pcloud2": "Map/Back/PL_Choco.img/back/6",
+  "heartCloud": "Map/Obj/wedding.img/weddingVillige/could/2",
+  "arrow": "Map/Obj/wedding.img/weddingVillige/car/2",
+  "cloudBank": "Map/Back/PL_Choco.img/back/3",
+  "hills": "Map/Back/Wedding.img/back/8",
+  "gardenGazebo": "Map/Back/Wedding.img/back/10",
+  "gardenArch": "Map/Back/Wedding.img/back/12",
+  "gardenDome": "Map/Back/WeddingGL.img/back/11",
+  "sandstone": "Map/Obj/AmoriaGL.img/town/tile/0",
+  "lamp": "Map/Obj/wedding.img/weddingVillige/acc/1",
+  "cherry": "Map/Obj/wedding.img/weddingVillige/JP/1",
+  "heartTopiary0": "Map/Obj/wedding.img/weddingVillige/acc/12",
+  "heartTopiary1": "Map/Obj/wedding.img/weddingVillige/acc/13",
+  "fence": "Map/Obj/wedding.img/weddingVillige/fence/1",
+  "fountain": "Map/Obj/wedding.img/weddingVillige/acc/4",
+  "cupid": "Map/Obj/wedding.img/weddingVillige/acc/7",
+  "cupidFountain": "Map/Obj/wedding.img/weddingVillige/acc/8",
+  "gazebo": "Map/Obj/wedding.img/weddingVillige/acc/5",
+  "gateArch": "Map/Obj/wedding.img/weddingVillige/fence/0",
+  "roseUrn": "Map/Obj/wedding.img/weddingVillige/nature/25",
+  "yellowUrn": "Map/Obj/wedding.img/weddingVillige/nature/26",
+  "snailTopiary": "Map/Obj/wedding.img/weddingVillige/nature/10",
+  "coneTopiary": "Map/Obj/wedding.img/weddingVillige/nature/13",
+  "roseBush": "Map/Obj/wedding.img/weddingVillige/nature/8",
+  "lilacs": "Map/Obj/wedding.img/weddingVillige/nature/27",
+  "pinkFlowers": "Map/Obj/wedding.img/weddingVillige/nature/28",
+  "tulip": "Map/Obj/wedding.img/weddingVillige/nature/31",
+  "roses": "Map/Obj/wedding.img/weddingVillige/nature/6",
+  "grass": "Map/Obj/wedding.img/weddingVillige/nature/23",
+  "bench": "Map/Obj/wedding.img/weddingVillige/seat/0",
+  "grizzly": {
+   "path": "Mob/9300693.img/move",
+   "version": "250"
+  },
+  "panda": {
+   "path": "Mob/9300694.img/move",
+   "version": "250"
+  },
+  "yeti": {
+   "path": "Mob/9500608.img/move",
+   "version": "250"
+  },
+  "teddy": {
+   "path": "Mob/3110101.img/move",
+   "version": "250"
+  }
+ },
+ "scene": {
+  "sky": {
+   "gradient": [
+    "#4e3a86",
+    "#ffb9d3"
+   ]
+  },
+  "stars": {
+   "sprite": "stars",
+   "alpha": [
+    0.3,
+    0.75
+   ],
+   "speed": 1.0
+  },
+  "celestial": {
+   "sprite": "moon",
+   "x": 0.7,
+   "y": 0.06,
+   "parallax": 0.02,
+   "glow": "255,215,235",
+   "glowRadius": 160,
+   "glowStrength": 0.2
+  },
+  "clouds": {
+   "sprites": [
+    "pcloud0",
+    "heartCloud",
+    "pcloud1",
+    "pcloud2"
+   ],
+   "count": 6,
+   "alpha": 0.75,
+   "y": [
+    0.04,
+    0.3
+   ],
+   "speed": [
+    3,
+    7
+   ]
+  },
+  "flyer": {
+   "sprite": "arrow",
+   "period": 36,
+   "duration": 20,
+   "y": 0.16,
+   "bob": 8
+  },
+  "far": [
+   {
+    "parallax": 0.08,
+    "y": 90,
+    "tile": [
+     "cloudBank"
+    ],
+    "start": -300,
+    "spacing": 900,
+    "alpha": 0.9
+   },
+   {
+    "parallax": 0.22,
+    "y": 40,
+    "tile": [
+     "hills"
+    ],
+    "start": -300,
+    "spacing": 699,
+    "darken": 0.3
+   },
+   {
+    "parallax": 0.45,
+    "y": -4,
+    "items": [
+     [
+      "gardenGazebo",
+      200,
+      0
+     ],
+     [
+      "gardenDome",
+      900,
+      0
+     ],
+     [
+      "gardenArch",
+      1500,
+      0
+     ]
+    ],
+    "darken": 0.18
+   },
+   {
+    "parallax": 0.7,
+    "y": 0,
+    "items": [
+     [
+      "cherry",
+      420,
+      0
+     ],
+     [
+      "coneTopiary",
+      820,
+      0
+     ],
+     [
+      "cherry",
+      1350,
+      0,
+      true
+     ],
+     [
+      "coneTopiary",
+      1750,
+      0
+     ]
+    ],
+    "darken": 0.3
+   }
+  ],
+  "mist": "255,190,220",
+  "ground": {
+   "tile": "sandstone",
+   "darken": 0.4,
+   "lip": [
+    "#4f8f3a",
+    "#86c95a"
+   ]
+  },
+  "back": [
+   [
+    "lamp",
+    30,
+    2
+   ],
+   [
+    "cherry",
+    175,
+    4
+   ],
+   [
+    "heartTopiary0",
+    345,
+    4
+   ],
+   [
+    "fence",
+    500,
+    4
+   ],
+   [
+    "fountain",
+    500,
+    4
+   ],
+   [
+    "cupid",
+    660,
+    2
+   ],
+   [
+    "roseUrn",
+    745,
+    2
+   ],
+   [
+    "gazebo",
+    1010,
+    4
+   ],
+   [
+    "lilacs",
+    900,
+    2
+   ],
+   [
+    "pinkFlowers",
+    1125,
+    2
+   ],
+   [
+    "roseBush",
+    1250,
+    4
+   ],
+   [
+    "heartTopiary1",
+    1225,
+    4
+   ],
+   [
+    "lamp",
+    1335,
+    2
+   ],
+   [
+    "bench",
+    1395,
+    2
+   ],
+   [
+    "snailTopiary",
+    1490,
+    4
+   ],
+   [
+    "gateArch",
+    1680,
+    4
+   ],
+   [
+    "cupidFountain",
+    1840,
+    2
+   ],
+   [
+    "cherry",
+    1975,
+    4,
+    true
+   ],
+   [
+    "lamp",
+    2075,
+    2
+   ],
+   [
+    "heartTopiary0",
+    2245,
+    4
+   ],
+   [
+    "yellowUrn",
+    2190,
+    2
+   ]
+  ],
+  "front": [
+   [
+    "grass",
+    120,
+    6
+   ],
+   [
+    "tulip",
+    300,
+    2
+   ],
+   [
+    "roses",
+    790,
+    2
+   ],
+   [
+    "grass",
+    1180,
+    6
+   ],
+   [
+    "roses",
+    1560,
+    2
+   ],
+   [
+    "tulip",
+    1900,
+    2
+   ]
+  ],
+  "idlers": [
+   [
+    "panda",
+    590,
+    2
+   ],
+   [
+    "grizzly",
+    1780,
+    2,
+    true
+   ]
+  ],
+  "walkers": [
+   {
+    "sprite": "teddy",
+    "x": 260,
+    "span": 160,
+    "speed": 14
+   },
+   {
+    "sprite": "yeti",
+    "x": 1320,
+    "span": 200,
+    "speed": 16
+   }
+  ],
+  "lights": {
+   "color": "255,180,215",
+   "steady": true,
+   "items": [
+    [
+     30,
+     -285,
+     70,
+     "255,235,190"
+    ],
+    [
+     1335,
+     -285,
+     70,
+     "255,235,190"
+    ],
+    [
+     2075,
+     -285,
+     70,
+     "255,235,190"
+    ],
+    [
+     1010,
+     -150,
+     140
+    ],
+    [
+     500,
+     -70,
+     90,
+     "200,230,255"
+    ],
+    [
+     1840,
+     -90,
+     80,
+     "200,230,255"
+    ],
+    [
+     345,
+     -120,
+     80
+    ],
+    [
+     1225,
+     -120,
+     80
+    ],
+    [
+     2245,
+     -120,
+     80
+    ]
+   ]
+  },
+  "particles": {
+   "type": "hearts",
+   "count": 36,
+   "alpha": 0.85
+  },
+  "vignette": "60,20,70",
+  "vignetteStrength": 0.35
+ },
+ "wardrobe": {
+  "hat": [
+   [
+    1002738,
+    "Bunny Earmuffs"
+   ],
+   [
+    1004852,
+    "Sweetheart Hat"
+   ],
+   [
+    1004877,
+    "Love Bell Hat"
+   ],
+   [
+    1004467,
+    "Giant Floppy Heart Hat"
+   ],
+   [
+    1002945,
+    "Heart Hairband"
+   ],
+   [
+    1005069,
+    "Marshmallow Heart Earmuffs"
+   ],
+   [
+    1005526,
+    "Fluffy Heart Cloud Hairpin"
+   ],
+   [
+    1004910,
+    "Sweet Chocolate Cake Hat"
+   ],
+   [
+    1003546,
+    "Chocolate Cupcake Hairpin"
+   ],
+   [
+    1004322,
+    "Rose Hat"
+   ],
+   [
+    1002520,
+    "Red Rose"
+   ],
+   [
+    1003955,
+    "Romance Rose"
+   ],
+   [
+    1006146,
+    "Romantic Pink Moon Bunny Ears"
+   ],
+   [
+    1004469,
+    "Love Message"
+   ],
+   [
+    1002367,
+    "Angel Halo"
+   ],
+   [
+    1004191,
+    "Pink Angel Wings Hat"
+   ]
+  ],
+  "outfit": [
+   [
+    1052926,
+    "Cottontail Rabbit Dress"
+   ],
+   [
+    1053293,
+    "Valentine's Shorts"
+   ],
+   [
+    1053294,
+    "Valentine's Dress"
+   ],
+   [
+    1050438,
+    "Sweetheart Shirt"
+   ],
+   [
+    1051506,
+    "Sweetheart Dress"
+   ],
+   [
+    1051510,
+    "Sweet Chocolate Dress"
+   ],
+   [
+    1050442,
+    "Sweet Chocolate Suspenders"
+   ],
+   [
+    1051909,
+    "Cherry Chocolate"
+   ],
+   [
+    1053126,
+    "Polka Dot Heart Dress"
+   ],
+   [
+    1053127,
+    "Polka Dot Heart Jumpsuit"
+   ],
+   [
+    1051497,
+    "Rose Princess Gown"
+   ],
+   [
+    1050429,
+    "Rose Prince Suit"
+   ],
+   [
+    1052904,
+    "Lovely Princess Dress"
+   ],
+   [
+    1051431,
+    "Ms. Love Messenger Outfit"
+   ],
+   [
+    1050361,
+    "Mr. Love Messenger Outfit"
+   ],
+   [
+    1052542,
+    "Angel Costume"
+   ]
+  ],
+  "cape": [
+   [
+    1102236,
+    "Cupid's Wings Cape"
+   ],
+   [
+    1102354,
+    "Valentine's Cape"
+   ],
+   [
+    1102271,
+    "Lovely Chocolate Balloons"
+   ],
+   [
+    1102204,
+    "Romantic Rose"
+   ],
+   [
+    1102630,
+    "Romantic Wing Cherubim"
+   ],
+   [
+    1102964,
+    "Sweetheart's Affection"
+   ],
+   [
+    1102981,
+    "Wrapped with Love Cape"
+   ],
+   [
+    1103283,
+    "In Love"
+   ],
+   [
+    1103422,
+    "Victorian Love Letter"
+   ],
+   [
+    1103559,
+    "Pink Bean Love Swing Cape"
+   ],
+   [
+    1103561,
+    "Sky Garden Full of Love"
+   ],
+   [
+    1102093,
+    "Heart Balloon"
+   ],
+   [
+    1102005,
+    "Baby Angel Wings"
+   ],
+   [
+    1103876,
+    "Sugary Romantic"
+   ]
+  ],
+  "shoes": [
+   [
+    1073062,
+    "Cottontail Rabbit Shoes"
+   ],
+   [
+    1073175,
+    "Sweetheart Shoes"
+   ],
+   [
+    1073176,
+    "Sweetheart Slippers"
+   ],
+   [
+    1073193,
+    "Sweet Chocolate Dessert Shoes"
+   ],
+   [
+    1072749,
+    "Bubble Bubble Chocolate Shoes"
+   ],
+   [
+    1073661,
+    "Chocolate Hiking Shoes"
+   ],
+   [
+    1073491,
+    "Lovely Shoes"
+   ],
+   [
+    1073437,
+    "Lovely Sneakers"
+   ],
+   [
+    1071199,
+    "Lovely Sugar Shoes"
+   ],
+   [
+    1074181,
+    "Sweet Love Maid Shoes"
+   ],
+   [
+    1074224,
+    "Playful Love Shoes"
+   ],
+   [
+    1073244,
+    "Puppy Love Samurai Shoes (Pink)"
+   ]
+  ],
+  "face": [
+   [
+    1012009,
+    "Kiss Mark"
+   ],
+   [
+    1012180,
+    "Chocolate Heart"
+   ],
+   [
+    1012310,
+    "Valentine's Day Sweet Chocolate"
+   ],
+   [
+    1012514,
+    "Heart-Shaped Chocolate"
+   ],
+   [
+    1012291,
+    "Sweet First Love"
+   ],
+   [
+    1012811,
+    "Lovestruck Face Accessory"
+   ],
+   [
+    1012886,
+    "Kissy Expression Face Accessory"
+   ],
+   [
+    1012208,
+    "Lovely Smile"
+   ],
+   [
+    1012040,
+    "Heart Face Painting"
+   ],
+   [
+    1012763,
+    "Cute Heart Blusher"
+   ],
+   [
+    1022377,
+    "Lovely Eyeshadow"
+   ]
+  ],
+  "weapon": [
+   [
+    1702024,
+    "Cupid's Bow"
+   ],
+   [
+    1702026,
+    "Cupid's Crossbow"
+   ],
+   [
+    1703340,
+    "Orbis Cupid"
+   ],
+   [
+    1702107,
+    "Chocolate"
+   ],
+   [
+    1702106,
+    "Melting Chocolate"
+   ],
+   [
+    1702988,
+    "True Love Chocolate"
+   ],
+   [
+    1702989,
+    "Heartbreak Chocolate"
+   ],
+   [
+    1702575,
+    "Lovely Chocolate Basket"
+   ],
+   [
+    1702717,
+    "Glow Stick of Love"
+   ],
+   [
+    1703806,
+    "Love Letter"
+   ],
+   [
+    1702749,
+    "Love Letter Book Bag"
+   ],
+   [
+    1702125,
+    "Heart Cane"
+   ],
+   [
+    1702886,
+    "Sweet Beary Chocolate"
+   ]
+  ]
+ },
+ "pets": [
+  5002353,
+  5002046,
+  5000290,
+  5000292,
+  5002501,
+  5002578,
+  5002579,
+  5000250,
+  5002577,
+  5000643,
+  5002128,
+  5002796,
+  5000448,
+  5002657,
+  5000060
+ ]
+}
