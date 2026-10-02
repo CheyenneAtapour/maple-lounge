@@ -126,6 +126,11 @@
     grid-column: 1 / -1; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
     color: var(--accent); padding: 8px 2px 0;
   }
+  .pet-search {
+    grid-column: 1 / -1; font: inherit; font-size: 13px; color: var(--panel-fg); background: var(--tile-bg);
+    border: 1px solid var(--panel-border); border-radius: 999px; padding: 6px 12px; margin-bottom: 2px;
+  }
+  .pet-search:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .gender-filter { grid-column: 1 / -1; display: flex; gap: 6px; padding-bottom: 4px; }
   .gender-filter button {
     border: 1px solid var(--panel-border); background: var(--tile-bg); border-radius: 999px; padding: 3px 12px;
@@ -395,6 +400,7 @@
       return;
     }
     if (e.target.tagName === 'SELECT') return; // arrow keys belong to the map picker while it's focused
+    if (e.target.tagName === 'INPUT') return; // typing in the pet search box
     if (e.code === 'KeyF' && !e.metaKey && !e.ctrlKey && !e.altKey && !e.repeat) { toggleFullscreen(); return; }
     if (e.target.closest && e.target.closest('button') && (e.code === 'Space' || e.code === 'Enter')) return;
     const k = keyMap[e.code]; if (k) { keys[k] = true; e.preventDefault(); }
@@ -1116,7 +1122,7 @@
   }
   // The info panel shows the newest pet's picture and blurb, plus everyone who's out.
   function petIcon(id) {
-    const known = [...A.wardrobe.pets, ...Object.values(window.MAPLE_THEMES || {}).flatMap(m => m.pets || [])];
+    const known = [...A.wardrobe.pets, ...Object.values(window.MAPLE_THEMES || {}).flatMap(m => m.pets || []), ...(window.MAPLE_PET_CATALOG || [])];
     const entry = known.find(x => x.id === id);
     return entry ? entry.icon : A.pet.anims.stand0[0].src;
   }
@@ -1292,7 +1298,10 @@
   const tabItems = tab => tab === 'mount' ? A.wardrobe.items.mount
     : withGroups(specs().map(t => [t.name, t.wardrobe[tab]]));
   const ADRIANO_ENTRY = { id: A.pet.id, name: A.pet.name, icon: A.pet.anims.stand0[0].src };
-  const petChoices = () => withGroups([['Favorites', [ADRIANO_ENTRY, ...A.wardrobe.pets]], ...specs().map(t => [t.name, t.pets])]);
+  // Favorites, then each month's pets, then every other pet in the game (assets/pet_catalog.js, A to Z).
+  const petChoices = () => withGroups([['Favorites', [ADRIANO_ENTRY, ...A.wardrobe.pets]], ...specs().map(t => [t.name, t.pets]),
+    ['All pets', window.MAPLE_PET_CATALOG || []]]);
+  let petQuery = ''; // the Pets tab's search box
   function groupHeading(text) {
     const h = document.createElement('div');
     h.className = 'group-head'; h.textContent = text;
@@ -1300,8 +1309,9 @@
   }
   // Every month's list is small (just names and icon paths); scenery images still load only for the map you pick.
   function loadAllWardrobeLists() {
-    return Promise.all(MAPS.map(([key]) => (window.MAPLE_THEMES || {})[key] ? null
-      : loadScript(`themes/${key}.js?v=${THEME_VERSION}`).catch(() => console.warn('map list missing:', key))));
+    return Promise.all([...MAPS.map(([key]) => (window.MAPLE_THEMES || {})[key] ? null
+      : loadScript(`themes/${key}.js?v=${THEME_VERSION}`).catch(() => console.warn('map list missing:', key))),
+      loadScript(`assets/pet_catalog.js?v=${THEME_VERSION}`).catch(() => console.warn('pet catalog missing'))]);
   }
 
   function renderTabs() {
@@ -1363,9 +1373,25 @@
     gridEl.innerHTML = '';
     if (COLOR_KIND[activeTab]) { renderStyleGrid(activeTab); return; }
     if (activeTab === 'pet') {
+      const search = document.createElement('input');
+      search.type = 'search'; search.className = 'pet-search'; search.placeholder = 'Search pets';
+      search.setAttribute('aria-label', 'Search pets'); search.value = petQuery;
+      search.addEventListener('input', () => {
+        petQuery = search.value;
+        const caret = search.selectionStart;
+        renderGrid();
+        const again = gridEl.querySelector('.pet-search');
+        again.focus(); again.setSelectionRange(caret, caret);
+      });
+      gridEl.appendChild(search);
+      const q = petQuery.trim().toLowerCase();
+      const choices = petChoices().filter(p => !q || p.name.toLowerCase().includes(q));
+      const counts = {};
+      for (const p of choices) counts[p.group] = (counts[p.group] || 0) + 1;
+      if (!choices.length) gridEl.appendChild(groupHeading('No pets match'));
       let group = null;
-      for (const p of petChoices()) {
-        if (p.group !== group) { group = p.group; gridEl.appendChild(groupHeading(group)); }
+      for (const p of choices) {
+        if (p.group !== group) { group = p.group; gridEl.appendChild(groupHeading(group === 'All pets' ? `All pets (${counts[group]})` : group)); }
         const slot = pets.findIndex(x => x.data.id === p.id);
         const loading = petsLoading.has(p.id);
         gridEl.appendChild(tile({
@@ -1558,7 +1584,7 @@
     showPetInfo();
     updateChairLabel();
     renderTabs(); renderGrid();
-    loadAllWardrobeLists().then(renderGrid); // fill in every month's picks
+    loadAllWardrobeLists().then(() => { renderGrid(); showPetInfo(); }); // fill in every month's picks and the pet catalog
 
     const saved = restore();
     // Older saves have no hair/face entries; fill them with the defaults.

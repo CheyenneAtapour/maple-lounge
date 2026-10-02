@@ -5,7 +5,8 @@ Walk around, jump, and sit on the Rabbit Lamp Chair (it changes color each time,
 while your pet follows you and Bubble Fish drift by. The wardrobe panel on the right swaps pets,
 mounts (Yeti, Hog, and more), hats, outfits, capes, shoes, face accessories, and weapons
 (seasonal picks for the current map), plus hair and face styles (filter by female/male) with hair
-and eye colors. Up to three pets can follow you at once. Minimize the wardrobe to show the **Maps**
+and eye colors. The Pets tab has every pet in the game (over 900, with a search box): favorites
+and each month's picks first, then all the rest A to Z. Up to three pets can follow you at once. Minimize the wardrobe to show the **Maps**
 and **Wardrobe** buttons: Maps switches between twelve monthly event maps (the page opens on the
 current month's map, or `?map=jan` … `?map=dec`), and Wardrobe reopens the wardrobe. You can also
 reopen it by walking to the wardrobe at the far right end of the path and pressing ↓.
@@ -56,10 +57,12 @@ reopen it by walking to the wardrobe at the far right end of the path and pressi
   pip install pillow
   python3 build_assets.py
   python3 build_theme.py themes/oct.json
-  python3 bake_pets.py        # saves every wardrobe pet into assets/pets/ (skips ones already saved)
+  python3 bake_pets.py        # saves every pet in the game into assets/pets/ (skips ones already saved)
   ```
 
-  Pets are saved in the repo and load from the site itself. Only outfit changes are drawn live by
+  Pets are saved in the repo and load from the site itself. `bake_pets.py` also writes
+  `assets/pet_catalog.js`, the wardrobe's "All pets" list: every pet maplestory.io knows, each name
+  kept once since many pets were re-released under new IDs with the same art. Only outfit changes are drawn live by
   maplestory.io, since every combination of items is a different picture; browsers keep each
   render for a day.
 

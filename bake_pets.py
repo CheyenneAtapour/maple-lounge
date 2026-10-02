@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""Download every pet in the wardrobe once and save it in the repo, so the site never fetches pets live.
+"""Download every pet once and save it in the repo, so the site never fetches pets live.
 
 Usage: python3 bake_pets.py          (skips pets that are already saved)
        python3 bake_pets.py --force  (re-downloads everything)
-Output: assets/pets/<id>.js, each defining window.MAPLE_PETS[<id>] with the frames the game uses.
-The pet list is the shared favorites in assets.js plus every month's pets in themes/*.js.
+Output: assets/pets/<id>.js, each defining window.MAPLE_PETS[<id>] with the frames the game uses,
+plus assets/pet_catalog.js listing every other pet in the game (the wardrobe's "All pets" section).
+The wardrobe pets are the shared favorites in assets.js plus every month's pets in themes/*.js.
+The catalog is every other pet maplestory.io knows. Many pets were re-released under new IDs with
+the same name and art, so each name is kept once (the oldest ID that has the animations we need).
 """
 import concurrent.futures as cf
 import glob
@@ -12,9 +15,10 @@ import json
 import os
 import sys
 
-from build_assets import API, REGION, VERSION, fetch_json
+from build_assets import API, REGION, VERSION, fetch, fetch_json, save_png
 
 OUT = "assets/pets"
+CATALOG = "assets/pet_catalog.js"
 # Animations the game actually plays; the rest (food, dung, cry, ...) are skipped to keep files small.
 USED_ANIMS = {"stand0", "stand1", "move", "jump", "sit", "sleep", "rest0", "love", "dancing", "chat", "hungry", "play"}
 
@@ -24,16 +28,26 @@ def read_js_object(path):
     return json.loads(src[src.index("= ") + 2:].rstrip().rstrip(";"))
 
 
-def pet_ids():
-    ids = []
+def wardrobe_pets():
+    """(id, name) for Adriano, the favorites, and every month's pets."""
     assets = read_js_object("assets.js")
-    ids.append(assets["pet"]["id"])
-    ids += [p["id"] for p in assets["wardrobe"]["pets"] if isinstance(p["id"], int)]
+    pets = [(assets["pet"]["id"], assets["pet"]["name"])]
+    pets += [(p["id"], p["name"]) for p in assets["wardrobe"]["pets"] if isinstance(p["id"], int)]
     for path in sorted(glob.glob("themes/*.js")):
         src = open(path).read()
         theme = json.loads(src[src.index("] = ") + 4:].rstrip().rstrip(";"))
-        ids += [p["id"] for p in theme.get("pets", [])]
-    return list(dict.fromkeys(ids))
+        pets += [(p["id"], p["name"]) for p in theme.get("pets", [])]
+    return list(dict.fromkeys(pets))
+
+
+def catalog_candidates(skip_names):
+    """{name: [ids, oldest first]} for every pet not already in the wardrobe."""
+    by_name = {}
+    for p in sorted(fetch_json(f"{API}/{REGION}/{VERSION}/pet"), key=lambda p: p["id"]):
+        name = (p.get("name") or "").strip()
+        if name and name not in skip_names:
+            by_name.setdefault(name, []).append(p["id"])
+    return by_name
 
 
 def bake(pet_id, force):
@@ -62,17 +76,53 @@ def bake(pet_id, force):
     return pet_id, f"saved ({os.path.getsize(path) // 1024} KB)"
 
 
+def bake_catalog_pet(name, ids, force):
+    """Bake the first ID for this name that works, and save its icon. Returns a catalog entry or None."""
+    for pet_id in ids:
+        _, result = safe_bake(pet_id, force)
+        if result.startswith("FAILED"):
+            return name, None, result
+        if result.startswith("skipped"):
+            continue
+        icon = f"assets/icons/{pet_id}.png"
+        if not os.path.exists(icon) or force:
+            try:
+                save_png(fetch(f"{API}/{REGION}/{VERSION}/item/{pet_id}/iconRaw")[0], icon)
+            except Exception as e:
+                return name, None, f"FAILED (icon: {e})"
+        return name, {"id": pet_id, "name": name, "icon": icon}, result
+    return name, None, "skipped (no ID has standing and walking animations)"
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     force = "--force" in sys.argv
-    ids = pet_ids()
-    print(f"{len(ids)} pets")
+    wardrobe = wardrobe_pets()
+    print(f"{len(wardrobe)} wardrobe pets")
     failed = []
     with cf.ThreadPoolExecutor(3) as ex:
-        for pet_id, result in ex.map(lambda i: safe_bake(i, force), ids):
+        for pet_id, result in ex.map(lambda i: safe_bake(i, force), [i for i, _ in wardrobe]):
             print(f"  {pet_id}: {result}")
             if result.startswith("FAILED"):
                 failed.append(pet_id)
+
+    candidates = catalog_candidates({n for _, n in wardrobe})
+    print(f"{len(candidates)} more pets for the catalog")
+    catalog = []
+    with cf.ThreadPoolExecutor(3) as ex:
+        for name, entry, result in ex.map(lambda kv: bake_catalog_pet(*kv, force), candidates.items()):
+            print(f"  {name}: {result}")
+            if entry:
+                catalog.append(entry)
+            elif result.startswith("FAILED"):
+                failed.append(name)
+    catalog.sort(key=lambda e: e["name"].lower())
+    with open(CATALOG, "w") as f:
+        f.write(f"// Generated by bake_pets.py from maplestory.io (GMS v{VERSION}). Do not edit.\n")
+        f.write("window.MAPLE_PET_CATALOG = ")
+        json.dump(catalog, f, separators=(",", ":"))
+        f.write(";\n")
+    print(f"catalog: {len(catalog)} pets")
     if failed:
         print(f"{len(failed)} failed; run again to retry them: {failed}")
 
