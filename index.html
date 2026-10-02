@@ -8,6 +8,7 @@
   /* The scene is always a Halloween night, so the UI uses one dark palette. */
   :root {
     --panel-bg: rgba(22, 15, 32, 0.94);
+    --panel-solid: #1a1224; /* --panel-bg without the see-through, for bars that scroll over tiles */
     --panel-fg: #f4ecf8;
     --panel-muted: #b9a8c4;
     --panel-border: rgba(255, 190, 120, 0.18);
@@ -126,9 +127,28 @@
     grid-column: 1 / -1; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
     color: var(--accent); padding: 8px 2px 0;
   }
+  .pet-bar {
+    grid-column: 1 / -1; position: sticky; top: -4px; z-index: 1; margin: -4px -16px 0; padding: 8px 16px 6px;
+    display: flex; flex-direction: column; gap: 6px;
+    background: var(--panel-solid); border-bottom: 1px solid var(--panel-border);
+  }
+  .pets-out { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 28px; }
+  .pets-out-label { font-size: 11.5px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); }
+  .pets-out-none { font-size: 12px; color: var(--panel-muted); }
+  .pet-chip {
+    display: flex; align-items: center; gap: 4px; max-width: 100%; padding: 2px 8px 2px 4px; cursor: pointer;
+    font: inherit; font-size: 12px; color: var(--panel-fg); background: var(--accent-soft);
+    border: 1px solid var(--accent); border-radius: 999px;
+  }
+  .pet-chip:hover { background: var(--tile-hover); }
+  .pet-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .pet-chip img { width: 22px; height: 22px; object-fit: contain; image-rendering: pixelated; }
+  .pet-chip span { max-width: 96px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pet-chip b { font-size: 14px; line-height: 1; color: var(--panel-muted); }
+  .pet-chip:hover b { color: var(--accent); }
   .pet-search {
-    grid-column: 1 / -1; font: inherit; font-size: 13px; color: var(--panel-fg); background: var(--tile-bg);
-    border: 1px solid var(--panel-border); border-radius: 999px; padding: 6px 12px; margin-bottom: 2px;
+    font: inherit; font-size: 13px; color: var(--panel-fg); background: var(--tile-bg);
+    border: 1px solid var(--panel-border); border-radius: 999px; padding: 6px 12px;
   }
   .pet-search:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .gender-filter { grid-column: 1 / -1; display: flex; gap: 6px; padding-bottom: 4px; }
@@ -1373,6 +1393,9 @@
     gridEl.innerHTML = '';
     if (COLOR_KIND[activeTab]) { renderStyleGrid(activeTab); return; }
     if (activeTab === 'pet') {
+      // Search and the pets you have out stay pinned at the top, so you can put one away without scrolling back up.
+      const bar = document.createElement('div');
+      bar.className = 'pet-bar';
       const search = document.createElement('input');
       search.type = 'search'; search.className = 'pet-search'; search.placeholder = 'Search pets';
       search.setAttribute('aria-label', 'Search pets'); search.value = petQuery;
@@ -1383,7 +1406,31 @@
         const again = gridEl.querySelector('.pet-search');
         again.focus(); again.setSelectionRange(caret, caret);
       });
-      gridEl.appendChild(search);
+      bar.appendChild(search);
+      const out = document.createElement('div');
+      out.className = 'pets-out'; out.setAttribute('role', 'group'); out.setAttribute('aria-label', 'Pets out');
+      const label = document.createElement('span');
+      label.className = 'pets-out-label'; label.textContent = `Out now ${pets.length + petsLoading.size}/${MAX_PETS}`;
+      out.appendChild(label);
+      const outIds = [...pets.map(p => p.data.id), ...petsLoading];
+      if (!outIds.length) {
+        const none = document.createElement('span');
+        none.className = 'pets-out-none'; none.textContent = 'none';
+        out.appendChild(none);
+      }
+      for (const id of outIds) {
+        const pet = pets.find(p => p.data.id === id);
+        const name = pet ? pet.data.name : ((petChoices().find(p => p.id === id) || {}).name || 'Pet');
+        const chip = document.createElement('button');
+        chip.type = 'button'; chip.className = 'pet-chip';
+        chip.title = `Put away ${name}`; chip.setAttribute('aria-label', `Put away ${name}`);
+        chip.innerHTML = `<img alt="" src="${petIcon(id)}"><span></span><b aria-hidden="true">${pet ? '×' : '…'}</b>`;
+        chip.querySelector('span').textContent = name;
+        chip.addEventListener('click', () => togglePet(id));
+        out.appendChild(chip);
+      }
+      bar.appendChild(out);
+      gridEl.appendChild(bar);
       const q = petQuery.trim().toLowerCase();
       const choices = petChoices().filter(p => !q || p.name.toLowerCase().includes(q));
       const counts = {};
@@ -1448,7 +1495,7 @@
     if (slot >= 0) { pets.splice(slot, 1); afterPetsChanged(); return; }
     if (petsLoading.has(id)) return;
     if (pets.length + petsLoading.size >= MAX_PETS) {
-      const msg = `You can have ${MAX_PETS} pets out. Click one to put it away first.`;
+      const msg = `You can have ${MAX_PETS} pets out. Put one away with its × at the top first.`;
       setStatus('pet', msg, true);
       setTimeout(() => { if (statusBy.pet && statusBy.pet.text === msg) setStatus('pet', ''); }, 4000);
       return;
